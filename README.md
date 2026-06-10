@@ -103,6 +103,28 @@ npm run preview
 
 ---
 
+## 🧰 Arsenal OSINT Recomendado (CLI & Standalone)
+
+Para investigações avançadas em terminal local (CLI) ou análises mais profundas e ofensivas, sugerimos integrar a sua rotina com as seguintes ferramentas de referência:
+
+- **GHunt** ([GitHub](https://github.com/mxrch/GHunt)) - Especializado no mapeamento do ecossistema e contas de serviços Google.
+- **Sherlock** ([GitHub](https://github.com/sherlock-project/sherlock)) - Caçador extremamente rápido de usernames em mais de 400 redes sociais.
+- **SocialScan** ([GitHub](https://github.com/iojw/socialscan)) - Verificador de e-mails e nomes de usuário focado na prevenção de falsos positivos.
+- **TheHarvester** ([GitHub](https://github.com/laramies/theHarvester)) - Coleta de e-mails, subdomínios, IPs e funcionários via fontes públicas.
+- **PhoneInfoga** ([GitHub](https://github.com/sundowndev/phoneinfoga)) - Mapeamento e análise aprofundada de números de telefone e operadoras.
+- **Mosint** ([GitHub](https://github.com/alpkeskin/mosint)) - Canivete suíço escrito em Go para validação e reconhecimento completo de e-mails.
+- **MailSleuth** ([GitHub](https://github.com/44za12/mailsleuth)) - Checador concorrente para detecção de e-mails em dezenas de serviços populares.
+- **LeakLooker** ([GitHub](https://github.com/woj-ciech/LeakLooker)) - Detector de bancos de dados expostos publicamente via Shodan.
+- **Spiderfoot** ([GitHub](https://github.com/smicallef/spiderfoot)) - Plataforma de automação OSINT agregando mais de 200 fontes de dados.
+- **GitFive** ([GitHub](https://github.com/mxrch/GitFive)) - Rastreador de perfis de desenvolvedores e commits no GitHub.
+
+## 📚 Guias e Metodologias OSINT
+
+- **Awesome OSINT** ([GitHub](https://github.com/jivoi/awesome-osint)) - O maior diretório mantido pela comunidade contendo listas de ferramentas e sites recomendados.
+- **OSINT-BIBLE** ([GitHub](https://github.com/frangelbarrera/OSINT-BIBLE)) - Manual metodológico detalhado para conduzir investigações e relatórios de inteligência.
+
+---
+
 ## ⚖️ Aviso Legal / Termos de Uso
 
 > [!WARNING]

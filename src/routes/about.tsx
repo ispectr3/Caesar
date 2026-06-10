@@ -89,6 +89,46 @@ function AboutPage() {
 
         <section className="fade-in-up stagger-3">
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-4">
+            // Arsenal OSINT Recomendado
+          </h2>
+          <p className="text-foreground leading-relaxed mb-4 text-sm">
+            Para investigações avançadas e testes de intrusão locais, recomendamos as seguintes ferramentas e guias de código aberto do ecossistema:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            {[
+              { name: "GHunt", desc: "Investigação de contas e serviços do ecossistema Google.", repo: "https://github.com/mxrch/GHunt" },
+              { name: "Sherlock", desc: "Caça de usernames em mais de 400 redes sociais simultaneamente.", repo: "https://github.com/sherlock-project/sherlock" },
+              { name: "SocialScan", desc: "Validador preciso de e-mails e usernames contra falsos positivos.", repo: "https://github.com/iojw/socialscan" },
+              { name: "TheHarvester", desc: "Coleta de e-mails, subdomínios, IPs e funcionários via fontes públicas.", repo: "https://github.com/laramies/theHarvester" },
+              { name: "PhoneInfoga", desc: "Análise de números de telefones, operadoras e possíveis vazamentos.", repo: "https://github.com/sundowndev/phoneinfoga" },
+              { name: "Mosint", desc: "Canivete suíço para e-mails de qualquer provedor escrito em Go.", repo: "https://github.com/alpkeskin/mosint" },
+              { name: "MailSleuth", desc: "Validador de e-mails em múltiplos serviços concorrentes.", repo: "https://github.com/44za12/mailsleuth" },
+              { name: "LeakLooker", desc: "Buscador de instâncias expostas na internet pública via Shodan.", repo: "https://github.com/woj-ciech/LeakLooker" },
+              { name: "Spiderfoot", desc: "Plataforma de automação OSINT agregando mais de 200 fontes.", repo: "https://github.com/smicallef/spiderfoot" },
+              { name: "GitFive", desc: "Rastreador de perfis e identidades de usuários do GitHub.", repo: "https://github.com/mxrch/GitFive" },
+              { name: "Awesome OSINT", desc: "O maior diretório mantido pela comunidade com ferramentas e sites.", repo: "https://github.com/jivoi/awesome-osint" },
+              { name: "OSINT-BIBLE", desc: "Guia definitivo e metodológico de investigação de fontes abertas.", repo: "https://github.com/frangelbarrera/OSINT-BIBLE" },
+            ].map((tool) => (
+              <a
+                key={tool.name}
+                href={tool.repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-cyber px-4 py-3 flex flex-col justify-between hover:border-primary/50 transition-colors"
+              >
+                <span className="font-mono text-[11px] uppercase tracking-wider text-primary font-bold">
+                  {tool.name} ↗
+                </span>
+                <span className="text-[10px] text-muted-foreground mt-1 leading-normal">
+                  {tool.desc}
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="fade-in-up stagger-4">
+          <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-4">
             // Código Fonte
           </h2>
           <p className="text-foreground leading-relaxed mb-4">
@@ -105,7 +145,7 @@ function AboutPage() {
           </a>
         </section>
 
-        <section className="border border-destructive/30 bg-destructive/5 rounded-none p-6 fade-in-up stagger-4">
+        <section className="border border-destructive/30 bg-destructive/5 rounded-none p-6 fade-in-up stagger-5">
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-destructive mb-4">
             ! Aviso legal
           </h2>
