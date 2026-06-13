@@ -11,6 +11,14 @@ function formatCNPJ(value: string) {
   return `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5, 8)}/${clean.slice(8, 12)}-${clean.slice(12)}`;
 }
 
+function formatCPF(value: string) {
+  const clean = value.replace(/\D/g, "").slice(0, 11);
+  if (clean.length <= 3) return clean;
+  if (clean.length <= 6) return `${clean.slice(0, 3)}.${clean.slice(3)}`;
+  if (clean.length <= 9) return `${clean.slice(0, 3)}.${clean.slice(3, 6)}.${clean.slice(6)}`;
+  return `${clean.slice(0, 3)}.${clean.slice(3, 6)}.${clean.slice(6, 9)}-${clean.slice(9)}`;
+}
+
 function formatPhone(value: string) {
   let clean = value.replace(/[^\d+]/g, "");
   if (!clean.startsWith("+")) {
@@ -46,7 +54,7 @@ export function ToolForm({
   onSubmit: (value: string) => void;
   loading: boolean;
   error: string | null;
-  inputType?: "cnpj" | "phone" | "domain" | "ip" | "email" | "default";
+  inputType?: "cnpj" | "cpf" | "phone" | "domain" | "ip" | "email" | "default";
   children?: ReactNode;
 }) {
   const [value, setValue] = useState("");
@@ -55,8 +63,22 @@ export function ToolForm({
     let formatted = val;
     if (inputType === "cnpj") {
       formatted = formatCNPJ(val);
+    } else if (inputType === "cpf") {
+      formatted = formatCPF(val);
     } else if (inputType === "phone") {
       formatted = formatPhone(val);
+    } else if (inputType === "ip") {
+      let clean = val.replace(/[^\d.]/g, "").replace(/\.+/g, ".");
+      const blocks = clean.split(".");
+      if (blocks.length > 4) blocks.length = 4;
+      for (let i = 0; i < blocks.length; i++) {
+        blocks[i] = blocks[i].slice(0, 3);
+      }
+      formatted = blocks.join(".");
+      
+      if (val.length > value.length && blocks.length < 4 && blocks[blocks.length - 1].length === 3) {
+        formatted += ".";
+      }
     }
     setValue(formatted);
   };
@@ -79,7 +101,7 @@ export function ToolForm({
             placeholder={placeholder}
             autoComplete="off"
             spellCheck={false}
-            className="w-full bg-background/40 border border-border/60 rounded-none pl-9 pr-4 py-3.5 font-mono text-sm text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
+            className="w-full bg-background/40 border border-border/60 border-l-4 border-l-primary rounded-none pl-9 pr-4 py-3.5 font-mono text-sm text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
           />
         </div>
         <button

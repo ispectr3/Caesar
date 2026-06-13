@@ -10,21 +10,31 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhoisRouteImport } from './routes/whois'
+import { Route as WaybackRouteImport } from './routes/wayback'
+import { Route as UsernameRouteImport } from './routes/username'
 import { Route as SubdomainsRouteImport } from './routes/subdomains'
-import { Route as SearchRouteImport } from './routes/search'
 import { Route as ScamRouteImport } from './routes/scam'
+import { Route as PortscanRouteImport } from './routes/portscan'
 import { Route as PhoneRouteImport } from './routes/phone'
+import { Route as NamintRouteImport } from './routes/namint'
+import { Route as MosintRouteImport } from './routes/mosint'
+import { Route as LeaklookerRouteImport } from './routes/leaklooker'
 import { Route as IpRouteImport } from './routes/ip'
 import { Route as HeadersRouteImport } from './routes/headers'
 import { Route as HashRouteImport } from './routes/hash'
+import { Route as GitfiveRouteImport } from './routes/gitfive'
+import { Route as GhuntRouteImport } from './routes/ghunt'
 import { Route as GeocodeRouteImport } from './routes/geocode'
+import { Route as FilephishRouteImport } from './routes/filephish'
 import { Route as EmailRouteImport } from './routes/email'
 import { Route as DorksRouteImport } from './routes/dorks'
 import { Route as DnsRouteImport } from './routes/dns'
 import { Route as CveRouteImport } from './routes/cve'
 import { Route as CrmRouteImport } from './routes/crm'
+import { Route as CpfRouteImport } from './routes/cpf'
 import { Route as CnpjRouteImport } from './routes/cnpj'
 import { Route as CepRouteImport } from './routes/cep'
+import { Route as AbuseipdbRouteImport } from './routes/abuseipdb'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -33,14 +43,19 @@ const WhoisRoute = WhoisRouteImport.update({
   path: '/whois',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WaybackRoute = WaybackRouteImport.update({
+  id: '/wayback',
+  path: '/wayback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsernameRoute = UsernameRouteImport.update({
+  id: '/username',
+  path: '/username',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SubdomainsRoute = SubdomainsRouteImport.update({
   id: '/subdomains',
   path: '/subdomains',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScamRoute = ScamRouteImport.update({
@@ -48,9 +63,29 @@ const ScamRoute = ScamRouteImport.update({
   path: '/scam',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortscanRoute = PortscanRouteImport.update({
+  id: '/portscan',
+  path: '/portscan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PhoneRoute = PhoneRouteImport.update({
   id: '/phone',
   path: '/phone',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NamintRoute = NamintRouteImport.update({
+  id: '/namint',
+  path: '/namint',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MosintRoute = MosintRouteImport.update({
+  id: '/mosint',
+  path: '/mosint',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaklookerRoute = LeaklookerRouteImport.update({
+  id: '/leaklooker',
+  path: '/leaklooker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IpRoute = IpRouteImport.update({
@@ -68,9 +103,24 @@ const HashRoute = HashRouteImport.update({
   path: '/hash',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GitfiveRoute = GitfiveRouteImport.update({
+  id: '/gitfive',
+  path: '/gitfive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GhuntRoute = GhuntRouteImport.update({
+  id: '/ghunt',
+  path: '/ghunt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GeocodeRoute = GeocodeRouteImport.update({
   id: '/geocode',
   path: '/geocode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilephishRoute = FilephishRouteImport.update({
+  id: '/filephish',
+  path: '/filephish',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailRoute = EmailRouteImport.update({
@@ -98,6 +148,11 @@ const CrmRoute = CrmRouteImport.update({
   path: '/crm',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CpfRoute = CpfRouteImport.update({
+  id: '/cpf',
+  path: '/cpf',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CnpjRoute = CnpjRouteImport.update({
   id: '/cnpj',
   path: '/cnpj',
@@ -106,6 +161,11 @@ const CnpjRoute = CnpjRouteImport.update({
 const CepRoute = CepRouteImport.update({
   id: '/cep',
   path: '/cep',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AbuseipdbRoute = AbuseipdbRouteImport.update({
+  id: '/abuseipdb',
+  path: '/abuseipdb',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -122,62 +182,92 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/abuseipdb': typeof AbuseipdbRoute
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
+  '/cpf': typeof CpfRoute
   '/crm': typeof CrmRoute
   '/cve': typeof CveRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
   '/email': typeof EmailRoute
+  '/filephish': typeof FilephishRoute
   '/geocode': typeof GeocodeRoute
+  '/ghunt': typeof GhuntRoute
+  '/gitfive': typeof GitfiveRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
+  '/leaklooker': typeof LeaklookerRoute
+  '/mosint': typeof MosintRoute
+  '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
+  '/portscan': typeof PortscanRoute
   '/scam': typeof ScamRoute
-  '/search': typeof SearchRoute
   '/subdomains': typeof SubdomainsRoute
+  '/username': typeof UsernameRoute
+  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/abuseipdb': typeof AbuseipdbRoute
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
+  '/cpf': typeof CpfRoute
   '/crm': typeof CrmRoute
   '/cve': typeof CveRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
   '/email': typeof EmailRoute
+  '/filephish': typeof FilephishRoute
   '/geocode': typeof GeocodeRoute
+  '/ghunt': typeof GhuntRoute
+  '/gitfive': typeof GitfiveRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
+  '/leaklooker': typeof LeaklookerRoute
+  '/mosint': typeof MosintRoute
+  '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
+  '/portscan': typeof PortscanRoute
   '/scam': typeof ScamRoute
-  '/search': typeof SearchRoute
   '/subdomains': typeof SubdomainsRoute
+  '/username': typeof UsernameRoute
+  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/abuseipdb': typeof AbuseipdbRoute
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
+  '/cpf': typeof CpfRoute
   '/crm': typeof CrmRoute
   '/cve': typeof CveRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
   '/email': typeof EmailRoute
+  '/filephish': typeof FilephishRoute
   '/geocode': typeof GeocodeRoute
+  '/ghunt': typeof GhuntRoute
+  '/gitfive': typeof GitfiveRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
+  '/leaklooker': typeof LeaklookerRoute
+  '/mosint': typeof MosintRoute
+  '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
+  '/portscan': typeof PortscanRoute
   '/scam': typeof ScamRoute
-  '/search': typeof SearchRoute
   '/subdomains': typeof SubdomainsRoute
+  '/username': typeof UsernameRoute
+  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRouteTypes {
@@ -185,82 +275,122 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/abuseipdb'
     | '/cep'
     | '/cnpj'
+    | '/cpf'
     | '/crm'
     | '/cve'
     | '/dns'
     | '/dorks'
     | '/email'
+    | '/filephish'
     | '/geocode'
+    | '/ghunt'
+    | '/gitfive'
     | '/hash'
     | '/headers'
     | '/ip'
+    | '/leaklooker'
+    | '/mosint'
+    | '/namint'
     | '/phone'
+    | '/portscan'
     | '/scam'
-    | '/search'
     | '/subdomains'
+    | '/username'
+    | '/wayback'
     | '/whois'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/abuseipdb'
     | '/cep'
     | '/cnpj'
+    | '/cpf'
     | '/crm'
     | '/cve'
     | '/dns'
     | '/dorks'
     | '/email'
+    | '/filephish'
     | '/geocode'
+    | '/ghunt'
+    | '/gitfive'
     | '/hash'
     | '/headers'
     | '/ip'
+    | '/leaklooker'
+    | '/mosint'
+    | '/namint'
     | '/phone'
+    | '/portscan'
     | '/scam'
-    | '/search'
     | '/subdomains'
+    | '/username'
+    | '/wayback'
     | '/whois'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/abuseipdb'
     | '/cep'
     | '/cnpj'
+    | '/cpf'
     | '/crm'
     | '/cve'
     | '/dns'
     | '/dorks'
     | '/email'
+    | '/filephish'
     | '/geocode'
+    | '/ghunt'
+    | '/gitfive'
     | '/hash'
     | '/headers'
     | '/ip'
+    | '/leaklooker'
+    | '/mosint'
+    | '/namint'
     | '/phone'
+    | '/portscan'
     | '/scam'
-    | '/search'
     | '/subdomains'
+    | '/username'
+    | '/wayback'
     | '/whois'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AbuseipdbRoute: typeof AbuseipdbRoute
   CepRoute: typeof CepRoute
   CnpjRoute: typeof CnpjRoute
+  CpfRoute: typeof CpfRoute
   CrmRoute: typeof CrmRoute
   CveRoute: typeof CveRoute
   DnsRoute: typeof DnsRoute
   DorksRoute: typeof DorksRoute
   EmailRoute: typeof EmailRoute
+  FilephishRoute: typeof FilephishRoute
   GeocodeRoute: typeof GeocodeRoute
+  GhuntRoute: typeof GhuntRoute
+  GitfiveRoute: typeof GitfiveRoute
   HashRoute: typeof HashRoute
   HeadersRoute: typeof HeadersRoute
   IpRoute: typeof IpRoute
+  LeaklookerRoute: typeof LeaklookerRoute
+  MosintRoute: typeof MosintRoute
+  NamintRoute: typeof NamintRoute
   PhoneRoute: typeof PhoneRoute
+  PortscanRoute: typeof PortscanRoute
   ScamRoute: typeof ScamRoute
-  SearchRoute: typeof SearchRoute
   SubdomainsRoute: typeof SubdomainsRoute
+  UsernameRoute: typeof UsernameRoute
+  WaybackRoute: typeof WaybackRoute
   WhoisRoute: typeof WhoisRoute
 }
 
@@ -273,18 +403,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhoisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wayback': {
+      id: '/wayback'
+      path: '/wayback'
+      fullPath: '/wayback'
+      preLoaderRoute: typeof WaybackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/username': {
+      id: '/username'
+      path: '/username'
+      fullPath: '/username'
+      preLoaderRoute: typeof UsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/subdomains': {
       id: '/subdomains'
       path: '/subdomains'
       fullPath: '/subdomains'
       preLoaderRoute: typeof SubdomainsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scam': {
@@ -294,11 +431,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portscan': {
+      id: '/portscan'
+      path: '/portscan'
+      fullPath: '/portscan'
+      preLoaderRoute: typeof PortscanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/phone': {
       id: '/phone'
       path: '/phone'
       fullPath: '/phone'
       preLoaderRoute: typeof PhoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/namint': {
+      id: '/namint'
+      path: '/namint'
+      fullPath: '/namint'
+      preLoaderRoute: typeof NamintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mosint': {
+      id: '/mosint'
+      path: '/mosint'
+      fullPath: '/mosint'
+      preLoaderRoute: typeof MosintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaklooker': {
+      id: '/leaklooker'
+      path: '/leaklooker'
+      fullPath: '/leaklooker'
+      preLoaderRoute: typeof LeaklookerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ip': {
@@ -322,11 +487,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HashRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gitfive': {
+      id: '/gitfive'
+      path: '/gitfive'
+      fullPath: '/gitfive'
+      preLoaderRoute: typeof GitfiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ghunt': {
+      id: '/ghunt'
+      path: '/ghunt'
+      fullPath: '/ghunt'
+      preLoaderRoute: typeof GhuntRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/geocode': {
       id: '/geocode'
       path: '/geocode'
       fullPath: '/geocode'
       preLoaderRoute: typeof GeocodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/filephish': {
+      id: '/filephish'
+      path: '/filephish'
+      fullPath: '/filephish'
+      preLoaderRoute: typeof FilephishRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email': {
@@ -364,6 +550,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CrmRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cpf': {
+      id: '/cpf'
+      path: '/cpf'
+      fullPath: '/cpf'
+      preLoaderRoute: typeof CpfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cnpj': {
       id: '/cnpj'
       path: '/cnpj'
@@ -376,6 +569,13 @@ declare module '@tanstack/react-router' {
       path: '/cep'
       fullPath: '/cep'
       preLoaderRoute: typeof CepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/abuseipdb': {
+      id: '/abuseipdb'
+      path: '/abuseipdb'
+      fullPath: '/abuseipdb'
+      preLoaderRoute: typeof AbuseipdbRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -398,21 +598,31 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AbuseipdbRoute: AbuseipdbRoute,
   CepRoute: CepRoute,
   CnpjRoute: CnpjRoute,
+  CpfRoute: CpfRoute,
   CrmRoute: CrmRoute,
   CveRoute: CveRoute,
   DnsRoute: DnsRoute,
   DorksRoute: DorksRoute,
   EmailRoute: EmailRoute,
+  FilephishRoute: FilephishRoute,
   GeocodeRoute: GeocodeRoute,
+  GhuntRoute: GhuntRoute,
+  GitfiveRoute: GitfiveRoute,
   HashRoute: HashRoute,
   HeadersRoute: HeadersRoute,
   IpRoute: IpRoute,
+  LeaklookerRoute: LeaklookerRoute,
+  MosintRoute: MosintRoute,
+  NamintRoute: NamintRoute,
   PhoneRoute: PhoneRoute,
+  PortscanRoute: PortscanRoute,
   ScamRoute: ScamRoute,
-  SearchRoute: SearchRoute,
   SubdomainsRoute: SubdomainsRoute,
+  UsernameRoute: UsernameRoute,
+  WaybackRoute: WaybackRoute,
   WhoisRoute: WhoisRoute,
 }
 export const routeTree = rootRouteImport

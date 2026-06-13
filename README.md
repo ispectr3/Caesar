@@ -103,20 +103,29 @@ npm run preview
 
 ---
 
-## 🧰 Arsenal OSINT Recomendado (CLI & Standalone)
+## 🧰 Plataformas OSINT Recomendadas (Web)
 
-Para investigações avançadas em terminal local (CLI) ou análises mais profundas e ofensivas, sugerimos integrar a sua rotina com as seguintes ferramentas de referência:
+Para investigações complementares diretamente pelo navegador, sugerimos integrar a sua rotina com as seguintes plataformas web:
 
-- **GHunt** ([GitHub](https://github.com/mxrch/GHunt)) - Especializado no mapeamento do ecossistema e contas de serviços Google.
-- **Sherlock** ([GitHub](https://github.com/sherlock-project/sherlock)) - Caçador extremamente rápido de usernames em mais de 400 redes sociais.
-- **SocialScan** ([GitHub](https://github.com/iojw/socialscan)) - Verificador de e-mails e nomes de usuário focado na prevenção de falsos positivos.
-- **TheHarvester** ([GitHub](https://github.com/laramies/theHarvester)) - Coleta de e-mails, subdomínios, IPs e funcionários via fontes públicas.
-- **PhoneInfoga** ([GitHub](https://github.com/sundowndev/phoneinfoga)) - Mapeamento e análise aprofundada de números de telefone e operadoras.
-- **Mosint** ([GitHub](https://github.com/alpkeskin/mosint)) - Canivete suíço escrito em Go para validação e reconhecimento completo de e-mails.
-- **MailSleuth** ([GitHub](https://github.com/44za12/mailsleuth)) - Checador concorrente para detecção de e-mails em dezenas de serviços populares.
-- **LeakLooker** ([GitHub](https://github.com/woj-ciech/LeakLooker)) - Detector de bancos de dados expostos publicamente via Shodan.
-- **Spiderfoot** ([GitHub](https://github.com/smicallef/spiderfoot)) - Plataforma de automação OSINT agregando mais de 200 fontes de dados.
-- **GitFive** ([GitHub](https://github.com/mxrch/GitFive)) - Rastreador de perfis de desenvolvedores e commits no GitHub.
+### 🔎 Buscas Avançadas
+- **Google Dorks** - Permanecem eficazes para tarefas focadas; operadores como `site:`, `filetype:`, `inurl:` para encontrar informações expostas.
+- **Dorksearch / GHDB** - Bases de dorks prontas.
+
+### 📍 Imagens e Geolocalização
+- **Google Reverse Image Search / TinEye** - Rastreamento de imagens.
+- **GeoGuessr / Geospy** - Geolocalização por análise visual.
+
+### 🌐 Domínios e Infraestrutura
+- **DNSDumpster** - Mapeamento DNS visual.
+- **Shodan** - Considerado o melhor para reconhecimento de infraestrutura, indexa dispositivos expostos na internet (IPs, portas, banners, CVEs).
+
+### 👤 Username e Presença Digital
+- **OSINT Industries** - Ferramenta de lookup em tempo real que mostra quais contas online estão vinculadas a um email, telefone, username ou carteira crypto.
+
+### ✉️ E-mail e Vazamentos
+- **Hunter.io** - Busca e validação de emails corporativos (limite de 25 buscas mensais na versão gratuita).
+- **HaveIBeenPwned** - Verifica se um email aparece em vazamentos conhecidos.
+- **Intelligence X** - Motor de busca que indexa dados de fontes públicas, dark web e registros históricos usando identificadores como emails, domínios, endereços cripto e telefone.
 
 ## 📚 Guias e Metodologias OSINT
 

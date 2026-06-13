@@ -30,8 +30,7 @@ function AboutPage() {
           </h2>
           <p className="text-foreground leading-relaxed">
             OSINT (Open-Source Intelligence) é a prática de coletar e analisar informações de fontes
-            públicas. Esta plataforma reúne consultas comuns em uma única interface, sem cadastro
-            nem armazenamento de buscas.
+            públicas. Esta plataforma reúne consultas comuns em uma única interface para fins de auditoria interna, investigação e controle de segurança.
           </p>
         </section>
 
@@ -55,6 +54,10 @@ function AboutPage() {
               { tool: "GEOINT", source: "OSM Nominatim API", url: "https://github.com/osm-search/Nominatim" },
               { tool: "Phone OSINT", source: "libphonenumber-js", url: "https://github.com/catamphetamine/libphonenumber-js" },
               { tool: "Scam Analyzer", source: "motor heurístico local", url: "https://github.com/ispectr3/Caesar" },
+              { tool: "WhatsMyName", source: "Username Recon (11 sites)", url: "https://github.com/WebBreacher/WhatsMyName" },
+              { tool: "NAMINT", source: "gerador algorítmico local", url: "https://github.com/ispectr3/Caesar" },
+              { tool: "File Phish", source: "construtor local de Dorks", url: "https://github.com/ispectr3/Caesar" },
+              { tool: "Wayback Machine", source: "archive.org (CDX API)", url: "https://archive.org" },
             ].map((item) => (
               <div
                 key={item.tool}
@@ -66,7 +69,7 @@ function AboutPage() {
                 <span className="text-muted-foreground">→</span>
                 <a
                   href={item.url}
-                  target="_blank"
+                  target="_self"
                   rel="noopener noreferrer"
                   className="text-foreground/80 hover:text-primary transition-colors text-right truncate max-w-[150px] sm:max-w-none"
                 >
@@ -79,11 +82,12 @@ function AboutPage() {
 
         <section className="fade-in-up stagger-2">
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-4">
-            // Privacidade
+            // Auditoria & Controle
           </h2>
           <p className="text-foreground leading-relaxed">
-            Nenhuma consulta é registrada, salva ou compartilhada por esta plataforma. Todas as
-            chamadas saem do servidor — sua origem não é exposta aos serviços terceiros.
+            Para fins de auditoria, segurança e conformidade, todos os logs de consultas realizadas e
+            ferramentas utilizadas nesta plataforma são registrados e monitorados. Mantemos total controle
+            e rastreamento das atividades para garantir o uso seguro e legítimo das funcionalidades.
           </p>
         </section>
 
@@ -112,7 +116,7 @@ function AboutPage() {
               <a
                 key={tool.name}
                 href={tool.repo}
-                target="_blank"
+                target="_self"
                 rel="noopener noreferrer"
                 className="card-cyber px-4 py-3 flex flex-col justify-between hover:border-primary/50 transition-colors"
               >
@@ -137,7 +141,7 @@ function AboutPage() {
           </p>
           <a
             href="https://github.com/ispectr3/Caesar"
-            target="_blank"
+            target="_self"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 border border-primary/40 text-primary font-mono text-xs uppercase tracking-wider rounded-none hover:bg-primary/5 hover:border-primary transition-all duration-300"
           >

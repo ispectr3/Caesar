@@ -212,10 +212,10 @@ function ScamTool() {
                 <div className="card-cyber p-5">
                   <div className="mb-3 pb-2 border-b border-border/30 flex items-center justify-between">
                     <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary font-bold">
-                      [// Conselhos de Segurança]
+                      [// Ações Recomendadas (Playbook)]
                     </span>
                   </div>
-                  <ul className="font-mono text-xs space-y-2.5 list-disc pl-4 text-muted-foreground leading-relaxed">
+                  <ul className="space-y-2.5 list-disc pl-4 font-sans text-xs sm:text-[13px] text-foreground/85 leading-relaxed">
                     <li>Sempre verifique o e-mail ou número de origem real do remetente, não apenas o nome exibido.</li>
                     <li>Nenhum banco ou órgão do governo solicita senhas, tokens ou transferências Pix imediatas para "desbloqueio".</li>
                     <li>Não clique em links encurtados ou IPs diretos contidos em SMS urgentes.</li>
@@ -224,10 +224,23 @@ function ScamTool() {
                 </div>
               </div>
             ) : (
-              <div className="card-cyber p-6 font-mono text-center text-muted-foreground flex flex-col items-center justify-center min-h-[300px]">
-                <AlertCircle size={32} className="text-primary/40 mb-3" />
-                <h4 className="text-xs uppercase font-bold text-foreground mb-1">[ Aguardando Dados ]</h4>
-                <p className="text-[11px] leading-relaxed max-w-[300px]">Insira o conteúdo do texto ou mensagem suspeita na caixa ao lado e clique em analisar para obter o veredito de risco.</p>
+              <div className="space-y-6">
+                <ResultCard title="O que é o Scam Analyzer?">
+                  <div className="space-y-4 font-mono text-xs text-muted-foreground leading-relaxed">
+                    <div className="p-3 bg-primary/5 border border-primary/20 text-foreground">
+                      <span className="text-primary font-bold block mb-1.5 uppercase tracking-wider">
+                        Engenharia Social
+                      </span>
+                      Esta ferramenta utiliza heurística local para identificar vetores de urgência, pressão psicológica, links ofuscados e falsas promessas financeiras comuns em e-mails corporativos falsos (BEC), SMS de phishing e golpes de WhatsApp.
+                    </div>
+                  </div>
+                </ResultCard>
+                <ResultCard title="Como Funciona?">
+                  <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                    <p>Cole o corpo do e-mail ou a mensagem que você quer auditar.</p>
+                    <p>O Caesar quebrará o texto em componentes lexicais, identificando domínios suspeitos, palavras-chave de risco e padrões de manipulação.</p>
+                  </div>
+                </ResultCard>
               </div>
             )}
           </div>

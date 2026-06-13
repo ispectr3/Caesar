@@ -19,6 +19,14 @@ import {
   ShieldAlert,
   MapPin,
   Phone,
+  Github,
+  Database,
+  X,
+  UserCheck,
+  History,
+  UserSearch,
+  FileText,
+  Filter,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -55,7 +63,7 @@ const TOOLS = [
     to: "/whois" as const,
     name: "WHOIS",
     desc: "Registrar, datas de criação/expiração e nameservers via RDAP.",
-    input: "example.com",
+    input: "tools.osintnewsletter.com",
     icon: Server,
     color: "from-primary/25 to-accent/10",
   },
@@ -64,19 +72,11 @@ const TOOLS = [
     to: "/dns" as const,
     name: "DNS Lookup",
     desc: "Registros A, AAAA, MX, NS, TXT, CNAME e SOA.",
-    input: "cloudflare.com",
+    input: "tools.osintnewsletter.com",
     icon: Layers,
     color: "from-primary/25 to-accent/10",
   },
-  {
-    code: "04",
-    to: "/search" as const,
-    name: "Username Search",
-    desc: "Procura presença de username em 10+ redes sociais.",
-    input: "torvalds",
-    icon: Search,
-    color: "from-primary/25 to-accent/10",
-  },
+
   {
     code: "05",
     to: "/email" as const,
@@ -91,7 +91,7 @@ const TOOLS = [
     to: "/headers" as const,
     name: "HTTP Headers",
     desc: "Analisa headers de segurança com score de proteção.",
-    input: "https://google.com",
+    input: "https://tools.osintnewsletter.com",
     icon: ShieldCheck,
     color: "from-primary/25 to-accent/10",
   },
@@ -109,7 +109,7 @@ const TOOLS = [
     to: "/subdomains" as const,
     name: "Subdomain Scanner",
     desc: "Descobre subdomínios via Certificate Transparency.",
-    input: "google.com",
+    input: "tools.osintnewsletter.com",
     icon: Network,
     color: "from-primary/25 to-accent/10",
   },
@@ -118,7 +118,7 @@ const TOOLS = [
     to: "/dorks" as const,
     name: "Google Dorks",
     desc: "Gerador de queries avançadas para encontrar arquivos e páginas ocultas.",
-    input: "site.com",
+    input: "tools.osintnewsletter.com",
     icon: Search,
     color: "from-primary/25 to-accent/10",
   },
@@ -167,11 +167,110 @@ const TOOLS = [
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
   },
+  {
+    code: "15",
+    to: "/gitfive" as const,
+    name: "GitFive",
+    desc: "Rastreia e-mails reais de commits públicos e identidades de desenvolvedores.",
+    input: "git_username",
+    icon: Github,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "16",
+    to: "/ghunt" as const,
+    name: "GHunt",
+    desc: "Identifica contas Google, GAIA IDs e exposição em serviços públicos.",
+    input: "user@gmail.com",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "17",
+    to: "/mosint" as const,
+    name: "Mosint",
+    desc: "Canivete suíço para investigação de e-mails e contas sociais.",
+    input: "email@exemplo.com",
+    icon: Mail,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "18",
+    to: "/leaklooker" as const,
+    name: "LeakLooker",
+    desc: "Varre a internet pública em busca de portas abertas e bancos expostos.",
+    input: "104.244.42.1",
+    icon: Database,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "19",
+    to: "/abuseipdb" as const,
+    name: "AbuseIPDB Scanner",
+    desc: "Consulta a reputação de um IP e histórico de denúncias maliciosas.",
+    input: "1.2.3.4",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "11b",
+    to: "/cpf" as const,
+    name: "CPF Search",
+    desc: "Validador, análise regional e rastreio de vazamento de CPF na Dark Web.",
+    input: "000.000.000-00",
+    icon: UserCheck,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "20",
+    to: "/username" as const,
+    name: "WhatsMyName",
+    desc: "Verificação passiva de nome de usuário em múltiplas plataformas.",
+    input: "torvalds",
+    icon: UserSearch,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "21",
+    to: "/namint" as const,
+    name: "NAMINT Combiner",
+    desc: "Gerador passivo de variações de e-mail e usernames por nome do alvo.",
+    input: "John Fitzgerald Kennedy",
+    icon: Filter,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "22",
+    to: "/filephish" as const,
+    name: "File Phish",
+    desc: "Busca estruturada de documentos sensíveis expostos via Google Dorks.",
+    input: "tools.osintnewsletter.com",
+    icon: FileText,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "23",
+    to: "/wayback" as const,
+    name: "Wayback Machine",
+    desc: "Consulta o histórico de capturas e snapshots de websites arquivados.",
+    input: "tools.osintnewsletter.com",
+    icon: History,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "25",
+    to: "/portscan" as const,
+    name: "Web Port Scanner",
+    desc: "Escaneamento ativo de portas focadas na superfície de ataque web.",
+    input: "tools.osintnewsletter.com",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
 ];
 
 const STATS = [
-  { icon: Zap, value: "14", label: "Ferramentas" },
-  { icon: Lock, value: "0", label: "Dados armazenados" },
+  { icon: Zap, value: "24", label: "Ferramentas" },
+  { icon: Database, value: "Ativo", label: "Controle & Logs" },
   { icon: Eye, value: "100%", label: "Gratuito" },
 ];
 
@@ -190,6 +289,15 @@ function Index() {
       "scan_phishing: running text content heuristics... [SAFE]",
       "system_idle: clearing cache memory buffers...",
       "audit_network: query packet routed through serverless proxy...",
+      "gitfive_scan: tracing GitHub commit email logs...",
+      "ghunt_check: checking target GAIA profile ID...",
+      "mosint_audit: running unified email intelligence suite...",
+      "leaklooker_audit: checking exposed databases on Shodan feed...",
+      "whatsmyname_scan: checking username existence across 11 social platforms...",
+      "namint_generate: permuting target name into username and email combinations...",
+      "filephish_dork: generating document disclosure google queries...",
+      "wayback_history: fetching historical snapshot timeline from internet archive CDX...",
+      "cpf_audit: calculating geographic origin and checking breach records...",
     ];
     const interval = setInterval(() => {
       setLogs((prev) => {
@@ -207,17 +315,14 @@ function Index() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left side */}
           <div className="lg:col-span-7">
-            <p className="font-mono text-xs uppercase tracking-[0.4em] text-primary glow-text mb-5 fade-in-up">
+            <p className="font-mono text-xs uppercase tracking-[0.4em] text-primary mb-5 fade-in-up">
               // Caesar OSINT
             </p>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight max-w-4xl fade-in-up stagger-1">
-              Inteligência de <span className="gradient-text">fontes abertas</span>,
-              <br className="hidden sm:block" /> sem fricção.
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight max-w-4xl fade-in-up stagger-1 font-mono">
+              A verdade está <span className="text-primary">nos dados</span>.
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl fade-in-up stagger-2 leading-relaxed">
-              Insira um IP, domínio, email ou username e receba imediatamente dados estruturados de
-              fontes públicas.{" "}
-              <span className="text-foreground/80 font-medium">Sem cadastro. Sem armazenamento.</span>
+              Plataforma avançada de investigação OSINT. Descubra conexões ocultas, rastreie identidades e exponha vulnerabilidades em tempo real.{" "}
             </p>
 
             {/* CTAs */}
@@ -231,7 +336,7 @@ function Index() {
               </Link>
               <Link
                 to="/about"
-                className="inline-flex items-center px-6 py-3 border border-border text-foreground font-mono text-xs uppercase tracking-wider rounded-none hover:bg-white/5 hover:border-primary/40 transition-all duration-300"
+                className="inline-flex items-center px-6 py-3 border border-border text-foreground font-mono text-xs uppercase tracking-wider rounded-none hover:bg-white/5 transition-all duration-300"
               >
                 [ COMO FUNCIONA ]
               </Link>
@@ -245,45 +350,139 @@ function Index() {
                     <stat.icon size={18} className="text-primary" />
                   </div>
                   <div>
-                    <p className="font-mono text-xl font-bold text-foreground">{stat.value}</p>
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <p className="font-sans text-xl font-bold text-foreground">{stat.value}</p>
+                    <p className="font-sans font-medium text-[10px] uppercase tracking-wider text-muted-foreground">
                       {stat.label}
                     </p>
                   </div>
                 </div>
               ))}
-              <div className="flex flex-wrap justify-center gap-3 fade-in-up">
-                <div className="flex items-center gap-2 px-4 py-2 border border-primary bg-primary/5 font-mono text-xs text-primary shadow-[0_0_15px_oklch(0.82_0.18_195/15%)] rounded-none">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                  </span>
-                  [ 14 MÓDULOS ATIVOS ]
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Right side - Hacker Terminal Feed */}
-          <div className="lg:col-span-5 w-full fade-in-up stagger-4">
-            <div className="border border-primary/30 bg-black/60 p-4 font-mono text-[11px] text-primary/80 space-y-1.5 rounded-none shadow-[0_0_25px_rgba(109,0,26,0.15)] relative overflow-hidden h-[220px] flex flex-col justify-between">
-              <div className="absolute top-0 right-0 bg-primary/20 text-primary px-2.5 py-1 text-[9px] uppercase tracking-widest border-l border-b border-primary/30 animate-pulse">
-                AUDIT FEED
+          {/* Right side - GitHub Dashboard layout style cards */}
+          <div className="lg:col-span-5 flex flex-col gap-6 fade-in-up stagger-4">
+            
+            {/* API Status Panel */}
+            <div className="rounded-none border border-border bg-card p-4 flex flex-col">
+              <div className="border-b border-border/40 pb-2.5 mb-4 flex justify-between items-center">
+                <h3 className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                  Status das APIs & Conexões
+                </h3>
+                <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">
+                  Live Feed
+                </span>
               </div>
-              <div className="flex-1 flex flex-col gap-1.5 overflow-y-auto scrollbar-none pt-4">
-                <p className="text-muted-foreground font-bold text-[10px] border-b border-primary/10 pb-1">// SYSTEM STATUS: DEFENSIBLE</p>
-                {logs.map((log, index) => (
-                  <p key={index} className="flex items-start gap-1.5 text-[10px] leading-tight text-foreground/90 font-mono truncate">
-                    <span className="text-primary font-bold shrink-0">&gt;</span>
-                    <span className="text-foreground/90 select-all">{log}</span>
-                  </p>
-                ))}
-              </div>
-              <div className="border-t border-border/20 pt-2 flex items-center justify-between text-[9px] text-muted-foreground">
-                <span>MODULES: 14/14 INTRUSION-FREE</span>
-                <span className="animate-pulse text-red-500 font-bold">● ONLINE</span>
+
+              <div className="grid grid-cols-2 gap-3 font-mono text-[10px]">
+                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
+                  <span className="text-muted-foreground block mb-1">CRT.SH (Subdomínios)</span>
+                  <span className="text-yellow-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                    INSTÁVEL (Fallback Ativo)
+                  </span>
+                </div>
+
+                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
+                  <span className="text-muted-foreground block mb-1">HackerTarget API</span>
+                  <span className="text-green-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    ONLINE
+                  </span>
+                </div>
+
+                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
+                  <span className="text-muted-foreground block mb-1">Wayback Machine</span>
+                  <span className="text-green-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    ONLINE
+                  </span>
+                </div>
+
+                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
+                  <span className="text-muted-foreground block mb-1">GitHub API Engine</span>
+                  <span className="text-green-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    ONLINE
+                  </span>
+                </div>
+
+                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
+                  <span className="text-muted-foreground block mb-1">AbuseIPDB Threat</span>
+                  <span className="text-green-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    ONLINE
+                  </span>
+                </div>
+
+                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
+                  <span className="text-muted-foreground block mb-1">Dark Web Simulator</span>
+                  <span className="text-green-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    OPERACIONAL
+                  </span>
+                </div>
               </div>
             </div>
+
+            {/* Changelog Timeline Card */}
+            <div className="rounded-none border border-border bg-card p-4 flex flex-col">
+              <div className="border-b border-border/40 pb-2.5 mb-4">
+                <h3 className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
+                  Global Threat & Hacking Feed
+                </h3>
+              </div>
+
+              {/* Timeline list */}
+              <div className="flex flex-col gap-4 font-mono text-[11px]">
+                {/* Item 1 */}
+                <div className="relative pl-5 border-l border-border/80 pb-1">
+                  <span className="absolute -left-1 top-1.5 w-2 h-2 rounded-full bg-accent"></span>
+                  <div className="text-muted-foreground text-[10px] mb-1">Há 1 hora</div>
+                  <h4 className="text-foreground font-semibold mb-1">
+                    CVE-2026-1234: SSH Authentication Bypass
+                  </h4>
+                  <p className="text-muted-foreground text-[10px] leading-normal">
+                    Identificado novo bypass crítico de autenticação em servidores SSH expostos. CISA emite diretiva urgente de patching.
+                  </p>
+                </div>
+
+                {/* Item 2 */}
+                <div className="relative pl-5 border-l border-border/80 pb-1">
+                  <span className="absolute -left-1 top-1.5 w-2 h-2 rounded-full bg-accent"></span>
+                  <div className="text-muted-foreground text-[10px] mb-1">Há 4 horas</div>
+                  <h4 className="text-foreground font-semibold mb-1">
+                    Active Directory Exploit Kit Publicado
+                  </h4>
+                  <p className="text-muted-foreground text-[10px] leading-normal">
+                    Novo framework modular de escaneamento de credenciais e exploração do Kerberos divulgado no GitHub por grupo hacker.
+                  </p>
+                </div>
+
+                {/* Item 3 */}
+                <div className="relative pl-5 border-l border-border/80">
+                  <span className="absolute -left-1 top-1.5 w-2 h-2 rounded-full bg-accent"></span>
+                  <div className="text-muted-foreground text-[10px] mb-1">Há 12 horas</div>
+                  <h4 className="text-foreground font-semibold mb-1">
+                    Ataque DDoS em Provedores DNS de Trânsito
+                  </h4>
+                  <p className="text-muted-foreground text-[10px] leading-normal">
+                    Grandes operadoras registram latência crítica devido a ondas massivas de tráfego spoofed direcionadas a servidores raiz.
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t border-border/40 mt-4 pt-3 text-[10px] font-mono">
+                <Link 
+                  to="/about"
+                  className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                >
+                  Ver arquivo de ameaças completo →
+                </Link>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -294,7 +493,7 @@ function Index() {
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
             // MÓDULOS DE RECONHECIMENTO OSINT
           </h2>
-          <span className="font-mono text-xs text-primary glow-text">14 ativos</span>
+          <span className="font-mono text-xs text-primary glow-text">24 ativos</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -306,30 +505,35 @@ function Index() {
             >
               {/* Gradient background */}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-40 transition-opacity duration-500`}
+                className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-md`}
               />
 
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-5">
-                  <div className="h-10 w-10 rounded-none bg-primary/5 border border-primary/20 grid place-items-center group-hover:bg-primary/15 group-hover:border-primary/45 transition-all duration-300">
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="h-9 w-9 rounded-md bg-secondary/80 border border-border grid place-items-center group-hover:border-primary/50 transition-colors duration-300">
                     <tool.icon
-                      size={18}
-                      className="text-primary group-hover:scale-110 transition-transform duration-300"
+                      size={16}
+                      className="text-muted-foreground group-hover:text-primary transition-colors duration-300"
                     />
                   </div>
-                  <span className="font-mono text-[10px] text-muted-foreground/60 tracking-wider">
-                    [{tool.code}]
+                  <span className="font-mono text-[10px] text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border">
+                    {tool.code}
                   </span>
                 </div>
-                <h3 className="text-base font-semibold mb-1.5 group-hover:text-primary transition-colors duration-300">
+                
+                <h3 className="text-sm font-semibold mb-2 group-hover:text-primary transition-colors duration-300 text-foreground">
                   {tool.name}
                 </h3>
-                <p className="text-xs text-muted-foreground mb-5 flex-1 leading-relaxed">
+                
+                <p className="text-xs text-muted-foreground mb-4 flex-1 leading-relaxed">
                   {tool.desc}
                 </p>
-                <code className="font-mono text-[11px] text-muted-foreground/70 bg-background/50 px-3 py-1.5 rounded-none border border-border/40 block truncate">
-                  $ {tool.input}
-                </code>
+                
+                <div className="mt-auto">
+                  <code className="font-mono text-[10px] text-muted-foreground/80 bg-background px-2 py-1.5 rounded border border-border block truncate">
+                    <span className="text-primary/70 mr-1.5">$</span>{tool.input}
+                  </code>
+                </div>
               </div>
             </Link>
           ))}

@@ -144,10 +144,10 @@ function SubdomainsPage() {
                             {sub.issuer}
                           </td>
                           <td className="px-3 py-2.5 text-[11px] text-muted-foreground whitespace-nowrap">
-                            {new Date(sub.notBefore).toLocaleDateString()}
+                            {sub.notBefore && !isNaN(Date.parse(sub.notBefore)) ? new Date(sub.notBefore).toLocaleDateString() : "—"}
                           </td>
                           <td className="px-3 py-2.5 text-[11px] text-muted-foreground whitespace-nowrap">
-                            {new Date(sub.notAfter).toLocaleDateString()}
+                            {sub.notAfter && !isNaN(Date.parse(sub.notAfter)) ? new Date(sub.notAfter).toLocaleDateString() : "—"}
                           </td>
                         </tr>
                       ))}

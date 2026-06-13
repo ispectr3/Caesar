@@ -122,18 +122,35 @@ function DorksTool() {
             </div>
           </div>
 
+          {/* Painel Explicativo: Como Usar */}
+          <div className="bg-primary/5 border border-primary/20 p-4 font-mono text-xs text-muted-foreground leading-relaxed">
+            <h4 className="text-primary font-bold mb-2 flex items-center gap-2">
+              <Search size={14} />
+              METODOLOGIA DE INVESTIGAÇÃO (DORKING)
+            </h4>
+            <p className="mb-2">
+              Google Dorks são operadores de busca avançada que revelam informações sensíveis indexadas acidentalmente.
+            </p>
+            <ul className="list-disc list-inside space-y-1 opacity-80">
+              <li>Use o campo <strong>Alvo</strong> para restringir a busca a um domínio específico (ex: <code className="text-primary">alvo.com.br</code>).</li>
+              <li>Abaixo, clique em qualquer Dork gerada para abrir o Google já com a pesquisa formatada.</li>
+              <li><strong className="text-foreground">Cuidado:</strong> Evite fazer dezenas de cliques seguidos rapidamente, ou o Google exigirá CAPTCHAs.</li>
+            </ul>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {DORKS.map((group) => (
               <div
                 key={group.category}
-                className="border border-green-500/20 bg-black/40 backdrop-blur-sm p-4 rounded-xl"
+                className="border border-border/50 bg-card/30 backdrop-blur-sm p-4"
               >
-                <h3 className="text-green-400 font-bold mb-3 border-b border-green-500/20 pb-2 uppercase text-sm tracking-wider">
+                <h3 className="text-primary/90 font-bold mb-3 border-b border-primary/20 pb-2 uppercase text-sm tracking-wider">
                   {group.category}
                 </h3>
                 <div className="space-y-2">
                   {group.queries.map((q) => {
                     const fullQuery = buildQuery(q);
+                    // Force Exact Match with Quotes where possible if not already quoted
                     const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(fullQuery)}`;
                     return (
                       <a
@@ -141,10 +158,13 @@ function DorksTool() {
                         href={googleUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block p-2 bg-green-500/5 hover:bg-green-500/20 border border-transparent hover:border-green-500/50 rounded transition-colors text-sm font-mono text-gray-300 hover:text-green-300 truncate"
+                        className="group flex items-center justify-between p-2.5 bg-background/50 hover:bg-primary/10 border border-transparent hover:border-primary/30 transition-all text-sm font-mono text-muted-foreground hover:text-foreground"
                         title={fullQuery}
                       >
-                        {fullQuery}
+                        <span className="truncate mr-4">{fullQuery}</span>
+                        <span className="shrink-0 text-[10px] text-primary/0 group-hover:text-primary/70 transition-colors uppercase tracking-wider">
+                          Pesquisar
+                        </span>
                       </a>
                     );
                   })}

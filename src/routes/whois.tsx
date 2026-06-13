@@ -87,9 +87,23 @@ function WhoisPage() {
     <SiteLayout>
       <PageHeader
         eyebrow="// Módulo 02"
-        title="WHOIS Lookup"
+        title="WHOIS & Registry Data"
         description="Informações de registro de domínio via protocolo RDAP. Consulte provedores oficiais, datas críticas e nameservers ativos."
       />
+      {/* Painel Explicativo: Como Usar */}
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 mb-8 fade-in-up">
+        <div className="bg-primary/5 border border-primary/20 p-4 font-mono text-xs text-muted-foreground leading-relaxed">
+          <h4 className="text-primary font-bold mb-2">METODOLOGIA DE INVESTIGAÇÃO (WHOIS/RDAP)</h4>
+          <p className="mb-2">
+            A consulta WHOIS/RDAP expõe a identidade, datas de registro e infraestrutura (DNS) por trás de um domínio.
+          </p>
+          <ul className="list-disc list-inside space-y-1 opacity-80">
+            <li><strong>Datas Críticas:</strong> Domínios registrados recentemente (ex: ontem) são fortes indicadores de phishing.</li>
+            <li><strong>Nameservers:</strong> Mostram onde o site está hospedado (ex: Cloudflare, AWS). Útil para descobrir o IP real posteriormente.</li>
+            <li><strong>Entities:</strong> Revelam os "handles" de administradores ou empresas conectadas.</li>
+          </ul>
+        </div>
+      </div>
       <ToolForm
         label="Domínio"
         placeholder="ex: instagram.com"

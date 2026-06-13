@@ -81,6 +81,7 @@ function HeadersPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<HeadersAnalysis | null>(null);
+  const [snippetTab, setSnippetTab] = useState<"nginx" | "apache" | "html">("nginx");
 
   async function submit(value: string) {
     setLoading(true);
@@ -134,6 +135,112 @@ function HeadersPage() {
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* Explicações e Recomendações */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Critérios de Score */}
+              <ResultCard title="Entendendo o Nível de Proteção">
+                <div className="space-y-3 font-mono text-xs">
+                  <div className="border-l-2 border-green-500 pl-3 py-1 bg-green-500/5">
+                    <span className="text-green-400 font-bold block mb-0.5">FORTE (Score 70-100)</span>
+                    <span className="text-muted-foreground leading-relaxed">
+                      Ativação dos cabeçalhos cruciais contra ataques web (como CSP robusto, HSTS, X-Frame-Options, X-Content-Type-Options e Referrer-Policy). Garante que navegadores modernos apliquem controles estritos sobre conteúdo executável, frames e redirecionamentos seguros.
+                    </span>
+                  </div>
+                  <div className="border-l-2 border-yellow-500 pl-3 py-1 bg-yellow-500/5">
+                    <span className="text-yellow-400 font-bold block mb-0.5">PARCIAL / BAIXA (Score 40-69)</span>
+                    <span className="text-muted-foreground leading-relaxed">
+                      O site possui alguns cabeçalhos básicos configurados, mas falha em implementar controles de segurança mais avançados ou rígidos (como CSP ou Strict-Transport-Security), deixando brechas para ataques de injeção de scripts (XSS) ou interceptação de tráfego.
+                    </span>
+                  </div>
+                  <div className="border-l-2 border-red-500 pl-3 py-1 bg-red-500/5">
+                    <span className="text-red-400 font-bold block mb-0.5">FRACA (Score 0-39)</span>
+                    <span className="text-muted-foreground leading-relaxed">
+                      Praticamente nenhum cabeçalho de segurança ativo. O servidor web expõe metadados sensíveis e permite que o site seja inserido em frames (vulnerabilidade a Clickjacking), além de aceitar scripts não autorizados e não forçar o uso exclusivo de HTTPS.
+                    </span>
+                  </div>
+                </div>
+              </ResultCard>
+
+              {/* Guia de Configuração */}
+              <ResultCard title="Snippets de Implementação">
+                <div className="space-y-4">
+                  <div className="flex border-b border-border/20 font-mono text-xs gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSnippetTab("nginx")}
+                      className={`px-3 py-1.5 border-t border-x -mb-[1px] transition-colors ${
+                        snippetTab === "nginx"
+                          ? "bg-black/40 border-border/20 border-b-transparent text-primary font-bold"
+                          : "bg-transparent border-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      NGINX
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSnippetTab("apache")}
+                      className={`px-3 py-1.5 border-t border-x -mb-[1px] transition-colors ${
+                        snippetTab === "apache"
+                          ? "bg-black/40 border-border/20 border-b-transparent text-primary font-bold"
+                          : "bg-transparent border-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Apache (.htaccess)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSnippetTab("html")}
+                      className={`px-3 py-1.5 border-t border-x -mb-[1px] transition-colors ${
+                        snippetTab === "html"
+                          ? "bg-black/40 border-border/20 border-b-transparent text-primary font-bold"
+                          : "bg-transparent border-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      HTML (Tags Meta)
+                    </button>
+                  </div>
+
+                  <div className="font-mono text-[11px] leading-normal overflow-x-auto bg-black/60 border border-border/20 p-3 select-all max-h-[180px] scrollbar-thin">
+                    {snippetTab === "nginx" && (
+                      <pre className="text-foreground/90 whitespace-pre">
+{`# NGINX configuration
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "no-referrer-when-downgrade" always;
+add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;`}
+                      </pre>
+                    )}
+                    {snippetTab === "apache" && (
+                      <pre className="text-foreground/90 whitespace-pre">
+{`# Apache .htaccess configuration
+<IfModule mod_headers.c>
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "no-referrer-when-downgrade"
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>`}
+                      </pre>
+                    )}
+                    {snippetTab === "html" && (
+                      <pre className="text-foreground/90 whitespace-pre">
+{`<!-- Tags HTML Meta -->
+<!-- Nota: HSTS, X-Frame-Options e X-Content-Type-Options devem ser enviados via headers HTTP do servidor. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';">
+<meta name="referrer" content="no-referrer-when-downgrade">`}
+                      </pre>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground font-mono">
+                    *Nota: Substitua os domínios e regras de CSP para adequar aos scripts externos legítimos que o seu site utiliza.
+                  </p>
+                </div>
+              </ResultCard>
             </div>
 
             {/* Security checks */}
