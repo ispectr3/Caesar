@@ -7,7 +7,7 @@ import { PageHeader, SiteLayout } from "../components/SiteLayout";
 export const Route = createFileRoute("/dorks")({
   head: () => ({
     meta: [
-      { title: "Google Dorks | Caesar OSINT" },
+      { title: "Google Dorks" },
       {
         name: "description",
         content: "Gerador de queries de pesquisa avançada (Google Dorks) para investigação de falhas de segurança.",

@@ -4,7 +4,7 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Sobre | Caesar OSINT" },
+      { title: "Sobre" },
       {
         name: "description",
         content:

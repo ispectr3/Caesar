@@ -8,7 +8,7 @@ import { ipLookup, type IpInfo } from "@/lib/osint.functions";
 export const Route = createFileRoute("/ip")({
   head: () => ({
     meta: [
-      { title: "IP Lookup | Caesar OSINT" },
+      { title: "IP Lookup" },
       {
         name: "description",
         content: "Consulte geolocalização, ISP, ASN e organização de qualquer endereço IP público.",

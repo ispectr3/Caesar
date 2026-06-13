@@ -8,7 +8,7 @@ import { hashIdentify, type HashIdentification } from "@/lib/osint.functions";
 export const Route = createFileRoute("/hash")({
   head: () => ({
     meta: [
-      { title: "Hash Identifier | Caesar OSINT" },
+      { title: "Hash Identifier" },
       {
         name: "description",
         content: "Identifique o tipo de hash: MD5, SHA1, SHA256, SHA512, bcrypt, NTLM e mais.",

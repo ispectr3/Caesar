@@ -8,7 +8,7 @@ import { phoneLookup, type PhoneInfo } from "../lib/osint.functions";
 export const Route = createFileRoute("/phone")({
   head: () => ({
     meta: [
-      { title: "Phone OSINT | Caesar OSINT" },
+      { title: "Phone OSINT" },
       {
         name: "description",
         content:

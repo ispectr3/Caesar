@@ -32,7 +32,7 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Caesar OSINT | Plataforma OSINT" },
+      { title: "Caesar" },
       {
         name: "description",
         content:
@@ -168,6 +168,15 @@ const TOOLS = [
     color: "from-primary/25 to-accent/10",
   },
   {
+    code: "14b",
+    to: "/cep" as const,
+    name: "CEP Address",
+    desc: "Busca de endereço físico e coordenadas por CEP (BrasilAPI).",
+    input: "01311-200",
+    icon: MapPin,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
     code: "15",
     to: "/gitfive" as const,
     name: "GitFive",
@@ -200,6 +209,15 @@ const TOOLS = [
     name: "LeakLooker",
     desc: "Varre a internet pública em busca de portas abertas e bancos expostos.",
     input: "104.244.42.1",
+    icon: Database,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "18b",
+    to: "/crm" as const,
+    name: "CRM Doctor",
+    desc: "Consulta e validação de registros de CRM médico conselho regional.",
+    input: "123456",
     icon: Database,
     color: "from-primary/25 to-accent/10",
   },
@@ -269,7 +287,7 @@ const TOOLS = [
 ];
 
 const STATS = [
-  { icon: Zap, value: "24", label: "Ferramentas" },
+  { icon: Zap, value: "26", label: "Ferramentas" },
   { icon: Database, value: "Ativo", label: "Controle & Logs" },
   { icon: Eye, value: "100%", label: "Gratuito" },
 ];
@@ -493,7 +511,7 @@ function Index() {
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
             // MÓDULOS DE RECONHECIMENTO OSINT
           </h2>
-          <span className="font-mono text-xs text-primary glow-text">24 ativos</span>
+          <span className="font-mono text-xs text-primary glow-text">26 ativos</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

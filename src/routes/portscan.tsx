@@ -9,7 +9,7 @@ import { Lock, Unlock, AlertTriangle, ShieldCheck } from "lucide-react";
 export const Route = createFileRoute("/portscan")({
   head: () => ({
     meta: [
-      { title: "Web Port Scanner | Caesar OSINT" },
+      { title: "Web Port Scanner" },
       {
         name: "description",
         content: "Verifique portas de serviços críticos (SSH, RDP, Banco de Dados, HTTP) abertas no servidor alvo.",

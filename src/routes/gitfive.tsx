@@ -8,7 +8,7 @@ import { Github, Mail, Database, Terminal } from "lucide-react";
 export const Route = createFileRoute("/gitfive")({
   head: () => ({
     meta: [
-      { title: "GitFive | Caesar OSINT" },
+      { title: "Git Recon" },
       {
         name: "description",
         content: "Descubra e-mails de commits públicos e identidades de desenvolvedores a partir do username GitHub.",

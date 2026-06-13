@@ -8,7 +8,7 @@ import { ShieldAlert, AlertTriangle, AlertCircle, CheckCircle, Loader2 } from "l
 export const Route = createFileRoute("/scam")({
   head: () => ({
     meta: [
-      { title: "Scam & Phishing Analyzer | Caesar OSINT" },
+      { title: "Phishing Analyzer" },
       {
         name: "description",
         content:

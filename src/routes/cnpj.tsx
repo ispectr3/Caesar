@@ -8,7 +8,7 @@ import { cnpjLookup, type CnpjInfo } from "../lib/osint.functions";
 export const Route = createFileRoute("/cnpj")({
   head: () => ({
     meta: [
-      { title: "CNPJ Lookup | Caesar OSINT" },
+      { title: "CNPJ Lookup" },
       {
         name: "description",
         content:

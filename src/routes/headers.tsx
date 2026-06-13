@@ -9,7 +9,7 @@ import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 export const Route = createFileRoute("/headers")({
   head: () => ({
     meta: [
-      { title: "HTTP Headers | Caesar OSINT" },
+      { title: "HTTP Headers" },
       {
         name: "description",
         content: "Analise headers de segurança HTTP de qualquer URL com score de proteção.",

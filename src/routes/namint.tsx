@@ -7,7 +7,7 @@ import { Copy, Check, Search, Filter, HelpCircle } from "lucide-react";
 export const Route = createFileRoute("/namint")({
   head: () => ({
     meta: [
-      { title: "NAMINT | Caesar OSINT" },
+      { title: "NAMINT Combiner" },
       {
         name: "description",
         content: "Gerador de combinações de nomes para encontrar usernames e e-mails de alvos.",

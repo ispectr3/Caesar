@@ -9,7 +9,7 @@ import { cveSearch } from "../lib/osint.functions";
 export const Route = createFileRoute("/cve")({
   head: () => ({
     meta: [
-      { title: "CVE Search | Caesar OSINT" },
+      { title: "CVE Search" },
       {
         name: "description",
         content: "Busque vulnerabilidades conhecidas (CVE) no banco de dados do NIST NVD.",

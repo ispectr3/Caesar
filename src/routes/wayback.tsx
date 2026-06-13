@@ -9,7 +9,7 @@ import { Calendar, History, Link2, AlertTriangle, ExternalLink, HelpCircle } fro
 export const Route = createFileRoute("/wayback")({
   head: () => ({
     meta: [
-      { title: "Wayback Machine Lookup | Caesar OSINT" },
+      { title: "Wayback Machine" },
       {
         name: "description",
         content: "Explore o histórico de capturas e snapshots de qualquer site arquivado na Wayback Machine.",

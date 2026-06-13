@@ -9,7 +9,7 @@ import { useServerFn } from "@tanstack/react-start";
 export const Route = createFileRoute("/cpf")({
   head: () => ({
     meta: [
-      { title: "CPF Search | Caesar OSINT" },
+      { title: "CPF Search" },
       {
         name: "description",
         content: "Validador e analisador regional de CPF com consulta a registros de vazamento.",

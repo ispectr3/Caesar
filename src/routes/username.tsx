@@ -14,7 +14,7 @@ export const Route = createFileRoute("/username")({
   },
   head: () => ({
     meta: [
-      { title: "WhatsMyName | Caesar OSINT" },
+      { title: "WhatsMyName" },
       {
         name: "description",
         content: "Varredura passiva de nome de usuário (username) em múltiplas redes e plataformas.",

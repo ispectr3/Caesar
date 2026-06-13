@@ -8,7 +8,7 @@ import { ShieldCheck, Mail, Globe, Database, HelpCircle } from "lucide-react";
 export const Route = createFileRoute("/ghunt")({
   head: () => ({
     meta: [
-      { title: "GHunt | Caesar OSINT" },
+      { title: "GHunt" },
       {
         name: "description",
         content: "Investigue contas Google, GAIA IDs, provedores de domínios e exposição em serviços associados.",

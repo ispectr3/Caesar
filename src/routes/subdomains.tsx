@@ -9,7 +9,7 @@ import { Search } from "lucide-react";
 export const Route = createFileRoute("/subdomains")({
   head: () => ({
     meta: [
-      { title: "Subdomain Scanner | Caesar OSINT" },
+      { title: "Subdomain Scanner" },
       {
         name: "description",
         content:

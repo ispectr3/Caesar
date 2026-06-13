@@ -8,7 +8,7 @@ import { ShieldCheck, ShieldAlert, Terminal, Activity } from "lucide-react";
 export const Route = createFileRoute("/leaklooker")({
   head: () => ({
     meta: [
-      { title: "LeakLooker | Caesar OSINT" },
+      { title: "LeakLooker" },
       {
         name: "description",
         content: "Varra portas de bancos de dados expostos publicamente como Elasticsearch, MongoDB e Redis.",

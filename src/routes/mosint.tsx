@@ -13,7 +13,7 @@ import { CheckCircle, XCircle, AlertTriangle, Link2, Share2 } from "lucide-react
 export const Route = createFileRoute("/mosint")({
   head: () => ({
     meta: [
-      { title: "Mosint Email Analyzer | Caesar OSINT" },
+      { title: "Mosint Email Analyzer" },
       {
         name: "description",
         content: "Investigue e-mails, registros MX, domínios descartáveis e perfis sociais vinculados em um só lugar.",

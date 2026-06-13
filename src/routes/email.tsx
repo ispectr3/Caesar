@@ -14,7 +14,7 @@ import { CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 export const Route = createFileRoute("/email")({
   head: () => ({
     meta: [
-      { title: "Email Validator | Caesar OSINT" },
+      { title: "Email Validator" },
       {
         name: "description",
         content:

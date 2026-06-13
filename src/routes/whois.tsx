@@ -9,7 +9,7 @@ import { Server, Calendar, Shield, Network, User } from "lucide-react";
 export const Route = createFileRoute("/whois")({
   head: () => ({
     meta: [
-      { title: "WHOIS Lookup | Caesar OSINT" },
+      { title: "WHOIS Lookup" },
       {
         name: "description",
         content:

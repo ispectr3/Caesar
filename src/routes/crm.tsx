@@ -7,7 +7,7 @@ import { crmLookup, type CrmResult } from "../lib/osint.functions";
 export const Route = createFileRoute("/crm")({
   head: () => ({
     meta: [
-      { title: "Consulta CRM Médicos | Caesar OSINT" },
+      { title: "CRM Doctor" },
       {
         name: "description",
         content: "Verifique a validade de registros médicos no Conselho Regional de Medicina (CRM).",

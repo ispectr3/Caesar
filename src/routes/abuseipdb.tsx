@@ -8,7 +8,7 @@ import { abuseIpdbLookup, type AbuseIpdbInfo } from "@/lib/osint.functions";
 export const Route = createFileRoute("/abuseipdb")({
   head: () => ({
     meta: [
-      { title: "AbuseIPDB Scanner | Caesar OSINT" },
+      { title: "AbuseIPDB Scanner" },
       {
         name: "description",
         content: "Verifique a reputação e denúncias maliciosas de endereços IP.",

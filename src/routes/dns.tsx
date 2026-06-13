@@ -10,7 +10,7 @@ type DnsResult = Array<{ type: string; records: string[] }>;
 export const Route = createFileRoute("/dns")({
   head: () => ({
     meta: [
-      { title: "DNS Lookup | Caesar OSINT" },
+      { title: "DNS Lookup" },
       {
         name: "description",
         content: "Consulte registros DNS (A, AAAA, MX, NS, TXT, CNAME, SOA) de qualquer domínio.",

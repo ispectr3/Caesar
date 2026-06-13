@@ -7,7 +7,7 @@ import { VipPaywall } from "../components/VipPaywall";
 export const Route = createFileRoute("/cep")({
   head: () => ({
     meta: [
-      { title: "Busca de Endereço (CEP) | Caesar OSINT" },
+      { title: "CEP Address" },
       {
         name: "description",
         content: "Localize endereços completos (rua, bairro, cidade, estado) a partir de um CEP.",

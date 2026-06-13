@@ -9,7 +9,7 @@ import { geocodeLookup } from "../lib/osint.functions";
 export const Route = createFileRoute("/geocode")({
   head: () => ({
     meta: [
-      { title: "GEOINT (Geocoding) | Caesar OSINT" },
+      { title: "GEOINT" },
       {
         name: "description",
         content: "Converta endereços em coordenadas geográficas lat/lon e visualize no mapa (OpenStreetMap).",

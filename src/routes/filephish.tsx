@@ -8,7 +8,7 @@ import exifr from "exifr";
 export const Route = createFileRoute("/filephish")({
   head: () => ({
     meta: [
-      { title: "File Phish | Caesar OSINT" },
+      { title: "File Phish" },
       {
         name: "description",
         content: "Construtor de Google Dorks para encontrar documentos confidenciais expostos e vazamentos de dados.",

@@ -25,31 +25,51 @@ const NAV = [
   { to: "/", label: "Home", icon: Search },
 ] as const;
 
-const MODULES = [
-  { to: "/whois", label: "WHOIS & Registry" },
-  { to: "/dns", label: "DNS Records" },
-  { to: "/ip", label: "IP Geolocation" },
-  { to: "/subdomains", label: "Subdomain Scanner" },
-  { to: "/leaklooker", label: "LeakLooker DB" },
-  { to: "/hash", label: "Hash Identifier" },
-  { to: "/dorks", label: "Google Dorks" },
-  { to: "/mosint", label: "Mosint Email" },
-  { to: "/phone", label: "Phone Lookup" },
-  { to: "/cnpj", label: "CNPJ Finder" },
-  { to: "/cpf", label: "CPF Search" },
-  { to: "/gitfive", label: "Git Recon" },
-  { to: "/ghunt", label: "Google Hunt" },
-  { to: "/abuseipdb", label: "AbuseIPDB" },
-  { to: "/cve", label: "CVE Search" },
-  { to: "/headers", label: "HTTP Headers" },
-  { to: "/scam", label: "Phishing Analyzer" },
-  { to: "/cep", label: "CEP Address" },
-  { to: "/crm", label: "CRM Doctor" },
-  { to: "/namint", label: "NAMINT Combiner" },
-  { to: "/portscan", label: "Web Port Scanner" },
-  { to: "/filephish", label: "File Phish" },
-  { to: "/wayback", label: "Wayback Machine" },
+const MODULE_CATEGORIES = [
+  {
+    title: "// Identidade & Pessoas",
+    items: [
+      { to: "/cpf", label: "CPF Search" },
+      { to: "/cnpj", label: "CNPJ Lookup" },
+      { to: "/cep", label: "CEP Address" },
+      { to: "/geocode", label: "GEOINT (Geocoding)" },
+      { to: "/phone", label: "Phone OSINT" },
+      { to: "/namint", label: "NAMINT Combiner" },
+      { to: "/username", label: "WhatsMyName" },
+      { to: "/crm", label: "CRM Doctor" },
+    ],
+  },
+  {
+    title: "// Rede & Infraestrutura",
+    items: [
+      { to: "/ip", label: "IP Geolocation" },
+      { to: "/whois", label: "WHOIS & Registry" },
+      { to: "/dns", label: "DNS Records" },
+      { to: "/subdomains", label: "Subdomain Scanner" },
+      { to: "/leaklooker", label: "LeakLooker DB" },
+      { to: "/abuseipdb", label: "AbuseIPDB" },
+      { to: "/portscan", label: "Web Port Scanner" },
+      { to: "/headers", label: "HTTP Headers" },
+      { to: "/cve", label: "CVE Search" },
+    ],
+  },
+  {
+    title: "// Web, Contas & Análise",
+    items: [
+      { to: "/filephish", label: "File Phish" },
+      { to: "/wayback", label: "Wayback Machine" },
+      { to: "/dorks", label: "Google Dorks" },
+      { to: "/gitfive", label: "Git Recon" },
+      { to: "/ghunt", label: "Google Hunt" },
+      { to: "/mosint", label: "Mosint Email" },
+      { to: "/scam", label: "Phishing Analyzer" },
+      { to: "/email", label: "Email Validator" },
+      { to: "/hash", label: "Hash Identifier" },
+    ],
+  },
 ];
+
+const MODULES = MODULE_CATEGORIES.flatMap((c) => c.items);
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -60,22 +80,8 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <header className="glass-strong sticky top-0 z-50 border-b border-border-active">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-14 flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="relative h-8 w-8 rounded-none border border-primary/50 grid place-items-center text-primary transition-colors duration-300 group-hover:border-primary">
-              <div className="relative z-10 flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 text-primary transition-colors duration-300">
-                  <path d="M12 2C6.5 2 3 6 3 11c0 3.5 2.5 7.5 5 9.5 2.5 2 4 2.5 4 2.5s1.5-.5 4-2.5c2.5-2 5-6 5-9.5 0-5-3.5-9-9-9z" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M7 9c.5-.8 1.5-1.2 2.5-1M17 9c-.5-.8-1.5-1.2-2.5-1" strokeLinecap="round"/>
-                  <path d="M8 10.5h1.5M14.5 10.5H16" strokeLinecap="round" strokeWidth="2"/>
-                  <path d="M6 7.5c1.5-.5 2.5-.2 3.5.5M18 7.5c-1.5-.5-2.5-.2-3.5.5" strokeLinecap="round"/>
-                  <path d="M9 14.8c1.5.3 2.5-.3 3-.3s1.5.6 3 .3c.5-.1.8-.3.8-.3s-.8-.1-1.3-.1c-1.5 0-2 .6-2.5.6s-1-.6-2.5-.6c-.5 0-1.3.1-1.3.1s.3.2.8.3z" fill="currentColor"/>
-                  <path d="M12 17v3" strokeLinecap="round" strokeWidth="1.8"/>
-                  <path d="M9.5 16.5c1.5 1 3.5 1 5 0" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300" />
-            </div>
-            <span className="font-mono text-sm tracking-wider text-foreground hidden sm:inline">
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="font-mono text-sm tracking-wider text-foreground">
               Caesar<span className="text-primary font-semibold">OSINT</span>
             </span>
           </Link>
@@ -100,20 +106,27 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                 Módulos <ChevronDown size={14} className="ml-1 opacity-60" />
               </button>
               
-              {/* Dropdown Box */}
-              <div className="absolute left-0 top-full mt-0 hidden group-hover:block w-56 bg-black/90 backdrop-blur-md border border-border/50 shadow-[0_4px_30px_rgba(0,0,0,0.8)] z-50">
-                <div className="py-2 flex flex-col max-h-[60vh] overflow-y-auto scrollbar-none">
-                  {MODULES.map((m) => (
-                    <Link
-                      key={m.to}
-                      to={m.to}
-                      className="px-4 py-2 text-[11px] font-mono hover:bg-white/10 text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 border-b border-border/10 last:border-0"
-                    >
-                      <Terminal size={10} className="opacity-50" />
-                      {m.label}
-                    </Link>
-                  ))}
-                </div>
+              {/* Dropdown Box - Mega Menu */}
+              <div className="absolute left-1/2 -translate-x-[20%] top-full mt-0 hidden group-hover:grid grid-cols-3 gap-5 p-5 w-[680px] bg-black/95 backdrop-blur-md border border-border-active shadow-[0_10px_40px_rgba(0,0,0,0.85)] z-50">
+                {MODULE_CATEGORIES.map((cat, idx) => (
+                  <div key={idx} className="flex flex-col">
+                    <span className="font-mono text-[10px] text-primary/80 uppercase tracking-widest font-bold border-b border-border/20 pb-1.5 mb-2.5">
+                      {cat.title}
+                    </span>
+                    <div className="flex flex-col gap-1">
+                      {cat.items.map((m) => (
+                        <Link
+                          key={m.to}
+                          to={m.to}
+                          className="px-2 py-1 text-[11px] font-mono hover:bg-white/5 text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                        >
+                          <Terminal size={10} className="opacity-40" />
+                          {m.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -207,28 +220,37 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <main className="flex-1">{children}</main>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-border-active mt-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="pulse-dot" />
-              <span className="font-mono text-xs text-muted-foreground">
-                Todos os sistemas operacionais
-              </span>
+      <footer className="border-t border-border-active mt-24 bg-card/10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 font-mono text-[11px] text-muted-foreground">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center border-b border-border/20 pb-8 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span>CAESAR CORE SYSTEM // STATUS: OPERACIONAL</span>
             </div>
-            <div className="flex flex-wrap items-center gap-4 font-mono text-xs text-muted-foreground">
-              <span>Caesar OSINT | fontes abertas, uso responsável.</span>
-              <span className="hidden sm:inline text-border">│</span>
+            <div className="text-left md:text-center">
+              <span>ESTÉTICA TÁTICA MILITAR & PRIVACIDADE ABSOLUTA</span>
+            </div>
+            <div className="text-left md:text-right">
+              <span>DATABASE V1.2.6-RELEASE</span>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <span className="text-foreground font-bold">Caesar<span className="text-primary">OSINT</span></span>
+              <span className="mx-2 text-border">│</span>
+              <span>© {new Date().getFullYear()} Open Source Intelligence Platform.</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span>[ Nenhum dado é armazenado ]</span>
+              <span className="text-border">│</span>
               <a
                 href="https://github.com/ispectr3/Caesar"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-primary transition-colors duration-200"
+                className="text-foreground hover:text-primary transition-all underline decoration-primary/30 hover:decoration-primary"
               >
-                GitHub
+                Código Fonte (GitHub)
               </a>
-              <span className="hidden sm:inline text-border">│</span>
-              <span>Nenhum dado é armazenado.</span>
             </div>
           </div>
         </div>
