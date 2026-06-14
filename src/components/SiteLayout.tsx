@@ -80,7 +80,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <img src="/logo.png" alt="Caesar Logo" className="w-5 h-5 object-contain" />
+            <img src="/logo.png" alt="Caesar Logo" className="w-7 h-7 object-contain" />
             <span className="font-mono text-sm tracking-wider text-foreground">
               Caesar<span className="text-primary font-semibold">OSINT</span>
             </span>
