@@ -210,7 +210,7 @@ function FilePhishTool() {
                   required
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}
-                  placeholder="ex: tools.osintnewsletter.com"
+                  placeholder="ex: target.com"
                   className="w-full bg-input/40 border border-border/40 px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 rounded-none transition-colors"
                 />
               </div>

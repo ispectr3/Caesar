@@ -70,7 +70,7 @@ function WaybackTool() {
 
       <ToolForm
         label="URL / Domínio"
-        placeholder="ex: tools.osintnewsletter.com"
+        placeholder="ex: target.com"
         buttonText="Buscar Histórico"
         onSubmit={handleSubmit}
         loading={loading}

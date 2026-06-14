@@ -81,6 +81,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
+            <img src="/logo.png" alt="Caesar Logo" className="w-5 h-5 object-contain" />
             <span className="font-mono text-sm tracking-wider text-foreground">
               Caesar<span className="text-primary font-semibold">OSINT</span>
             </span>
@@ -107,7 +108,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               </button>
               
               {/* Dropdown Box - Mega Menu */}
-              <div className="absolute left-1/2 -translate-x-[20%] top-full mt-0 hidden group-hover:grid grid-cols-3 gap-5 p-5 w-[680px] bg-black/95 backdrop-blur-md border border-border-active shadow-[0_10px_40px_rgba(0,0,0,0.85)] z-50">
+              <div className="absolute right-0 top-full mt-0 hidden group-hover:grid grid-cols-3 gap-5 p-5 w-[680px] bg-black/95 backdrop-blur-md border border-border-active shadow-[0_10px_40px_rgba(0,0,0,0.85)] z-50">
                 {MODULE_CATEGORIES.map((cat, idx) => (
                   <div key={idx} className="flex flex-col">
                     <span className="font-mono text-[10px] text-primary/80 uppercase tracking-widest font-bold border-b border-border/20 pb-1.5 mb-2.5">
@@ -241,15 +242,15 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               <span>© {new Date().getFullYear()} Open Source Intelligence Platform.</span>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <span>[ Nenhum dado é armazenado ]</span>
-              <span className="text-border">│</span>
               <a
                 href="https://github.com/ispectr3/Caesar"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground hover:text-primary transition-all underline decoration-primary/30 hover:decoration-primary"
+                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+                title="Código-fonte no GitHub"
+                aria-label="GitHub Repository"
               >
-                Código Fonte (GitHub)
+                <Github size={15} />
               </a>
             </div>
           </div>
