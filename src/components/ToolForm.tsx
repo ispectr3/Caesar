@@ -166,7 +166,7 @@ export function ToolForm({
       {/* Histórico Recente */}
       {storageKey && history.length > 0 && (
         <div className="flex flex-wrap gap-2 items-center text-[10px] font-mono text-muted-foreground mb-8 no-print">
-          <span>REcentes //</span>
+          <span>RECENTES //</span>
           {history.map((h) => (
             <button
               key={h}
