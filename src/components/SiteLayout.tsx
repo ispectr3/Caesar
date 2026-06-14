@@ -18,7 +18,7 @@ import {
   Github,
   ChevronDown,
   Terminal,
-  Scan
+  Scan,
 } from "lucide-react";
 
 const NAV = [
@@ -36,6 +36,7 @@ const MODULE_CATEGORIES = [
       { to: "/phone", label: "Phone OSINT" },
       { to: "/namint", label: "NAMINT Combiner" },
       { to: "/username", label: "WhatsMyName" },
+      { to: "/datajud", label: "CNJ DataJud" },
     ],
   },
   {
@@ -50,6 +51,8 @@ const MODULE_CATEGORIES = [
       { to: "/portscan", label: "Web Port Scanner" },
       { to: "/headers", label: "HTTP Headers" },
       { to: "/cve", label: "CVE Search" },
+      { to: "/registro", label: "Registro.br WHOIS" },
+      { to: "/favicon", label: "Favicon Hash" },
     ],
   },
   {
@@ -64,11 +67,94 @@ const MODULE_CATEGORIES = [
       { to: "/scam", label: "Phishing Analyzer" },
       { to: "/email", label: "Email Validator" },
       { to: "/hash", label: "Hash Identifier" },
+      { to: "/exif", label: "EXIF Extractor" },
+      { to: "/hibp", label: "HIBP Breach Check" },
+      { to: "/encoder", label: "Encoder / Decoder" },
+      { to: "/regex", label: "Regex Extractor" },
+      { to: "/timestamp", label: "Timestamp Converter" },
+      { to: "/ela", label: "Error Level Analysis" },
+      { to: "/crypto", label: "Crypto Tracker" },
     ],
   },
 ];
 
 const MODULES = MODULE_CATEGORIES.flatMap((c) => c.items);
+
+interface Suggestion {
+  moduleName: string;
+  action: string;
+  label: string;
+  to: string;
+  query?: string;
+}
+
+function getSuggestions(query: string): Suggestion[] {
+  const q = query.trim();
+  if (!q) return [];
+
+  const suggestions: Suggestion[] = [];
+
+  // Patterns for Autodetection
+  const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+  const cpfRegex = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/;
+  const cnpjRegex = /^\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}$/;
+  const cepRegex = /^\d{5}-?\d{3}$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
+
+  if (ipRegex.test(q)) {
+    suggestions.push(
+      { moduleName: "IP Geolocation", action: "Geolocalizar", label: `Geolocalizar IP: ${q}`, to: "/ip", query: q },
+      { moduleName: "AbuseIPDB", action: "Verificar Abuso", label: `Verificar reputação do IP: ${q}`, to: "/abuseipdb", query: q },
+      { moduleName: "Web Port Scanner", action: "Port Scan", label: `Escanear portas do IP: ${q}`, to: "/portscan", query: q }
+    );
+  } else if (cpfRegex.test(q)) {
+    suggestions.push(
+      { moduleName: "CPF Search", action: "Investigar", label: `Investigar CPF: ${q}`, to: "/cpf", query: q }
+    );
+  } else if (cnpjRegex.test(q)) {
+    suggestions.push(
+      { moduleName: "CNPJ Lookup", action: "Consultar", label: `Consultar CNPJ: ${q}`, to: "/cnpj", query: q }
+    );
+  } else if (cepRegex.test(q)) {
+    suggestions.push(
+      { moduleName: "CEP Address", action: "Buscar Endereço", label: `Buscar CEP: ${q}`, to: "/cep", query: q }
+    );
+  } else if (emailRegex.test(q)) {
+    suggestions.push(
+      { moduleName: "Email Validator", action: "Validar", label: `Validar e-mail: ${q}`, to: "/email", query: q },
+      { moduleName: "HIBP Breach Check", action: "Verificar Brechas", label: `Verificar vazamentos de: ${q}`, to: "/hibp", query: q },
+      { moduleName: "Mosint Email", action: "Investigar Mosint", label: `Investigar e-mail com Mosint: ${q}`, to: "/mosint", query: q }
+    );
+  } else if (domainRegex.test(q)) {
+    suggestions.push(
+      { moduleName: "WHOIS & Registry", action: "WHOIS", label: `Consultar WHOIS de: ${q}`, to: "/whois", query: q },
+      { moduleName: "DNS Records", action: "DNS Lookup", label: `Consultar DNS de: ${q}`, to: "/dns", query: q },
+      { moduleName: "Subdomain Scanner", action: "Subdomínios", label: `Escanear subdomínios de: ${q}`, to: "/subdomains", query: q },
+      { moduleName: "Google Dorks", action: "Google Dorks", label: `Gerar dorks para: ${q}`, to: "/dorks", query: q },
+      { moduleName: "Registro.br WHOIS", action: "Registro.br", label: `Consultar Registro.br de: ${q}`, to: "/registro", query: q },
+      { moduleName: "Favicon Hash", action: "Favicon Hash", label: `Obter hash de favicon de: ${q}`, to: "/favicon", query: q }
+    );
+  }
+
+  // Fuzzy match on Modules list
+  const cleanQ = q.toLowerCase();
+  MODULES.forEach((m) => {
+    const nameMatch = m.label.toLowerCase().includes(cleanQ);
+    const descMatch = m.to.toLowerCase().includes(cleanQ);
+    const alreadySuggested = suggestions.some((s) => s.to === m.to);
+    if ((nameMatch || descMatch) && !alreadySuggested) {
+      suggestions.push({
+        moduleName: m.label,
+        action: "Ir para o módulo",
+        label: `Abrir ferramenta ${m.label}`,
+        to: m.to,
+      });
+    }
+  });
+
+  return suggestions.slice(0, 6);
+}
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);

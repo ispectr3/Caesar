@@ -98,10 +98,9 @@ function FilePhishTool() {
   };
 
   const handleSubmit = (e?: React.FormEvent, customTarget?: string) => {
-    
     const targetVal = customTarget !== undefined ? customTarget : target;
     if (!targetVal.trim()) return;
-    e.preventDefault();
+    if (e) e.preventDefault();
     
 
     const t = targetVal.trim().toLowerCase();

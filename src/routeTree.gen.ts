@@ -12,24 +12,34 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhoisRouteImport } from './routes/whois'
 import { Route as WaybackRouteImport } from './routes/wayback'
 import { Route as UsernameRouteImport } from './routes/username'
+import { Route as TimestampRouteImport } from './routes/timestamp'
 import { Route as SubdomainsRouteImport } from './routes/subdomains'
 import { Route as ScamRouteImport } from './routes/scam'
+import { Route as RegistroRouteImport } from './routes/registro'
+import { Route as RegexRouteImport } from './routes/regex'
 import { Route as PortscanRouteImport } from './routes/portscan'
 import { Route as PhoneRouteImport } from './routes/phone'
 import { Route as NamintRouteImport } from './routes/namint'
 import { Route as MosintRouteImport } from './routes/mosint'
 import { Route as LeaklookerRouteImport } from './routes/leaklooker'
 import { Route as IpRouteImport } from './routes/ip'
+import { Route as HibpRouteImport } from './routes/hibp'
 import { Route as HeadersRouteImport } from './routes/headers'
 import { Route as HashRouteImport } from './routes/hash'
 import { Route as GitfiveRouteImport } from './routes/gitfive'
 import { Route as GhuntRouteImport } from './routes/ghunt'
 import { Route as GeocodeRouteImport } from './routes/geocode'
 import { Route as FilephishRouteImport } from './routes/filephish'
+import { Route as FaviconRouteImport } from './routes/favicon'
+import { Route as ExifRouteImport } from './routes/exif'
+import { Route as EncoderRouteImport } from './routes/encoder'
 import { Route as EmailRouteImport } from './routes/email'
+import { Route as ElaRouteImport } from './routes/ela'
 import { Route as DorksRouteImport } from './routes/dorks'
 import { Route as DnsRouteImport } from './routes/dns'
+import { Route as DatajudRouteImport } from './routes/datajud'
 import { Route as CveRouteImport } from './routes/cve'
+import { Route as CryptoRouteImport } from './routes/crypto'
 import { Route as CpfRouteImport } from './routes/cpf'
 import { Route as CnpjRouteImport } from './routes/cnpj'
 import { Route as CepRouteImport } from './routes/cep'
@@ -52,6 +62,11 @@ const UsernameRoute = UsernameRouteImport.update({
   path: '/username',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TimestampRoute = TimestampRouteImport.update({
+  id: '/timestamp',
+  path: '/timestamp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SubdomainsRoute = SubdomainsRouteImport.update({
   id: '/subdomains',
   path: '/subdomains',
@@ -60,6 +75,16 @@ const SubdomainsRoute = SubdomainsRouteImport.update({
 const ScamRoute = ScamRouteImport.update({
   id: '/scam',
   path: '/scam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistroRoute = RegistroRouteImport.update({
+  id: '/registro',
+  path: '/registro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegexRoute = RegexRouteImport.update({
+  id: '/regex',
+  path: '/regex',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortscanRoute = PortscanRouteImport.update({
@@ -92,6 +117,11 @@ const IpRoute = IpRouteImport.update({
   path: '/ip',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HibpRoute = HibpRouteImport.update({
+  id: '/hibp',
+  path: '/hibp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HeadersRoute = HeadersRouteImport.update({
   id: '/headers',
   path: '/headers',
@@ -122,9 +152,29 @@ const FilephishRoute = FilephishRouteImport.update({
   path: '/filephish',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FaviconRoute = FaviconRouteImport.update({
+  id: '/favicon',
+  path: '/favicon',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExifRoute = ExifRouteImport.update({
+  id: '/exif',
+  path: '/exif',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EncoderRoute = EncoderRouteImport.update({
+  id: '/encoder',
+  path: '/encoder',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmailRoute = EmailRouteImport.update({
   id: '/email',
   path: '/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ElaRoute = ElaRouteImport.update({
+  id: '/ela',
+  path: '/ela',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DorksRoute = DorksRouteImport.update({
@@ -137,9 +187,19 @@ const DnsRoute = DnsRouteImport.update({
   path: '/dns',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DatajudRoute = DatajudRouteImport.update({
+  id: '/datajud',
+  path: '/datajud',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CveRoute = CveRouteImport.update({
   id: '/cve',
   path: '/cve',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CryptoRoute = CryptoRouteImport.update({
+  id: '/crypto',
+  path: '/crypto',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CpfRoute = CpfRouteImport.update({
@@ -180,24 +240,34 @@ export interface FileRoutesByFullPath {
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
+  '/crypto': typeof CryptoRoute
   '/cve': typeof CveRoute
+  '/datajud': typeof DatajudRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
+  '/ela': typeof ElaRoute
   '/email': typeof EmailRoute
+  '/encoder': typeof EncoderRoute
+  '/exif': typeof ExifRoute
+  '/favicon': typeof FaviconRoute
   '/filephish': typeof FilephishRoute
   '/geocode': typeof GeocodeRoute
   '/ghunt': typeof GhuntRoute
   '/gitfive': typeof GitfiveRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
+  '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
   '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
+  '/regex': typeof RegexRoute
+  '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
   '/subdomains': typeof SubdomainsRoute
+  '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
@@ -209,24 +279,34 @@ export interface FileRoutesByTo {
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
+  '/crypto': typeof CryptoRoute
   '/cve': typeof CveRoute
+  '/datajud': typeof DatajudRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
+  '/ela': typeof ElaRoute
   '/email': typeof EmailRoute
+  '/encoder': typeof EncoderRoute
+  '/exif': typeof ExifRoute
+  '/favicon': typeof FaviconRoute
   '/filephish': typeof FilephishRoute
   '/geocode': typeof GeocodeRoute
   '/ghunt': typeof GhuntRoute
   '/gitfive': typeof GitfiveRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
+  '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
   '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
+  '/regex': typeof RegexRoute
+  '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
   '/subdomains': typeof SubdomainsRoute
+  '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
@@ -239,24 +319,34 @@ export interface FileRoutesById {
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
+  '/crypto': typeof CryptoRoute
   '/cve': typeof CveRoute
+  '/datajud': typeof DatajudRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
+  '/ela': typeof ElaRoute
   '/email': typeof EmailRoute
+  '/encoder': typeof EncoderRoute
+  '/exif': typeof ExifRoute
+  '/favicon': typeof FaviconRoute
   '/filephish': typeof FilephishRoute
   '/geocode': typeof GeocodeRoute
   '/ghunt': typeof GhuntRoute
   '/gitfive': typeof GitfiveRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
+  '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
   '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
+  '/regex': typeof RegexRoute
+  '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
   '/subdomains': typeof SubdomainsRoute
+  '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
@@ -270,24 +360,34 @@ export interface FileRouteTypes {
     | '/cep'
     | '/cnpj'
     | '/cpf'
+    | '/crypto'
     | '/cve'
+    | '/datajud'
     | '/dns'
     | '/dorks'
+    | '/ela'
     | '/email'
+    | '/encoder'
+    | '/exif'
+    | '/favicon'
     | '/filephish'
     | '/geocode'
     | '/ghunt'
     | '/gitfive'
     | '/hash'
     | '/headers'
+    | '/hibp'
     | '/ip'
     | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
     | '/portscan'
+    | '/regex'
+    | '/registro'
     | '/scam'
     | '/subdomains'
+    | '/timestamp'
     | '/username'
     | '/wayback'
     | '/whois'
@@ -299,24 +399,34 @@ export interface FileRouteTypes {
     | '/cep'
     | '/cnpj'
     | '/cpf'
+    | '/crypto'
     | '/cve'
+    | '/datajud'
     | '/dns'
     | '/dorks'
+    | '/ela'
     | '/email'
+    | '/encoder'
+    | '/exif'
+    | '/favicon'
     | '/filephish'
     | '/geocode'
     | '/ghunt'
     | '/gitfive'
     | '/hash'
     | '/headers'
+    | '/hibp'
     | '/ip'
     | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
     | '/portscan'
+    | '/regex'
+    | '/registro'
     | '/scam'
     | '/subdomains'
+    | '/timestamp'
     | '/username'
     | '/wayback'
     | '/whois'
@@ -328,24 +438,34 @@ export interface FileRouteTypes {
     | '/cep'
     | '/cnpj'
     | '/cpf'
+    | '/crypto'
     | '/cve'
+    | '/datajud'
     | '/dns'
     | '/dorks'
+    | '/ela'
     | '/email'
+    | '/encoder'
+    | '/exif'
+    | '/favicon'
     | '/filephish'
     | '/geocode'
     | '/ghunt'
     | '/gitfive'
     | '/hash'
     | '/headers'
+    | '/hibp'
     | '/ip'
     | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
     | '/portscan'
+    | '/regex'
+    | '/registro'
     | '/scam'
     | '/subdomains'
+    | '/timestamp'
     | '/username'
     | '/wayback'
     | '/whois'
@@ -358,24 +478,34 @@ export interface RootRouteChildren {
   CepRoute: typeof CepRoute
   CnpjRoute: typeof CnpjRoute
   CpfRoute: typeof CpfRoute
+  CryptoRoute: typeof CryptoRoute
   CveRoute: typeof CveRoute
+  DatajudRoute: typeof DatajudRoute
   DnsRoute: typeof DnsRoute
   DorksRoute: typeof DorksRoute
+  ElaRoute: typeof ElaRoute
   EmailRoute: typeof EmailRoute
+  EncoderRoute: typeof EncoderRoute
+  ExifRoute: typeof ExifRoute
+  FaviconRoute: typeof FaviconRoute
   FilephishRoute: typeof FilephishRoute
   GeocodeRoute: typeof GeocodeRoute
   GhuntRoute: typeof GhuntRoute
   GitfiveRoute: typeof GitfiveRoute
   HashRoute: typeof HashRoute
   HeadersRoute: typeof HeadersRoute
+  HibpRoute: typeof HibpRoute
   IpRoute: typeof IpRoute
   LeaklookerRoute: typeof LeaklookerRoute
   MosintRoute: typeof MosintRoute
   NamintRoute: typeof NamintRoute
   PhoneRoute: typeof PhoneRoute
   PortscanRoute: typeof PortscanRoute
+  RegexRoute: typeof RegexRoute
+  RegistroRoute: typeof RegistroRoute
   ScamRoute: typeof ScamRoute
   SubdomainsRoute: typeof SubdomainsRoute
+  TimestampRoute: typeof TimestampRoute
   UsernameRoute: typeof UsernameRoute
   WaybackRoute: typeof WaybackRoute
   WhoisRoute: typeof WhoisRoute
@@ -404,6 +534,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsernameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/timestamp': {
+      id: '/timestamp'
+      path: '/timestamp'
+      fullPath: '/timestamp'
+      preLoaderRoute: typeof TimestampRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/subdomains': {
       id: '/subdomains'
       path: '/subdomains'
@@ -416,6 +553,20 @@ declare module '@tanstack/react-router' {
       path: '/scam'
       fullPath: '/scam'
       preLoaderRoute: typeof ScamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registro': {
+      id: '/registro'
+      path: '/registro'
+      fullPath: '/registro'
+      preLoaderRoute: typeof RegistroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/regex': {
+      id: '/regex'
+      path: '/regex'
+      fullPath: '/regex'
+      preLoaderRoute: typeof RegexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portscan': {
@@ -460,6 +611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hibp': {
+      id: '/hibp'
+      path: '/hibp'
+      fullPath: '/hibp'
+      preLoaderRoute: typeof HibpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/headers': {
       id: '/headers'
       path: '/headers'
@@ -502,11 +660,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FilephishRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/favicon': {
+      id: '/favicon'
+      path: '/favicon'
+      fullPath: '/favicon'
+      preLoaderRoute: typeof FaviconRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exif': {
+      id: '/exif'
+      path: '/exif'
+      fullPath: '/exif'
+      preLoaderRoute: typeof ExifRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/encoder': {
+      id: '/encoder'
+      path: '/encoder'
+      fullPath: '/encoder'
+      preLoaderRoute: typeof EncoderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/email': {
       id: '/email'
       path: '/email'
       fullPath: '/email'
       preLoaderRoute: typeof EmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ela': {
+      id: '/ela'
+      path: '/ela'
+      fullPath: '/ela'
+      preLoaderRoute: typeof ElaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dorks': {
@@ -523,11 +709,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DnsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/datajud': {
+      id: '/datajud'
+      path: '/datajud'
+      fullPath: '/datajud'
+      preLoaderRoute: typeof DatajudRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cve': {
       id: '/cve'
       path: '/cve'
       fullPath: '/cve'
       preLoaderRoute: typeof CveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crypto': {
+      id: '/crypto'
+      path: '/crypto'
+      fullPath: '/crypto'
+      preLoaderRoute: typeof CryptoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cpf': {
@@ -582,24 +782,34 @@ const rootRouteChildren: RootRouteChildren = {
   CepRoute: CepRoute,
   CnpjRoute: CnpjRoute,
   CpfRoute: CpfRoute,
+  CryptoRoute: CryptoRoute,
   CveRoute: CveRoute,
+  DatajudRoute: DatajudRoute,
   DnsRoute: DnsRoute,
   DorksRoute: DorksRoute,
+  ElaRoute: ElaRoute,
   EmailRoute: EmailRoute,
+  EncoderRoute: EncoderRoute,
+  ExifRoute: ExifRoute,
+  FaviconRoute: FaviconRoute,
   FilephishRoute: FilephishRoute,
   GeocodeRoute: GeocodeRoute,
   GhuntRoute: GhuntRoute,
   GitfiveRoute: GitfiveRoute,
   HashRoute: HashRoute,
   HeadersRoute: HeadersRoute,
+  HibpRoute: HibpRoute,
   IpRoute: IpRoute,
   LeaklookerRoute: LeaklookerRoute,
   MosintRoute: MosintRoute,
   NamintRoute: NamintRoute,
   PhoneRoute: PhoneRoute,
   PortscanRoute: PortscanRoute,
+  RegexRoute: RegexRoute,
+  RegistroRoute: RegistroRoute,
   ScamRoute: ScamRoute,
   SubdomainsRoute: SubdomainsRoute,
+  TimestampRoute: TimestampRoute,
   UsernameRoute: UsernameRoute,
   WaybackRoute: WaybackRoute,
   WhoisRoute: WhoisRoute,

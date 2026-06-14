@@ -27,6 +27,10 @@ import {
   UserSearch,
   FileText,
   Filter,
+  Image,
+  Scale,
+  Coins,
+  Clock,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -113,6 +117,15 @@ const TOOLS = [
     icon: UserSearch,
     color: "from-primary/25 to-accent/10",
   },
+  {
+    code: "29",
+    to: "/datajud" as const,
+    name: "CNJ DataJud",
+    desc: "Consulte processos judiciais em tribunais nacionais usando a numeração única do CNJ.",
+    input: "0000000-00.0000.0.00.0000",
+    icon: Scale,
+    color: "from-primary/25 to-accent/10",
+  },
 
   // ── Rede & Infraestrutura ──
   {
@@ -196,6 +209,24 @@ const TOOLS = [
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
   },
+  {
+    code: "28",
+    to: "/registro" as const,
+    name: "Registro.br WHOIS",
+    desc: "Consulte proprietários, documentos associados (CNPJ/CPF) e DNS de domínios nacionais .br.",
+    input: "domain.com.br",
+    icon: Server,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "33",
+    to: "/favicon" as const,
+    name: "Favicon Hash",
+    desc: "Obtenha MurmurHash3 de favicon para buscas de infraestrutura no Shodan.",
+    input: "target.com",
+    icon: Globe,
+    color: "from-primary/25 to-accent/10",
+  },
 
   // ── Web, Contas & Análise ──
   {
@@ -229,7 +260,7 @@ const TOOLS = [
     code: "20",
     to: "/gitfive" as const,
     name: "GitFive",
-    desc: "Rastreia e e-mails reais de commits públicos e identidades de desenvolvedores.",
+    desc: "Rastreia e-mails reais de commits públicos e identidades de desenvolvedores.",
     input: "git_username",
     icon: Github,
     color: "from-primary/25 to-accent/10",
@@ -279,10 +310,76 @@ const TOOLS = [
     icon: Hash,
     color: "from-primary/25 to-accent/10",
   },
+  {
+    code: "26",
+    to: "/exif" as const,
+    name: "EXIF Extractor",
+    desc: "Extrai metadados EXIF ocultos de imagens, incluindo GPS, modelo de câmera e data.",
+    input: "foto.jpg",
+    icon: Image,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "27",
+    to: "/hibp" as const,
+    name: "HIBP Breach Check",
+    desc: "Verifique se seu e-mail ou senhas vazaram em brechas de segurança públicas.",
+    input: "user@gmail.com",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "30",
+    to: "/encoder" as const,
+    name: "Encoder / Decoder",
+    desc: "Codificador e decodificador multi-formato: Base64, URL, Hex, HTML e Binário.",
+    input: "texto_raw",
+    icon: Filter,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "31",
+    to: "/regex" as const,
+    name: "Regex Extractor",
+    desc: "Extraia CPFs, CNPJs, e-mails, IPs, telefones e URLs de dumps de texto.",
+    input: "logs_dump.txt",
+    icon: Filter,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "32",
+    to: "/timestamp" as const,
+    name: "Timestamp Converter",
+    desc: "Converta Epoch Unix Timestamps para datas legíveis e vice-versa.",
+    input: "1718388000",
+    icon: Clock,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "34",
+    to: "/ela" as const,
+    name: "Error Level Analysis",
+    desc: "Analise a autenticidade de fotos e prints usando diferença de compressão.",
+    input: "print.png",
+    icon: Image,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "35",
+    to: "/crypto" as const,
+    name: "Crypto Tracker",
+    desc: "Monitore saldo, transações e atividades de carteiras (BTC, ETH, DOGE).",
+    input: "bc1qxy2kgdy...",
+    icon: Coins,
+    color: "from-primary/25 to-accent/10",
+  },
 ];
 
+// Sort tools by their logical codes to maintain index integrity
+const SORTED_TOOLS = [...TOOLS].sort((a, b) => parseInt(a.code) - parseInt(b.code));
+
 const STATS = [
-  { icon: Zap, value: "25", label: "Ferramentas" },
+  { icon: Zap, value: "35", label: "Ferramentas" },
   { icon: Database, value: "Ativo", label: "Controle & Logs" },
   { icon: Eye, value: "100%", label: "Gratuito" },
 ];
@@ -311,6 +408,9 @@ function Index() {
       "filephish_dork: generating document disclosure google queries...",
       "wayback_history: fetching historical snapshot timeline from internet archive CDX...",
       "cpf_audit: calculating geographic origin and checking breach records...",
+      "exif_extract: analyzing camera signatures and latent gps coordinates...",
+      "hibp_query: executing k-anonymity ranges against database hashes...",
+      "crypto_track: scanning blockchain balances and transaction logs...",
     ];
     const interval = setInterval(() => {
       setLogs((prev) => {
@@ -349,54 +449,49 @@ function Index() {
               </Link>
               <Link
                 to="/about"
-                className="inline-flex items-center px-6 py-3 border border-border text-foreground font-mono text-xs uppercase tracking-wider rounded-none hover:bg-white/5 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 border border-border hover:border-primary font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 hover:bg-primary/5"
               >
-                [ COMO FUNCIONA ]
+                [ SOBRE ]
               </Link>
-            </div>
-
-            {/* Stats */}
-            <div className="mt-14 flex flex-wrap gap-8 sm:gap-12 fade-in-up stagger-4">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-none bg-primary/5 border border-primary/35 grid place-items-center">
-                    <stat.icon size={18} className="text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-sans text-xl font-bold text-foreground">{stat.value}</p>
-                    <p className="font-sans font-medium text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {stat.label}
-                    </p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* Right side - GitHub Dashboard layout style cards */}
-          <div className="lg:col-span-5 flex flex-col gap-6 fade-in-up stagger-4">
-            
-            {/* API Status Panel */}
-            <div className="rounded-none border border-border bg-card p-4 flex flex-col">
-              <div className="border-b border-border/40 pb-2.5 mb-4 flex justify-between items-center">
-                <h3 className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                  Status das APIs & Conexões
-                </h3>
-                <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">
-                  Live Feed
+          {/* Right side */}
+          <div className="lg:col-span-5 space-y-4 fade-in-up stagger-2">
+            <div className="card-cyber p-5 hover-lift transition-all duration-300">
+              <div className="flex justify-between items-center mb-3">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold">
+                  // STATUS DO SISTEMA
                 </span>
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
               </div>
+              <div className="font-mono text-xs text-green-400 space-y-1 block">
+                <span>CAESAR CORE SYSTEM // OPERACIONAL</span>
+                <span className="block text-muted-foreground">MODULOS CARREGADOS: {SORTED_TOOLS.length}</span>
+              </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3 font-mono text-[10px]">
-                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
-                  <span className="text-muted-foreground block mb-1">CRT.SH (Subdomínios)</span>
-                  <span className="text-yellow-400 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
-                    INSTÁVEL (Fallback Ativo)
-                  </span>
-                </div>
+            {/* Terminal simulation */}
+            <div className="card-cyber p-5 font-mono text-[10px] text-muted-foreground bg-black/60 relative overflow-hidden min-h-[160px] hover-lift transition-all duration-300 border-l-4 border-l-primary/45 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]">
+              <div className="flex items-center justify-between border-b border-border/30 pb-2 mb-3">
+                <span className="text-primary font-bold">SYSTEM_LOG // STREAM</span>
+                <span className="text-muted-foreground/35">AUDIT_MODE: SECURE</span>
+              </div>
+              <div className="space-y-1.5 max-h-[100px] overflow-y-auto pr-1">
+                {logs.map((log, i) => (
+                  <div key={i} className="truncate select-none opacity-85 hover:opacity-100 transition-opacity">
+                    <span className="text-primary mr-1">&gt;</span> {log}
+                  </div>
+                ))}
+              </div>
+            </div>
 
+            {/* Services Health */}
+            <div className="card-cyber p-5 hover-lift transition-all duration-300">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground block mb-3.5">
+                // EXTERNAL_ENGINES // INTEGRIDADE
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] font-mono">
                 <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
                   <span className="text-muted-foreground block mb-1">HackerTarget API</span>
                   <span className="text-green-400 font-bold flex items-center gap-1.5">
@@ -438,9 +533,6 @@ function Index() {
                 </div>
               </div>
             </div>
-
-
-
           </div>
         </div>
       </section>
@@ -451,15 +543,15 @@ function Index() {
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
             // MÓDULOS DE RECONHECIMENTO OSINT
           </h2>
-          <span className="font-mono text-xs text-primary glow-text">25 ativos</span>
+          <span className="font-mono text-xs text-primary glow-text">{SORTED_TOOLS.length} ativos</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {TOOLS.map((tool, i) => (
+          {SORTED_TOOLS.map((tool, i) => (
             <Link
               key={tool.to}
               to={tool.to}
-              className={`group relative card-cyber p-6 flex flex-col hover-lift transition-all duration-300 fade-in-up stagger-${i + 1}`}
+              className={`group relative card-cyber p-6 flex flex-col hover-lift transition-all duration-300 fade-in-up`}
             >
               {/* Gradient background */}
               <div
