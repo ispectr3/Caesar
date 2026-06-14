@@ -18,7 +18,6 @@ import { Route as PortscanRouteImport } from './routes/portscan'
 import { Route as PhoneRouteImport } from './routes/phone'
 import { Route as NamintRouteImport } from './routes/namint'
 import { Route as MosintRouteImport } from './routes/mosint'
-import { Route as LeaklookerRouteImport } from './routes/leaklooker'
 import { Route as IpRouteImport } from './routes/ip'
 import { Route as HeadersRouteImport } from './routes/headers'
 import { Route as HashRouteImport } from './routes/hash'
@@ -81,11 +80,6 @@ const NamintRoute = NamintRouteImport.update({
 const MosintRoute = MosintRouteImport.update({
   id: '/mosint',
   path: '/mosint',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LeaklookerRoute = LeaklookerRouteImport.update({
-  id: '/leaklooker',
-  path: '/leaklooker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IpRoute = IpRouteImport.update({
@@ -198,7 +192,6 @@ export interface FileRoutesByFullPath {
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
-  '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
@@ -228,7 +221,6 @@ export interface FileRoutesByTo {
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
-  '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
@@ -259,7 +251,6 @@ export interface FileRoutesById {
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
-  '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
@@ -291,7 +282,6 @@ export interface FileRouteTypes {
     | '/hash'
     | '/headers'
     | '/ip'
-    | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
@@ -321,7 +311,6 @@ export interface FileRouteTypes {
     | '/hash'
     | '/headers'
     | '/ip'
-    | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
@@ -351,7 +340,6 @@ export interface FileRouteTypes {
     | '/hash'
     | '/headers'
     | '/ip'
-    | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
@@ -382,7 +370,6 @@ export interface RootRouteChildren {
   HashRoute: typeof HashRoute
   HeadersRoute: typeof HeadersRoute
   IpRoute: typeof IpRoute
-  LeaklookerRoute: typeof LeaklookerRoute
   MosintRoute: typeof MosintRoute
   NamintRoute: typeof NamintRoute
   PhoneRoute: typeof PhoneRoute
@@ -457,13 +444,6 @@ declare module '@tanstack/react-router' {
       path: '/mosint'
       fullPath: '/mosint'
       preLoaderRoute: typeof MosintRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/leaklooker': {
-      id: '/leaklooker'
-      path: '/leaklooker'
-      fullPath: '/leaklooker'
-      preLoaderRoute: typeof LeaklookerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ip': {
@@ -614,7 +594,6 @@ const rootRouteChildren: RootRouteChildren = {
   HashRoute: HashRoute,
   HeadersRoute: HeadersRoute,
   IpRoute: IpRoute,
-  LeaklookerRoute: LeaklookerRoute,
   MosintRoute: MosintRoute,
   NamintRoute: NamintRoute,
   PhoneRoute: PhoneRoute,

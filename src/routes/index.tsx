@@ -204,15 +204,6 @@ const TOOLS = [
     color: "from-primary/25 to-accent/10",
   },
   {
-    code: "18",
-    to: "/leaklooker" as const,
-    name: "LeakLooker",
-    desc: "Varre a internet pública em busca de portas abertas e bancos expostos.",
-    input: "104.244.42.1",
-    icon: Database,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
     code: "18b",
     to: "/crm" as const,
     name: "CRM Doctor",
@@ -287,7 +278,7 @@ const TOOLS = [
 ];
 
 const STATS = [
-  { icon: Zap, value: "26", label: "Ferramentas" },
+  { icon: Zap, value: "25", label: "Ferramentas" },
   { icon: Database, value: "Ativo", label: "Controle & Logs" },
   { icon: Eye, value: "100%", label: "Gratuito" },
 ];
@@ -511,7 +502,7 @@ function Index() {
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
             // MÓDULOS DE RECONHECIMENTO OSINT
           </h2>
-          <span className="font-mono text-xs text-primary glow-text">26 ativos</span>
+          <span className="font-mono text-xs text-primary glow-text">25 ativos</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

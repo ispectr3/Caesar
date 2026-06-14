@@ -46,7 +46,6 @@ const MODULE_CATEGORIES = [
       { to: "/whois", label: "WHOIS & Registry" },
       { to: "/dns", label: "DNS Records" },
       { to: "/subdomains", label: "Subdomain Scanner" },
-      { to: "/leaklooker", label: "LeakLooker DB" },
       { to: "/abuseipdb", label: "AbuseIPDB" },
       { to: "/portscan", label: "Web Port Scanner" },
       { to: "/headers", label: "HTTP Headers" },
@@ -223,18 +222,6 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       {/* ── Footer ── */}
       <footer className="border-t border-border-active mt-24 bg-card/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 font-mono text-[11px] text-muted-foreground">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center border-b border-border/20 pb-8 mb-6">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span>CAESAR CORE SYSTEM // STATUS: OPERACIONAL</span>
-            </div>
-            <div className="text-left md:text-center">
-              <span>ESTÉTICA TÁTICA MILITAR & PRIVACIDADE ABSOLUTA</span>
-            </div>
-            <div className="text-left md:text-right">
-              <span>DATABASE V1.2.6-RELEASE</span>
-            </div>
-          </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <span className="text-foreground font-bold">Caesar<span className="text-primary">OSINT</span></span>
