@@ -32,11 +32,11 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Caesar" },
+      { title: "Caesar OSINT" },
       {
         name: "description",
         content:
-          "Plataforma gratuita de ferramentas OSINT: IP lookup, WHOIS, DNS, Username Search, Email Validator, HTTP Headers, Hash Identifier e Subdomain Scanner.",
+          "Plataforma OSINT para investigação digital, análise de ameaças e inteligência de fontes abertas.",
       },
       { property: "og:title", content: "Caesar OSINT | OSINT Tools" },
       {
