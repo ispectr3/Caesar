@@ -51,6 +51,12 @@ A plataforma conta com **35 módulos de reconhecimento** ativos e acessíveis di
 
 ---
 
+## ⚙️ Under the Hood (Arquitetura Técnica)
+
+O Caesar opera em uma arquitetura serverless de borda (**Cloudflare Pages**). Para garantir a privacidade do investigador (zero-logging e proteção contra vazamento do IP original) e contornar bloqueios de CORS, o tráfego de módulos sensíveis é roteado e intermediado silenciosamente por **Server Functions** nativas do *TanStack Start*. No front-end, o estado é controlado estritamente para manter a alta performance das micro-animações, entregando uma simulação autêntica e ininterrupta de um terminal de inteligência.
+
+---
+
 ## 🔗 Repositórios e APIs Utilizados
 
 Para viabilizar as consultas e o funcionamento dos módulos de OSINT, o projeto utiliza os seguintes repositórios e serviços de código aberto:
