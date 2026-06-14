@@ -6,29 +6,48 @@
 
 **Caesar OSINT** é uma plataforma de inteligência de fontes abertas (OSINT) e reconhecimento digital. O projeto foi projetado com uma estética tática hacker militar, utilizando tipografia totalmente monoespaçada, cantos vivos (`rounded-none`), inputs com prompts interativos (`$ `) e um esquema de cores focado em Preto e Borgonha (`#6D001A`).
 
-> [!NOTE]
-> **Garantia de Privacidade:** Nenhuma consulta realizada através da plataforma é armazenada, registrada ou compartilhada. Todas as requisições externas são feitas pelo servidor para que a sua origem (IP cliente) nunca seja exposta.
 
 ---
 
 ## 🛠️ Módulos Integrados
 
-A plataforma conta com **14 módulos de reconhecimento** ativos e acessíveis diretamente da página inicial:
+A plataforma conta com **35 módulos de reconhecimento** ativos e acessíveis diretamente da página inicial:
 
-1. 🌐 **IP Lookup** – Informações de geolocalização, ISP, ASN e organização para qualquer IPv4/IPv6.
-2. 🗄️ **WHOIS** – Consulta de dados cadastrais, data de criação, expiração e servidores DNS via protocolo RDAP.
-3. 🧬 **DNS Lookup** – Resolução em tempo real de registros (A, AAAA, MX, NS, TXT, CNAME, SOA) via Google DNS-over-HTTPS.
-4. 🔍 **Username Search** – Verificação instantânea de presença de nome de usuário em mais de 10 plataformas e redes sociais.
-5. ✉️ **Email Validator** – Análise sintática de e-mail, consulta de registros MX ativos e verificação contra domínios descartáveis.
-6. 🛡️ **HTTP Headers** – Verificador e pontuador de cabeçalhos de segurança HTTP com feedback de proteção.
-7. 🔑 **Hash Identifier** – Análise criptográfica local de padrões de hashes comuns (MD5, SHA1, SHA256, bcrypt, etc.).
-8. 🕸️ **Subdomain Scanner** – Enumeração passiva de subdomínios através de registros públicos de transparência de certificados (crt.sh).
-9. 🔎 **Google Dorks** – Gerador interativo de filtros avançados do Google para auditoria de arquivos confidenciais e diretórios abertos.
-10. ⚠️ **CVE Search** – Consulta de vulnerabilidades conhecidas por produto ou ID diretamente na base de dados do NIST NVD.
-11. 🏢 **CNPJ Lookup** – Detalhes cadastrais de empresas brasileiras, sócios e capital social integrado via BrasilAPI.
-12. 📍 **GEOINT** – Geocodificação reversa de endereços e coordenadas usando a base do OpenStreetMap (Nominatim).
-13. 📞 **Phone OSINT** – Extração de operadora, fuso horário, validade e metadados de números de telefone globais.
-14. 🚨 **Scam Analyzer** – Analisador heurístico local contra tentativas de golpes, phishing e engenharia social.
+1. 👤 **CPF Search** – Validador, análise regional e rastreio de vazamento de CPF na Dark Web.
+2. 🏢 **CNPJ Lookup** – Consultas cadastrais e quadro societário de empresas (BrasilAPI).
+3. 📍 **CEP Address** – Busca de endereço físico e coordenadas por CEP (BrasilAPI).
+4. 📍 **GEOINT** – OpenStreetMap Geocoding e coordenadas.
+5. 📞 **Phone OSINT** – Extração de dados globais de números telefônicos.
+6. 🎛️ **NAMINT Combiner** – Gerador passivo de variações de e-mail e usernames por nome do alvo.
+7. 🔍 **WhatsMyName** – Verificação passiva de nome de usuário em múltiplas plataformas.
+8. 🌐 **IP Lookup** – Geolocalização, ISP, ASN e organização por endereço IP.
+9. 🗄️ **WHOIS** – Registrar, datas de criação/expiração e nameservers via RDAP.
+10. 🧬 **DNS Lookup** – Registros A, AAAA, MX, NS, TXT, CNAME e SOA.
+11. 🕸️ **Subdomain Scanner** – Descobre subdomínios via Certificate Transparency.
+12. 🗃️ **LeakLooker** – Varre a internet pública em busca de portas abertas e bancos expostos.
+13. 🚨 **AbuseIPDB Scanner** – Consulta a reputação de um IP e histórico de denúncias maliciosas.
+14. 🚨 **Web Port Scanner** – Escaneamento ativo de portas focadas na superfície de ataque web.
+15. 🛡️ **HTTP Headers** – Analisa headers de segurança com score de proteção.
+16. ⚠️ **CVE Search** – Busca vulnerabilidades no banco de dados NIST NVD.
+17. 📄 **File Phish** – Busca estruturada de documentos sensíveis expostos via Google Dorks.
+18. 🕰️ **Wayback Machine** – Consulta o histórico de capturas e snapshots de websites arquivados.
+19. 🔎 **Google Dorks** – Gerador de queries avançadas para encontrar arquivos e páginas ocultas.
+20. 🐙 **GitFive** – Rastreia e-mails reais de commits públicos e identidades de desenvolvedores.
+21. 🚨 **GHunt** – Identifica contas Google, GAIA IDs e exposição em serviços públicos.
+22. ✉️ **Mosint** – Canivete suíço para investigação de e-mails e contas sociais.
+23. 🚨 **Scam Analyzer** – Análise heurística de mensagens para identificação de golpes.
+24. ✉️ **Email Validator** – Verifica formato, domínio MX e se é email descartável.
+25. 🔑 **Hash Identifier** – Identifica tipo de hash: MD5, SHA1, SHA256, bcrypt e mais.
+26. 🖼️ **EXIF Extractor** – Extrai metadados EXIF ocultos de imagens, incluindo GPS, modelo de câmera e data.
+27. 🚨 **HIBP Breach Check** – Verifique se seu e-mail ou senhas vazaram em brechas de segurança públicas.
+28. 🗄️ **Registro.br WHOIS** – Consulte proprietários, documentos associados (CNPJ/CPF) e DNS de domínios nacionais .br.
+29. ⚖️ **CNJ DataJud** – Consulte processos judiciais em tribunais nacionais usando a numeração única do CNJ.
+30. 🎛️ **Encoder / Decoder** – Codificador e decodificador multi-formato: Base64, URL, Hex, HTML e Binário.
+31. 🎛️ **Regex Extractor** – Extraia CPFs, CNPJs, e-mails, IPs, telefones e URLs de dumps de texto.
+32. ⏱️ **Timestamp Converter** – Converta Epoch Unix Timestamps para datas legíveis e vice-versa.
+33. 🌐 **Favicon Hash** – Obtenha MurmurHash3 de favicon para buscas de infraestrutura no Shodan.
+34. 🖼️ **Error Level Analysis** – Analise a autenticidade de fotos e prints usando diferença de compressão.
+35. 🪙 **Crypto Tracker** – Monitore saldo, transações e atividades de carteiras (BTC, ETH, DOGE).
 
 ---
 

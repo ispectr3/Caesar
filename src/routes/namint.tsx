@@ -194,9 +194,7 @@ function NamintTool() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Painel de Entrada */}
         <div className="lg:col-span-1 space-y-4">
-          <ResultCard
-                exportData={result}
-                exportName="namint_export" title="Dados do Alvo">
+          <ResultCard title="Dados do Alvo">
             <form onSubmit={handleGenerate} className="space-y-4">
               <div>
                 <label className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">

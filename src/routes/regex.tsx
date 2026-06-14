@@ -54,34 +54,32 @@ function RegexTool() {
   const [inputText, setInputText] = useState("");
   const [selectedPresetIdx, setSelectedPresetIdx] = useState(0);
   const [customPattern, setCustomPattern] = useState("");
-  const [customError, setCustomError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const getMatches = () => {
-    if (!inputText) return [];
+  let customError: string | null = null;
+  let matches: string[] = [];
 
-    let regex: RegExp;
+  if (inputText) {
+    let regex: RegExp | null = null;
     if (selectedPresetIdx === -1) {
-      if (!customPattern) return [];
-      try {
-        regex = new RegExp(customPattern, "g");
-        setCustomError(null);
-      } catch (err) {
-        setCustomError("Expressão Regular Inválida.");
-        return [];
+      if (customPattern) {
+        try {
+          regex = new RegExp(customPattern, "g");
+        } catch (err) {
+          customError = "Expressão Regular Inválida.";
+        }
       }
     } else {
       regex = PRESETS[selectedPresetIdx].pattern;
     }
 
-    const matches = inputText.match(regex);
-    if (!matches) return [];
-    
-    // Remove duplicates
-    return Array.from(new Set(matches));
-  };
-
-  const matches = getMatches();
+    if (regex && !customError) {
+      const m = inputText.match(regex);
+      if (m) {
+        matches = Array.from(new Set(m));
+      }
+    }
+  }
 
   const handleCopy = () => {
     if (matches.length === 0) return;

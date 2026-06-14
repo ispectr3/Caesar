@@ -730,13 +730,14 @@ export const hashIdentify = createServerFn({ method: "POST" })
       "1234", "1234567", "root", "password123", "senha", "senha123", "mudar123", "brasil",
       "admin123", "iloveyou", "test", "123123", "qazwsx", "welcome", "1234567890",
       // Include typical default hashes
-      "0000", "123", "1234"
+      "0000", "123", "1234", "user", "guest", "info", "system", "love", "secret", "google",
+      "facebook", "github", "caesar", "osint", "security", "hacking", "hacker", "cyber"
     ];
     
     let crackedPlaintext: string | undefined = undefined;
     let crackedAlgorithm: string | undefined = undefined;
-    // Static crypto import used instead
     
+    // 1. Offline dictionary check
     for (const word of commonWords) {
       if (crypto.createHash('md5').update(word).digest('hex') === hash.toLowerCase()) {
         crackedPlaintext = word; crackedAlgorithm = 'MD5'; break;
@@ -746,6 +747,48 @@ export const hashIdentify = createServerFn({ method: "POST" })
       }
       if (crypto.createHash('sha256').update(word).digest('hex') === hash.toLowerCase()) {
         crackedPlaintext = word; crackedAlgorithm = 'SHA-256'; break;
+      }
+    }
+
+    // 2. Online fallback lookup (Gromweb)
+    if (!crackedPlaintext) {
+      const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+      const cleanHash = hash.toLowerCase().trim();
+      
+      if (cleanHash.length === 32 && /^[a-f0-9]+$/.test(cleanHash)) {
+        try {
+          const res = await fetch(`https://md5.gromweb.com/?md5=${cleanHash}`, {
+            headers: { "User-Agent": userAgent },
+            signal: AbortSignal.timeout(4000)
+          });
+          if (res.ok) {
+            const html = await res.text();
+            const match = html.match(/into the string <a class="[Ss]tring" href="[^"]+">([^<]+)<\/a>/i)?.[1];
+            if (match) {
+              crackedPlaintext = match;
+              crackedAlgorithm = "MD5 (via Gromweb)";
+            }
+          }
+        } catch (e) {
+          console.error("Gromweb MD5 lookup failed:", e);
+        }
+      } else if (cleanHash.length === 40 && /^[a-f0-9]+$/.test(cleanHash)) {
+        try {
+          const res = await fetch(`https://sha1.gromweb.com/?hash=${cleanHash}`, {
+            headers: { "User-Agent": userAgent },
+            signal: AbortSignal.timeout(4000)
+          });
+          if (res.ok) {
+            const html = await res.text();
+            const match = html.match(/into the string <a class="[Ss]tring" href="[^"]+">([^<]+)<\/a>/i)?.[1];
+            if (match) {
+              crackedPlaintext = match;
+              crackedAlgorithm = "SHA-1 (via Gromweb)";
+            }
+          }
+        } catch (e) {
+          console.error("Gromweb SHA-1 lookup failed:", e);
+        }
       }
     }
 
