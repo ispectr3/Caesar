@@ -1652,60 +1652,7 @@ export const banksLookup = createServerFn({ method: "POST" })
     }
   });
 
-/* ═══════════════════════════════════════════
-   Module 18 — CRM Lookup
-   ═══════════════════════════════════════════ */
 
-const crmSchema = z.object({
-  crm: z.string().trim().min(2),
-  uf: z.string().trim().min(2).max(2),
-});
-
-export type CrmResult = {
-  nome: string;
-  situacao: string;
-  crm: string;
-  uf: string;
-};
-
-export const crmLookup = createServerFn({ method: "POST" })
-  .validator(crmSchema)
-  .handler(async ({ data }): Promise<{ error: string | null; data: CrmResult | null }> => {
-    try {
-      const crmNum = data.crm.replace(/\D/g, "");
-      if (!crmNum) {
-        return { error: "Número de CRM inválido.", data: null };
-      }
-
-      // Deteministic simulator for CRM verification since there's no free endpoint
-      const firstNames = ["Gabriel", "Mariana", "Rodrigo", "Beatriz", "Lucas", "Fernanda", "Thiago", "Camila", "Felipe", "Juliana", "Renato", "Patrícia", "Marcelo", "Aline"];
-      const middleNames = ["Silva", "Santos", "Oliveira", "Souza", "Rodrigues", "Ferreira", "Alves", "Pereira", "Lima", "Gomes", "Costa", "Ribeiro", "Martins", "Carvalho"];
-      const lastNames = ["Mendes", "Cardoso", "Teixeira", "Pinto", "Cavalcanti", "Dias", "Castro", "Rocha", "Moreira", "Barbosa", "Nunes", "Vieira", "Ramos", "Machado"];
-
-      const seed = parseInt(crmNum) || 42;
-      const fIdx = seed % firstNames.length;
-      const mIdx = (seed * 3) % middleNames.length;
-      const lIdx = (seed * 7) % lastNames.length;
-
-      const nome = `${firstNames[fIdx]} ${middleNames[mIdx]} ${lastNames[lIdx]}`;
-      const situacao = (seed % 9 === 0) ? "INATIVO (Cancelado)" : (seed % 15 === 0) ? "INATIVO (Falecido)" : "ATIVO";
-
-      return {
-        error: null,
-        data: {
-          nome,
-          situacao,
-          crm: crmNum,
-          uf: data.uf.toUpperCase(),
-        },
-      };
-    } catch (e) {
-      return {
-        error: e instanceof Error ? e.message : "Erro desconhecido",
-        data: null,
-      };
-    }
-  });
 
 /* ═══════════════════════════════════════════
    Module 14 — Scam & Phishing Analyzer

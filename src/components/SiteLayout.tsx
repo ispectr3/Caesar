@@ -36,7 +36,6 @@ const MODULE_CATEGORIES = [
       { to: "/phone", label: "Phone OSINT" },
       { to: "/namint", label: "NAMINT Combiner" },
       { to: "/username", label: "WhatsMyName" },
-      { to: "/crm", label: "CRM Doctor" },
     ],
   },
   {
@@ -46,6 +45,7 @@ const MODULE_CATEGORIES = [
       { to: "/whois", label: "WHOIS & Registry" },
       { to: "/dns", label: "DNS Records" },
       { to: "/subdomains", label: "Subdomain Scanner" },
+      { to: "/leaklooker", label: "LeakLooker DB" },
       { to: "/abuseipdb", label: "AbuseIPDB" },
       { to: "/portscan", label: "Web Port Scanner" },
       { to: "/headers", label: "HTTP Headers" },

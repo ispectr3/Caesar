@@ -18,6 +18,7 @@ import { Route as PortscanRouteImport } from './routes/portscan'
 import { Route as PhoneRouteImport } from './routes/phone'
 import { Route as NamintRouteImport } from './routes/namint'
 import { Route as MosintRouteImport } from './routes/mosint'
+import { Route as LeaklookerRouteImport } from './routes/leaklooker'
 import { Route as IpRouteImport } from './routes/ip'
 import { Route as HeadersRouteImport } from './routes/headers'
 import { Route as HashRouteImport } from './routes/hash'
@@ -29,7 +30,6 @@ import { Route as EmailRouteImport } from './routes/email'
 import { Route as DorksRouteImport } from './routes/dorks'
 import { Route as DnsRouteImport } from './routes/dns'
 import { Route as CveRouteImport } from './routes/cve'
-import { Route as CrmRouteImport } from './routes/crm'
 import { Route as CpfRouteImport } from './routes/cpf'
 import { Route as CnpjRouteImport } from './routes/cnpj'
 import { Route as CepRouteImport } from './routes/cep'
@@ -80,6 +80,11 @@ const NamintRoute = NamintRouteImport.update({
 const MosintRoute = MosintRouteImport.update({
   id: '/mosint',
   path: '/mosint',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaklookerRoute = LeaklookerRouteImport.update({
+  id: '/leaklooker',
+  path: '/leaklooker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IpRoute = IpRouteImport.update({
@@ -137,11 +142,6 @@ const CveRoute = CveRouteImport.update({
   path: '/cve',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CrmRoute = CrmRouteImport.update({
-  id: '/crm',
-  path: '/crm',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CpfRoute = CpfRouteImport.update({
   id: '/cpf',
   path: '/cpf',
@@ -180,7 +180,6 @@ export interface FileRoutesByFullPath {
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
-  '/crm': typeof CrmRoute
   '/cve': typeof CveRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
@@ -192,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
+  '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
@@ -209,7 +209,6 @@ export interface FileRoutesByTo {
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
-  '/crm': typeof CrmRoute
   '/cve': typeof CveRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
@@ -221,6 +220,7 @@ export interface FileRoutesByTo {
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
+  '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
@@ -239,7 +239,6 @@ export interface FileRoutesById {
   '/cep': typeof CepRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
-  '/crm': typeof CrmRoute
   '/cve': typeof CveRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
@@ -251,6 +250,7 @@ export interface FileRoutesById {
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/ip': typeof IpRoute
+  '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/phone': typeof PhoneRoute
@@ -270,7 +270,6 @@ export interface FileRouteTypes {
     | '/cep'
     | '/cnpj'
     | '/cpf'
-    | '/crm'
     | '/cve'
     | '/dns'
     | '/dorks'
@@ -282,6 +281,7 @@ export interface FileRouteTypes {
     | '/hash'
     | '/headers'
     | '/ip'
+    | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
@@ -299,7 +299,6 @@ export interface FileRouteTypes {
     | '/cep'
     | '/cnpj'
     | '/cpf'
-    | '/crm'
     | '/cve'
     | '/dns'
     | '/dorks'
@@ -311,6 +310,7 @@ export interface FileRouteTypes {
     | '/hash'
     | '/headers'
     | '/ip'
+    | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
@@ -328,7 +328,6 @@ export interface FileRouteTypes {
     | '/cep'
     | '/cnpj'
     | '/cpf'
-    | '/crm'
     | '/cve'
     | '/dns'
     | '/dorks'
@@ -340,6 +339,7 @@ export interface FileRouteTypes {
     | '/hash'
     | '/headers'
     | '/ip'
+    | '/leaklooker'
     | '/mosint'
     | '/namint'
     | '/phone'
@@ -358,7 +358,6 @@ export interface RootRouteChildren {
   CepRoute: typeof CepRoute
   CnpjRoute: typeof CnpjRoute
   CpfRoute: typeof CpfRoute
-  CrmRoute: typeof CrmRoute
   CveRoute: typeof CveRoute
   DnsRoute: typeof DnsRoute
   DorksRoute: typeof DorksRoute
@@ -370,6 +369,7 @@ export interface RootRouteChildren {
   HashRoute: typeof HashRoute
   HeadersRoute: typeof HeadersRoute
   IpRoute: typeof IpRoute
+  LeaklookerRoute: typeof LeaklookerRoute
   MosintRoute: typeof MosintRoute
   NamintRoute: typeof NamintRoute
   PhoneRoute: typeof PhoneRoute
@@ -444,6 +444,13 @@ declare module '@tanstack/react-router' {
       path: '/mosint'
       fullPath: '/mosint'
       preLoaderRoute: typeof MosintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaklooker': {
+      id: '/leaklooker'
+      path: '/leaklooker'
+      fullPath: '/leaklooker'
+      preLoaderRoute: typeof LeaklookerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ip': {
@@ -523,13 +530,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/crm': {
-      id: '/crm'
-      path: '/crm'
-      fullPath: '/crm'
-      preLoaderRoute: typeof CrmRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cpf': {
       id: '/cpf'
       path: '/cpf'
@@ -582,7 +582,6 @@ const rootRouteChildren: RootRouteChildren = {
   CepRoute: CepRoute,
   CnpjRoute: CnpjRoute,
   CpfRoute: CpfRoute,
-  CrmRoute: CrmRoute,
   CveRoute: CveRoute,
   DnsRoute: DnsRoute,
   DorksRoute: DorksRoute,
@@ -594,6 +593,7 @@ const rootRouteChildren: RootRouteChildren = {
   HashRoute: HashRoute,
   HeadersRoute: HeadersRoute,
   IpRoute: IpRoute,
+  LeaklookerRoute: LeaklookerRoute,
   MosintRoute: MosintRoute,
   NamintRoute: NamintRoute,
   PhoneRoute: PhoneRoute,
