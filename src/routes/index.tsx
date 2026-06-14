@@ -622,6 +622,7 @@ function Index() {
             <Link
               key={tool.to}
               to={tool.to}
+              style={{ animationDelay: `${i * 12}ms` }}
               className={`group relative card-cyber p-6 flex flex-col hover-lift transition-all duration-300 fade-in-up`}
             >
               {/* Gradient background */}
