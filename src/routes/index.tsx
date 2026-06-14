@@ -49,180 +49,9 @@ export const Route = createFileRoute("/")({
 });
 
 const TOOLS = [
+  // ── Identidade & Pessoas ──
   {
     code: "01",
-    to: "/ip" as const,
-    name: "IP Lookup",
-    desc: "Geolocalização, ISP, ASN e organização por endereço IP.",
-    input: "8.8.8.8",
-    icon: Globe,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "02",
-    to: "/whois" as const,
-    name: "WHOIS",
-    desc: "Registrar, datas de criação/expiração e nameservers via RDAP.",
-    input: "target.com",
-    icon: Server,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "03",
-    to: "/dns" as const,
-    name: "DNS Lookup",
-    desc: "Registros A, AAAA, MX, NS, TXT, CNAME e SOA.",
-    input: "target.com",
-    icon: Layers,
-    color: "from-primary/25 to-accent/10",
-  },
-
-  {
-    code: "05",
-    to: "/email" as const,
-    name: "Email Validator",
-    desc: "Verifica formato, domínio MX e se é email descartável.",
-    input: "user@gmail.com",
-    icon: Mail,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "06",
-    to: "/headers" as const,
-    name: "HTTP Headers",
-    desc: "Analisa headers de segurança com score de proteção.",
-    input: "https://target.com",
-    icon: ShieldCheck,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "07",
-    to: "/hash" as const,
-    name: "Hash Identifier",
-    desc: "Identifica tipo de hash: MD5, SHA1, SHA256, bcrypt e mais.",
-    input: "d41d8cd9...8427e",
-    icon: Hash,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "08",
-    to: "/subdomains" as const,
-    name: "Subdomain Scanner",
-    desc: "Descobre subdomínios via Certificate Transparency.",
-    input: "target.com",
-    icon: Network,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "09",
-    to: "/dorks" as const,
-    name: "Google Dorks",
-    desc: "Gerador de queries avançadas para encontrar arquivos e páginas ocultas.",
-    input: "target.com",
-    icon: Search,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "10",
-    to: "/cve" as const,
-    name: "CVE Search",
-    desc: "Busca vulnerabilidades no banco de dados NIST NVD.",
-    input: "apache",
-    icon: ShieldAlert,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "11",
-    to: "/cnpj" as const,
-    name: "CNPJ Lookup",
-    desc: "Consultas cadastrais e quadro societário de empresas (BrasilAPI).",
-    input: "00.000.000/0000-00",
-    icon: Building2,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "12",
-    to: "/geocode" as const,
-    name: "GEOINT",
-    desc: "OpenStreetMap Geocoding e coordenadas.",
-    input: "Av. Paulista",
-    icon: MapPin,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "13",
-    to: "/phone" as const,
-    name: "Phone OSINT",
-    desc: "Extração de dados globais de números telefônicos.",
-    input: "+5511999999999",
-    icon: Phone,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "14",
-    to: "/scam" as const,
-    name: "Scam Analyzer",
-    desc: "Análise heurística de mensagens para identificação de golpes.",
-    input: "PARABÉNS! Você ganhou um Pix...",
-    icon: ShieldAlert,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "14b",
-    to: "/cep" as const,
-    name: "CEP Address",
-    desc: "Busca de endereço físico e coordenadas por CEP (BrasilAPI).",
-    input: "01311-200",
-    icon: MapPin,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "15",
-    to: "/gitfive" as const,
-    name: "GitFive",
-    desc: "Rastreia e-mails reais de commits públicos e identidades de desenvolvedores.",
-    input: "git_username",
-    icon: Github,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "16",
-    to: "/ghunt" as const,
-    name: "GHunt",
-    desc: "Identifica contas Google, GAIA IDs e exposição em serviços públicos.",
-    input: "user@gmail.com",
-    icon: ShieldAlert,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "17",
-    to: "/mosint" as const,
-    name: "Mosint",
-    desc: "Canivete suíço para investigação de e-mails e contas sociais.",
-    input: "email@exemplo.com",
-    icon: Mail,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "18",
-    to: "/leaklooker" as const,
-    name: "LeakLooker",
-    desc: "Varre a internet pública em busca de portas abertas e bancos expostos.",
-    input: "target.com",
-    icon: Database,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "19",
-    to: "/abuseipdb" as const,
-    name: "AbuseIPDB Scanner",
-    desc: "Consulta a reputação de um IP e histórico de denúncias maliciosas.",
-    input: "1.2.3.4",
-    icon: ShieldAlert,
-    color: "from-primary/25 to-accent/10",
-  },
-  {
-    code: "11b",
     to: "/cpf" as const,
     name: "CPF Search",
     desc: "Validador, análise regional e rastreio de vazamento de CPF na Dark Web.",
@@ -231,16 +60,43 @@ const TOOLS = [
     color: "from-primary/25 to-accent/10",
   },
   {
-    code: "20",
-    to: "/username" as const,
-    name: "WhatsMyName",
-    desc: "Verificação passiva de nome de usuário em múltiplas plataformas.",
-    input: "torvalds",
-    icon: UserSearch,
+    code: "02",
+    to: "/cnpj" as const,
+    name: "CNPJ Lookup",
+    desc: "Consultas cadastrais e quadro societário de empresas (BrasilAPI).",
+    input: "00.000.000/0000-00",
+    icon: Building2,
     color: "from-primary/25 to-accent/10",
   },
   {
-    code: "21",
+    code: "03",
+    to: "/cep" as const,
+    name: "CEP Address",
+    desc: "Busca de endereço físico e coordenadas por CEP (BrasilAPI).",
+    input: "01311-200",
+    icon: MapPin,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "04",
+    to: "/geocode" as const,
+    name: "GEOINT",
+    desc: "OpenStreetMap Geocoding e coordenadas.",
+    input: "Av. Paulista",
+    icon: MapPin,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "05",
+    to: "/phone" as const,
+    name: "Phone OSINT",
+    desc: "Extração de dados globais de números telefônicos.",
+    input: "+5511999999999",
+    icon: Phone,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "06",
     to: "/namint" as const,
     name: "NAMINT Combiner",
     desc: "Gerador passivo de variações de e-mail e usernames por nome do alvo.",
@@ -249,7 +105,101 @@ const TOOLS = [
     color: "from-primary/25 to-accent/10",
   },
   {
-    code: "22",
+    code: "07",
+    to: "/username" as const,
+    name: "WhatsMyName",
+    desc: "Verificação passiva de nome de usuário em múltiplas plataformas.",
+    input: "torvalds",
+    icon: UserSearch,
+    color: "from-primary/25 to-accent/10",
+  },
+
+  // ── Rede & Infraestrutura ──
+  {
+    code: "08",
+    to: "/ip" as const,
+    name: "IP Lookup",
+    desc: "Geolocalização, ISP, ASN e organização por endereço IP.",
+    input: "8.8.8.8",
+    icon: Globe,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "09",
+    to: "/whois" as const,
+    name: "WHOIS",
+    desc: "Registrar, datas de criação/expiração e nameservers via RDAP.",
+    input: "target.com",
+    icon: Server,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "10",
+    to: "/dns" as const,
+    name: "DNS Lookup",
+    desc: "Registros A, AAAA, MX, NS, TXT, CNAME e SOA.",
+    input: "target.com",
+    icon: Layers,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "11",
+    to: "/subdomains" as const,
+    name: "Subdomain Scanner",
+    desc: "Descobre subdomínios via Certificate Transparency.",
+    input: "target.com",
+    icon: Network,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "12",
+    to: "/leaklooker" as const,
+    name: "LeakLooker",
+    desc: "Varre a internet pública em busca de portas abertas e bancos expostos.",
+    input: "target.com",
+    icon: Database,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "13",
+    to: "/abuseipdb" as const,
+    name: "AbuseIPDB Scanner",
+    desc: "Consulta a reputação de um IP e histórico de denúncias maliciosas.",
+    input: "1.2.3.4",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "14",
+    to: "/portscan" as const,
+    name: "Web Port Scanner",
+    desc: "Escaneamento ativo de portas focadas na superfície de ataque web.",
+    input: "target.com",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "15",
+    to: "/headers" as const,
+    name: "HTTP Headers",
+    desc: "Analisa headers de segurança com score de proteção.",
+    input: "https://target.com",
+    icon: ShieldCheck,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "16",
+    to: "/cve" as const,
+    name: "CVE Search",
+    desc: "Busca vulnerabilidades no banco de dados NIST NVD.",
+    input: "apache",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+
+  // ── Web, Contas & Análise ──
+  {
+    code: "17",
     to: "/filephish" as const,
     name: "File Phish",
     desc: "Busca estruturada de documentos sensíveis expostos via Google Dorks.",
@@ -258,7 +208,7 @@ const TOOLS = [
     color: "from-primary/25 to-accent/10",
   },
   {
-    code: "23",
+    code: "18",
     to: "/wayback" as const,
     name: "Wayback Machine",
     desc: "Consulta o histórico de capturas e snapshots de websites arquivados.",
@@ -267,12 +217,66 @@ const TOOLS = [
     color: "from-primary/25 to-accent/10",
   },
   {
-    code: "25",
-    to: "/portscan" as const,
-    name: "Web Port Scanner",
-    desc: "Escaneamento ativo de portas focadas na superfície de ataque web.",
+    code: "19",
+    to: "/dorks" as const,
+    name: "Google Dorks",
+    desc: "Gerador de queries avançadas para encontrar arquivos e páginas ocultas.",
     input: "target.com",
+    icon: Search,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "20",
+    to: "/gitfive" as const,
+    name: "GitFive",
+    desc: "Rastreia e e-mails reais de commits públicos e identidades de desenvolvedores.",
+    input: "git_username",
+    icon: Github,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "21",
+    to: "/ghunt" as const,
+    name: "GHunt",
+    desc: "Identifica contas Google, GAIA IDs e exposição em serviços públicos.",
+    input: "user@gmail.com",
     icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "22",
+    to: "/mosint" as const,
+    name: "Mosint",
+    desc: "Canivete suíço para investigação de e-mails e contas sociais.",
+    input: "email@exemplo.com",
+    icon: Mail,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "23",
+    to: "/scam" as const,
+    name: "Scam Analyzer",
+    desc: "Análise heurística de mensagens para identificação de golpes.",
+    input: "PARABÉNS! Você ganhou um Pix...",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "24",
+    to: "/email" as const,
+    name: "Email Validator",
+    desc: "Verifica formato, domínio MX e se é email descartável.",
+    input: "user@gmail.com",
+    icon: Mail,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "25",
+    to: "/hash" as const,
+    name: "Hash Identifier",
+    desc: "Identifica tipo de hash: MD5, SHA1, SHA256, bcrypt e mais.",
+    input: "d41d8cd9...8427e",
+    icon: Hash,
     color: "from-primary/25 to-accent/10",
   },
 ];
@@ -426,71 +430,16 @@ function Index() {
                 </div>
 
                 <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
-                  <span className="text-muted-foreground block mb-1">Dark Web Simulator</span>
+                  <span className="text-muted-foreground block mb-1">BrasilAPI (CNPJ/CEP)</span>
                   <span className="text-green-400 font-bold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    OPERACIONAL
+                    ONLINE
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Changelog Timeline Card */}
-            <div className="rounded-none border border-border bg-card p-4 flex flex-col">
-              <div className="border-b border-border/40 pb-2.5 mb-4">
-                <h3 className="font-mono text-xs font-bold text-foreground uppercase tracking-wider">
-                  Global Threat & Hacking Feed
-                </h3>
-              </div>
 
-              {/* Timeline list */}
-              <div className="flex flex-col gap-4 font-mono text-[11px]">
-                {/* Item 1 */}
-                <div className="relative pl-5 border-l border-border/80 pb-1">
-                  <span className="absolute -left-1 top-1.5 w-2 h-2 rounded-full bg-accent"></span>
-                  <div className="text-muted-foreground text-[10px] mb-1">Há 1 hora</div>
-                  <h4 className="text-foreground font-semibold mb-1">
-                    CVE-2026-1234: SSH Authentication Bypass
-                  </h4>
-                  <p className="text-muted-foreground text-[10px] leading-normal">
-                    Identificado novo bypass crítico de autenticação em servidores SSH expostos. CISA emite diretiva urgente de patching.
-                  </p>
-                </div>
-
-                {/* Item 2 */}
-                <div className="relative pl-5 border-l border-border/80 pb-1">
-                  <span className="absolute -left-1 top-1.5 w-2 h-2 rounded-full bg-accent"></span>
-                  <div className="text-muted-foreground text-[10px] mb-1">Há 4 horas</div>
-                  <h4 className="text-foreground font-semibold mb-1">
-                    Active Directory Exploit Kit Publicado
-                  </h4>
-                  <p className="text-muted-foreground text-[10px] leading-normal">
-                    Novo framework modular de escaneamento de credenciais e exploração do Kerberos divulgado no GitHub por grupo hacker.
-                  </p>
-                </div>
-
-                {/* Item 3 */}
-                <div className="relative pl-5 border-l border-border/80">
-                  <span className="absolute -left-1 top-1.5 w-2 h-2 rounded-full bg-accent"></span>
-                  <div className="text-muted-foreground text-[10px] mb-1">Há 12 horas</div>
-                  <h4 className="text-foreground font-semibold mb-1">
-                    Ataque DDoS em Provedores DNS de Trânsito
-                  </h4>
-                  <p className="text-muted-foreground text-[10px] leading-normal">
-                    Grandes operadoras registram latência crítica devido a ondas massivas de tráfego spoofed direcionadas a servidores raiz.
-                  </p>
-                </div>
-              </div>
-
-              <div className="border-t border-border/40 mt-4 pt-3 text-[10px] font-mono">
-                <Link 
-                  to="/about"
-                  className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
-                >
-                  Ver arquivo de ameaças completo →
-                </Link>
-              </div>
-            </div>
 
           </div>
         </div>

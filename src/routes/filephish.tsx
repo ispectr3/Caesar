@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard } from "@/components/ToolForm";
 import { Copy, Check, ExternalLink, HelpCircle, FileSearch, Fingerprint, UploadCloud, Loader2 } from "lucide-react";
 import exifr from "exifr";
 
 export const Route = createFileRoute("/filephish")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "File Phish" },
       {
@@ -25,7 +25,15 @@ type DorkItem = {
 };
 
 function FilePhishTool() {
-  const [target, setTarget] = useState("");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q) {
+      setTarget(q);
+      handleSubmit(undefined, q);
+    }
+  }, [q]);
+    const [target, setTarget] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>(["pdf", "xlsx", "sql"]);
   const [sensitivity, setSensitivity] = useState<string>("all");
   const [dorks, setDorks] = useState<DorkItem[]>([]);
@@ -89,11 +97,14 @@ function FilePhishTool() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e?: React.FormEvent, customTarget?: string) => {
+    
+    const targetVal = customTarget !== undefined ? customTarget : target;
+    if (!targetVal.trim()) return;
     e.preventDefault();
-    if (!target.trim()) return;
+    
 
-    const t = target.trim().toLowerCase();
+    const t = targetVal.trim().toLowerCase();
     const isDomain = t.includes(".") && !t.includes(" ");
     const sitePrefix = isDomain ? `site:${t}` : `"${t}"`;
 
@@ -164,7 +175,7 @@ function FilePhishTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 22"
+        eyebrow="// Módulo 17"
         title="File Phish (Document & Meta Finder)"
         description="Configure e gere Google Dorks focadas em vazamentos de dados, ou use o visualizador local para extrair EXIF/Metadados de arquivos já capturados."
       />
@@ -199,7 +210,9 @@ function FilePhishTool() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 fade-in-up">
           {/* Painel de Filtros e Configuração */}
         <div className="lg:col-span-1 space-y-4">
-          <ResultCard title="Configurar Auditoria">
+          <ResultCard
+                exportData={undefined}
+                exportName="filephish_export" title="Configurar Auditoria">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">

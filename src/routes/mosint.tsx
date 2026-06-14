@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
 import {
@@ -11,7 +11,7 @@ import {
 import { CheckCircle, XCircle, AlertTriangle, Link2, Share2 } from "lucide-react";
 
 export const Route = createFileRoute("/mosint")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Mosint Email Analyzer" },
       {
@@ -24,7 +24,14 @@ export const Route = createFileRoute("/mosint")({
 });
 
 function MosintTool() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [validation, setValidation] = useState<EmailValidation | null>(null);
   const [profile, setProfile] = useState<GravatarProfile | null>(null);
@@ -62,12 +69,14 @@ function MosintTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 17"
+        eyebrow="// Módulo 22"
         title="Mosint Email Sleuth"
         description="Canivete suíço para inteligência de e-mails. Valide o domínio, verifique se é descartável e recolha perfis sociais públicos vinculados a um endereço."
       />
 
       <ToolForm
+        defaultValue={q}
+        storageKey="mosint"
         label="Endereço de E-mail"
         placeholder="ex: alvo@exemplo.com"
         buttonText="Rastrear"
@@ -79,7 +88,9 @@ function MosintTool() {
           <div className="space-y-6 animate-fade-in">
             {/* Domain & Validation */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ResultCard title="Status do Endereço">
+              <ResultCard
+                exportData={result}
+                exportName="mosint_export" title="Status do Endereço">
                 <KeyValue k="Formato Correto" v={validation.formatValid ? "SIM" : "NÃO"} />
                 <KeyValue k="Domínio Descartável" v={validation.isDisposable ? "SIM [ALERTA]" : "NÃO [SEGURO]"} />
                 <KeyValue k="Provedor Gratuito" v={validation.isFreeProvider ? "SIM" : "NÃO"} />

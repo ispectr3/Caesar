@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
 import { gitfiveLookup, type GitFiveResult } from "@/lib/osint.functions";
 import { Github, Mail, Database, Terminal } from "lucide-react";
 
 export const Route = createFileRoute("/gitfive")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Git Recon" },
       {
@@ -19,7 +19,14 @@ export const Route = createFileRoute("/gitfive")({
 });
 
 function GitFiveTool() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GitFiveResult | null>(null);
 
@@ -47,12 +54,14 @@ function GitFiveTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 15"
+        eyebrow="// Módulo 20"
         title="GitFive Search"
         description="Analise perfis do GitHub e examine históricos de commits em eventos públicos para descobrir o e-mail real por trás de identidades digitais."
       />
 
       <ToolForm
+        defaultValue={q}
+        storageKey="gitfive"
         label="Username do GitHub"
         placeholder="ex: torvalds"
         buttonText="Rastrear"
@@ -64,7 +73,9 @@ function GitFiveTool() {
           <div className="space-y-6 animate-fade-in">
             {/* Profile Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <ResultCard title="Perfil Identificado">
+              <ResultCard
+                exportData={result}
+                exportName="gitfive_export" title="Perfil Identificado">
                 <div className="flex items-center gap-4 mb-4">
                   <img
                     src={result.profile.avatar_url}

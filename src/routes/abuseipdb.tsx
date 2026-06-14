@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
 import { abuseIpdbLookup, type AbuseIpdbInfo } from "@/lib/osint.functions";
@@ -47,6 +47,13 @@ function getCategoryName(cat: number): string {
 }
 
 function AbuseIpdbPage() {
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
   const fn = useServerFn(abuseIpdbLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,11 +86,13 @@ function AbuseIpdbPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 19"
+        eyebrow="// Módulo 13"
         title="AbuseIPDB Scanner"
         description="Analisa a reputação de um IP verificando histórico de ataques, malwares e fraudes recentes."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="abuseipdb"
         label="Endereço IP"
         placeholder="ex: 1.2.3.4"
         buttonText="Analisar Reputação"
@@ -94,7 +103,9 @@ function AbuseIpdbPage() {
       >
         {result && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ResultCard title="Reputação do IP">
+            <ResultCard
+                exportData={result}
+                exportName="abuseipdb_export" title="Reputação do IP">
               <KeyValue k="IP" v={result.ipAddress} />
               <KeyValue 
                 k="Confidence Score" 

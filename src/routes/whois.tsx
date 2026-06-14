@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
 import { whoisLookup, type WhoisInfo } from "@/lib/osint.functions";
 import { Server, Calendar, Shield, Network, User } from "lucide-react";
 
 export const Route = createFileRoute("/whois")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "WHOIS Lookup" },
       {
@@ -21,7 +21,14 @@ export const Route = createFileRoute("/whois")({
 });
 
 function WhoisPage() {
-  const fn = useServerFn(whoisLookup);
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(whoisLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<WhoisInfo | null>(null);
@@ -86,7 +93,7 @@ function WhoisPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 02"
+        eyebrow="// Módulo 09"
         title="WHOIS & Registry Data"
         description="Informações de registro de domínio via protocolo RDAP. Consulte provedores oficiais, datas críticas e nameservers ativos."
       />
@@ -105,6 +112,8 @@ function WhoisPage() {
         </div>
       </div>
       <ToolForm
+        defaultValue={q}
+        storageKey="whois"
         label="Domínio"
         placeholder="ex: instagram.com"
         buttonText="Consultar"
@@ -139,7 +148,9 @@ function WhoisPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Registry Details */}
-              <ResultCard title="Detalhes do Registro">
+              <ResultCard
+                exportData={result}
+                exportName="whois_export" title="Detalhes do Registro">
                 <KeyValue
                   k="Domínio"
                   v={<span className="uppercase font-bold text-primary">{result.domain}</span>}

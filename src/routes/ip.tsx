@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
 import { ipLookup, type IpInfo } from "@/lib/osint.functions";
 
 export const Route = createFileRoute("/ip")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "IP Lookup" },
       {
@@ -19,7 +19,14 @@ export const Route = createFileRoute("/ip")({
 });
 
 function IpPage() {
-  const fn = useServerFn(ipLookup);
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+    const fn = useServerFn(ipLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<IpInfo | null>(null);
@@ -39,10 +46,10 @@ function IpPage() {
     }
   }
 
-  return (
+    return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 01"
+        eyebrow="// Módulo 08"
         title="IP Lookup"
         description="Geolocalização, provedor de internet, sistema autônomo e organização por endereço IPv4 ou IPv6."
       />
@@ -54,11 +61,13 @@ function IpPage() {
         loading={loading}
         error={error}
         inputType="ip"
+        defaultValue={q}
+        storageKey="ip"
       >
         {result ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-              <ResultCard title="Localização">
+              <ResultCard title="Localização" exportData={result} exportName={`ip_loc_${result.query}`}>
                 <KeyValue k="IP" v={result.query} />
                 <KeyValue k="País" v={`${result.country} (${result.countryCode})`} />
                 <KeyValue k="Região" v={result.regionName} />
@@ -80,11 +89,39 @@ function IpPage() {
                   }
                 />
               </ResultCard>
-              <ResultCard title="Rede">
+              <ResultCard title="Rede" exportData={result} exportName={`ip_net_${result.query}`}>
                 <KeyValue k="ISP" v={result.isp} />
                 <KeyValue k="Organização" v={result.org || "—"} />
                 <KeyValue k="AS" v={result.as} />
               </ResultCard>
+
+              {result.lat && result.lon && (
+                <ResultCard title="Visualização no Mapa" className="md:col-span-2">
+                  <div className="w-full h-[250px] border border-border/30 rounded overflow-hidden">
+                    <iframe
+                      title="Mapa de Geolocalização"
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      marginHeight={0}
+                      marginWidth={0}
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${result.lon - 0.02}%2C${result.lat - 0.02}%2C${result.lon + 0.02}%2C${result.lat + 0.02}&layer=mapnik&marker=${result.lat}%2C${result.lon}`}
+                      className="filter invert contrast-125 brightness-90 opacity-80 hover:opacity-100 transition-opacity duration-300 w-full h-full border-0"
+                    />
+                  </div>
+                  <div className="mt-2 text-center">
+                    <a
+                      href={`https://www.openstreetmap.org/?mlat=${result.lat}&mlon=${result.lon}&zoom=14`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-primary hover:underline text-[10px] uppercase font-mono tracking-wider"
+                    >
+                      [ Ver Mapa Completo ↗ ]
+                    </a>
+                  </div>
+                </ResultCard>
+              )}
             </div>
             
             <div className="lg:col-span-1">

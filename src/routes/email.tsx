@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
 import {
@@ -12,7 +12,7 @@ import {
 import { CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/email")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Email Validator" },
       {
@@ -47,7 +47,14 @@ function StatusBadge({ ok, label, warn = false }: { ok: boolean; label: string; 
 }
 
 function EmailPage() {
-  const fn = useServerFn(emailValidate);
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(emailValidate);
   const gravatarFn = useServerFn(gravatarLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,11 +88,13 @@ function EmailPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 05"
+        eyebrow="// Módulo 24"
         title="Email Validator"
         description="Verifica formato do email, existência de registros MX no domínio, se é provedor descartável e se é provedor gratuito."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="email"
         label="Email"
         placeholder="ex: user@gmail.com"
         buttonText="Validar"
@@ -107,7 +116,9 @@ function EmailPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <ResultCard title="Informações do Email">
+              <ResultCard
+                exportData={result}
+                exportName="email_export" title="Informações do Email">
                 <KeyValue k="Email" v={result.email} />
                 <KeyValue k="Local Part" v={result.localPart} />
                 <KeyValue k="Domínio" v={result.domain} />

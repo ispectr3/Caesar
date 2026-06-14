@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createFileRoute } from "@tanstack/react-router";
 import { ShieldAlert } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { cveSearch } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/cve")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "CVE Search" },
       {
@@ -20,7 +20,14 @@ export const Route = createFileRoute("/cve")({
 });
 
 function CveTool() {
-  const [query, setQuery] = useState("");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !results) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<any[] | null>(null);
@@ -66,11 +73,13 @@ function CveTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 10"
+        eyebrow="// Módulo 16"
         title="CVE Search"
         description="NIST NVD Vulnerability Database. Busque vulnerabilidades conhecidas por produto ou palavra-chave."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="cve"
         label="Palavra-chave ou Produto"
         placeholder="ex: apache, windows, log4j"
         buttonText="Buscar"

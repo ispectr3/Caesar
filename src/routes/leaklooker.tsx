@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm } from "@/components/ToolForm";
 import { leaklookerScan, type LeakLookerResult } from "@/lib/osint.functions";
 import { ShieldCheck, ShieldAlert, Terminal, Activity } from "lucide-react";
 
 export const Route = createFileRoute("/leaklooker")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "LeakLooker" },
       {
@@ -19,6 +19,13 @@ export const Route = createFileRoute("/leaklooker")({
 });
 
 function LeakLookerTool() {
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<LeakLookerResult | null>(null);
@@ -47,7 +54,7 @@ function LeakLookerTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 18"
+        eyebrow="// Módulo 12"
         title="LeakLooker DB Scanner"
         description="Varra de forma tática endereços de IP ou domínios para encontrar instâncias ativas e desprotegidas de bancos de dados expostas na rede pública."
       />
@@ -72,6 +79,8 @@ function LeakLookerTool() {
       </div>
 
       <ToolForm
+        defaultValue={q}
+        storageKey="leaklooker"
         label="IP ou Domínio Alvo"
         placeholder="ex: 104.244.42.1"
         buttonText="Escanear"

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm } from "@/components/ToolForm";
 import { dnsLookup } from "@/lib/osint.functions";
@@ -8,7 +8,7 @@ import { dnsLookup } from "@/lib/osint.functions";
 type DnsResult = Array<{ type: string; records: string[] }>;
 
 export const Route = createFileRoute("/dns")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "DNS Lookup" },
       {
@@ -21,7 +21,14 @@ export const Route = createFileRoute("/dns")({
 });
 
 function DnsPage() {
-  const fn = useServerFn(dnsLookup);
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(dnsLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DnsResult | null>(null);
@@ -44,11 +51,13 @@ function DnsPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 03"
+        eyebrow="// Módulo 10"
         title="DNS Lookup"
         description="Consulta de todos os registros DNS comuns via Google DNS-over-HTTPS."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="dns"
         label="Domínio"
         placeholder="ex: cloudflare.com"
         buttonText="Resolver"
@@ -59,7 +68,9 @@ function DnsPage() {
         {result && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {result.map((r) => (
-              <ResultCard key={r.type} title={`Registros ${r.type}`}>
+              <ResultCard
+                exportData={result}
+                exportName="dns_export" key={r.type} title={`Registros ${r.type}`}>
                 {r.records.length === 0 ? (
                   <span className="text-muted-foreground">Nenhum registro</span>
                 ) : (

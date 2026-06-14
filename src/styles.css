@@ -73,23 +73,23 @@
   /* Caesar OSINT Theme */
   --background: #000000; /* fundo: background absoluto, sem variação */
   --foreground: #ffffff; /* texto base: título principal apenas – usar com parcimônia */
-  --card: #050000; /* surface: cards, modais, inputs – preto levemente tingido */
+  --card: #0b0303; /* surface: cards, modais – preto levemente tingido de vermelho */
   --card-foreground: #ffffff;
-  --popover: #000000;
+  --popover: #0f0404; /* Nível 3: Dropdowns, mega menu */
   --popover-foreground: #ffffff;
   --primary: #ed0408; /* acento forte: logo, título, cursor, dot de status, números de stat */
   --primary-foreground: #ffffff;
-  --secondary: #050000;
+  --secondary: #0b0303;
   --secondary-foreground: #ffffff;
-  --muted: #050000;
+  --muted: #110505; /* Hover/Áreas internas */
   --muted-foreground: #ccc0c2; /* muted text: labels, placeholders, textos secundários de alta legibilidade */
   --accent: #97070b; /* mid accent: border-left do prompt, hover state, nomes de módulos */
   --accent-foreground: #ffffff;
   --destructive: #ed0408;
   --destructive-foreground: #ffffff;
-  --border: #1a0000; /* borda sutil: divisores, separadores, bordas de card */
-  --border-active: #230404; /* borda ativa: topbar, rodapé, grid background */
-  --input: #050000;
+  --border: #220b0b; /* borda sutil: divisores, separadores, bordas de card */
+  --border-active: #331111; /* borda ativa: topbar, rodapé, grid background */
+  --input: #150606; /* Nível 3: fundos de inputs */
   --ring: #ed0408;
   /* Glow & accent */
   --glow: #ed0408;
@@ -107,9 +107,9 @@
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #ed0408;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #050000;
+  --sidebar-accent: #0b0303;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #1a0000;
+  --sidebar-border: #220b0b;
   --sidebar-ring: #ed0408;
   /* Fonts */
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -119,23 +119,23 @@
 .dark {
   --background: #000000;
   --foreground: #ffffff;
-  --card: #050000;
+  --card: #0b0303;
   --card-foreground: #ffffff;
-  --popover: #000000;
+  --popover: #0f0404;
   --popover-foreground: #ffffff;
   --primary: #ed0408;
   --primary-foreground: #ffffff;
-  --secondary: #050000;
+  --secondary: #0b0303;
   --secondary-foreground: #ffffff;
-  --muted: #050000;
+  --muted: #110505;
   --muted-foreground: #ccc0c2;
   --accent: #97070b;
   --accent-foreground: #ffffff;
   --destructive: #ed0408;
   --destructive-foreground: #ffffff;
-  --border: #1a0000;
-  --border-active: #230404;
-  --input: #050000;
+  --border: #220b0b;
+  --border-active: #331111;
+  --input: #150606;
   --ring: #ed0408;
   --glow: #ed0408;
   --glow-subtle: #ed040840;
@@ -151,9 +151,9 @@
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #ed0408;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #050000;
+  --sidebar-accent: #0b0303;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #1a0000;
+  --sidebar-border: #220b0b;
   --sidebar-ring: #ed0408;
 }
 
@@ -635,4 +635,66 @@
   border-bottom: 1px dashed var(--border);
   opacity: 0.3;
 }
+
+/* ═══════════════════════════════════════════
+   Print layout optimizations (JSON/PDF)
+   ═══════════════════════════════════════════ */
+@media print {
+  header,
+  footer,
+  form,
+  nav,
+  button,
+  .no-print,
+  .accent-bar::before,
+  .accent-bar-left::before {
+    display: none !important;
+  }
+  
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+  }
+
+  .min-h-screen {
+    min-height: auto !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .card-cyber {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 20px;
+    padding: 15px !important;
+  }
+
+  .text-muted-foreground {
+    color: #444444 !important;
+  }
+
+  .text-primary {
+    color: #000000 !important;
+    text-shadow: none !important;
+    font-weight: bold;
+  }
+
+  .glow-text, .glow-text-strong {
+    text-shadow: none !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+    color: #000000 !important;
+  }
+}
+
 

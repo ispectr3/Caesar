@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm } from "@/components/ToolForm";
 import { subdomainScan, type SubdomainResult } from "@/lib/osint.functions";
 import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/subdomains")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Subdomain Scanner" },
       {
@@ -21,7 +21,14 @@ export const Route = createFileRoute("/subdomains")({
 });
 
 function SubdomainsPage() {
-  const fn = useServerFn(subdomainScan);
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(subdomainScan);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SubdomainResult | null>(null);
@@ -48,11 +55,13 @@ function SubdomainsPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 08"
+        eyebrow="// Módulo 11"
         title="Subdomain Scanner"
         description="Descobre subdomínios consultando Certificate Transparency logs via crt.sh. Sem brute-force — 100% passivo."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="subdomains"
         label="Domínio"
         placeholder="ex: google.com"
         buttonText="Escanear"
@@ -109,6 +118,8 @@ function SubdomainsPage() {
 
             {/* Results table */}
             <ResultCard
+                exportData={result}
+                exportName="subdomains_export"
               title={`Subdomínios ${filter ? `(${filtered?.length} filtrados)` : ""}`}
               className="stagger-2"
             >

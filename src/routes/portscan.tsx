@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm } from "@/components/ToolForm";
 import { portScan, type PortScanResult } from "@/lib/osint.functions";
 import { Lock, Unlock, AlertTriangle, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/portscan")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Web Port Scanner" },
       {
@@ -20,6 +20,13 @@ export const Route = createFileRoute("/portscan")({
 });
 
 function PortScanTool() {
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
   const scanFn = useServerFn(portScan);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,12 +58,14 @@ function PortScanTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 25"
+        eyebrow="// Módulo 14"
         title="Web Port Scanner"
         description="Escaneamento ativo de portas focadas na superfície de ataque web. Descubra serviços SSH, FTP, Bancos de Dados e RDP expostos."
       />
 
       <ToolForm
+        defaultValue={q}
+        storageKey="portscan"
         label="Alvo (Domínio ou IP)"
         placeholder="ex: exemplo.com.br ou 192.168.1.1"
         buttonText="Escanear Portas"
@@ -67,7 +76,9 @@ function PortScanTool() {
         {result ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2 space-y-4">
-              <ResultCard title={`Status do Servidor: ${result.target}`}>
+              <ResultCard
+                exportData={result}
+                exportName="portscan_export" title={`Status do Servidor: ${result.target}`}>
                 <div className="flex gap-4 mb-4 font-mono text-xs border-b border-border/20 pb-4">
                   <div className="flex flex-col items-center p-3 bg-red-500/10 border border-red-500/20 rounded flex-1">
                     <span className="text-red-500 font-bold text-lg">{openPorts.length}</span>

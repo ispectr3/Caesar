@@ -7,12 +7,7 @@ import { usernameScan, redditAnalyze, type UsernameScanResult, type RedditAnalyt
 import { Search, ExternalLink, CheckCircle2, XCircle, HelpCircle, Activity, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/username")({
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      q: (search.q as string) || "",
-    };
-  },
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "WhatsMyName" },
       {
@@ -28,7 +23,13 @@ import { useEffect } from "react";
 
 function UsernameTool() {
   const { q } = Route.useSearch();
-  const scanFn = useServerFn(usernameScan);
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+    const scanFn = useServerFn(usernameScan);
   const analyzeRedditFn = useServerFn(redditAnalyze);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,13 +75,7 @@ function UsernameTool() {
     }
   };
 
-  useEffect(() => {
-    if (q && !result && !loading && !error) {
-      handleSubmit(q);
-    }
-  }, [q]);
-
-  const foundCount = result?.results.filter((r) => r.exists).length ?? 0;
+    const foundCount = result?.results.filter((r) => r.exists).length ?? 0;
   const totalCount = result?.results.length ?? 0;
   const filtered = result?.results.filter((r) =>
     r.platform.toLowerCase().includes(filter.toLowerCase())
@@ -89,12 +84,14 @@ function UsernameTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 20"
+        eyebrow="// Módulo 07"
         title="WhatsMyName (Username Recon)"
         description="Verifique a presença digital de um alvo escaneando seu nome de usuário (username) de forma passiva em dezenas de plataformas populares."
       />
 
       <ToolForm
+        defaultValue={q}
+        storageKey="username"
         label="Nome de usuário"
         placeholder="ex: johndoe123"
         buttonText="Procurar"
@@ -152,7 +149,9 @@ function UsernameTool() {
                   />
                 </div>
 
-                <ResultCard title="Resultados da Varredura">
+                <ResultCard
+                exportData={result}
+                exportName="username_export" title="Resultados da Varredura">
                   <div className="space-y-2.5">
                     {filtered && filtered.length > 0 ? (
                       filtered.map((item, idx) => (

@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Phone, MapPin, Send, Search, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
 import { phoneLookup, type PhoneInfo } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/phone")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Phone OSINT" },
       {
@@ -20,7 +20,14 @@ export const Route = createFileRoute("/phone")({
 });
 
 function PhoneTool() {
-  const [query, setQuery] = useState("");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PhoneInfo | null>(null);
@@ -82,11 +89,13 @@ function PhoneTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 13"
+        eyebrow="// Módulo 05"
         title="Phone OSINT"
         description="Análise e validação avançada de números de telefone. Identifique formatos, países, regionalização de DDD no Brasil e links de inteligência rápida."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="phone"
         label="Número de Telefone"
         placeholder="ex: +55 (11) 99999-9999"
         buttonText="Analisar"
@@ -123,7 +132,9 @@ function PhoneTool() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* General details */}
-              <ResultCard title="Informações do Número">
+              <ResultCard
+                exportData={result}
+                exportName="phone_export" title="Informações do Número">
                 <KeyValue
                   k="Formato Int."
                   v={

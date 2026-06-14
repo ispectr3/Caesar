@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Building2, MapPin, Phone, Users, ShieldCheck, Landmark } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
 import { cnpjLookup, type CnpjInfo } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/cnpj")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "CNPJ Lookup" },
       {
@@ -20,7 +20,14 @@ export const Route = createFileRoute("/cnpj")({
 });
 
 function CnpjTool() {
-  const [cnpj, setCnpj] = useState("");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const [cnpj, setCnpj] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CnpjInfo | null>(null);
@@ -92,11 +99,13 @@ function CnpjTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 11"
+        eyebrow="// Módulo 02"
         title="CNPJ Lookup"
         description="BrasilAPI & Receita Federal Corporate Intelligence. Consulte dados cadastrais completos, regime tributário e quadro societário."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="cnpj"
         label="CNPJ"
         placeholder="ex: 00.000.000/0001-00"
         buttonText="Consultar"
@@ -135,7 +144,9 @@ function CnpjTool() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* General details */}
-              <ResultCard title="Dados Corporativos">
+              <ResultCard
+                exportData={result}
+                exportName="cnpj_export" title="Dados Corporativos">
                 <KeyValue k="Razão Social" v={result.razao_social} />
                 {result.nome_fantasia && <KeyValue k="Nome Fantasia" v={result.nome_fantasia} />}
                 <KeyValue k="Porte" v={getPorteLabel(result.porte)} />

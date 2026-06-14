@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm } from "@/components/ToolForm";
 import { waybackLookup, type WaybackResult } from "@/lib/osint.functions";
 import { Calendar, History, Link2, AlertTriangle, ExternalLink, HelpCircle } from "lucide-react";
 
 export const Route = createFileRoute("/wayback")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Wayback Machine" },
       {
@@ -20,6 +20,13 @@ export const Route = createFileRoute("/wayback")({
 });
 
 function WaybackTool() {
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
   const lookupFn = useServerFn(waybackLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,12 +70,14 @@ function WaybackTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 23"
+        eyebrow="// Módulo 18"
         title="Wayback Machine Lookup"
         description="Analise o histórico de arquivos e snapshots de qualquer site indexado no banco de dados do Internet Archive."
       />
 
       <ToolForm
+        defaultValue={q}
+        storageKey="wayback"
         label="URL / Domínio"
         placeholder="ex: target.com"
         buttonText="Buscar Histórico"
@@ -107,7 +116,9 @@ function WaybackTool() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Marcos do Histórico & Playbook */}
                   <div className="lg:col-span-1 space-y-4">
-                    <ResultCard title="Marcos do Histórico">
+                    <ResultCard
+                exportData={result}
+                exportName="wayback_export" title="Marcos do Histórico">
                       <div className="space-y-4 font-mono text-xs">
                         {result.firstSnapshot && (
                           <div className="p-3 border border-border/10 bg-background/20">

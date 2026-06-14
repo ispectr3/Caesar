@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm } from "@/components/ToolForm";
 import { headersAnalyze, type HeadersAnalysis } from "@/lib/osint.functions";
 import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 
 export const Route = createFileRoute("/headers")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "HTTP Headers" },
       {
@@ -77,7 +77,14 @@ const RATING_META = {
 };
 
 function HeadersPage() {
-  const fn = useServerFn(headersAnalyze);
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(headersAnalyze);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<HeadersAnalysis | null>(null);
@@ -101,11 +108,13 @@ function HeadersPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 06"
+        eyebrow="// Módulo 15"
         title="HTTP Headers Analyzer"
         description="Analisa os headers de resposta HTTP e verifica a presença de headers de segurança importantes."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="headers"
         label="URL"
         placeholder="ex: google.com"
         buttonText="Analisar"
@@ -140,7 +149,9 @@ function HeadersPage() {
             {/* Explicações e Recomendações */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Critérios de Score */}
-              <ResultCard title="Entendendo o Nível de Proteção">
+              <ResultCard
+                exportData={result}
+                exportName="headers_export" title="Entendendo o Nível de Proteção">
                 <div className="space-y-3 font-mono text-xs">
                   <div className="border-l-2 border-green-500 pl-3 py-1 bg-green-500/5">
                     <span className="text-green-400 font-bold block mb-0.5">FORTE (Score 70-100)</span>

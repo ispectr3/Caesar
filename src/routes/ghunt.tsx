@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
 import { ghuntLookup, type GhuntResult } from "@/lib/osint.functions";
 import { ShieldCheck, Mail, Globe, Database, HelpCircle } from "lucide-react";
 
 export const Route = createFileRoute("/ghunt")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "GHunt" },
       {
@@ -19,7 +19,14 @@ export const Route = createFileRoute("/ghunt")({
 });
 
 function GhuntTool() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GhuntResult | null>(null);
 
@@ -47,12 +54,14 @@ function GhuntTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 16"
+        eyebrow="// Módulo 21"
         title="GHunt Google Analyzer"
         description="Analise e-mails para identificar se estão associados a uma Conta Google, extrair o ID numérico GAIA e analisar a exposição de metadados públicos."
       />
 
       <ToolForm
+        defaultValue={q}
+        storageKey="ghunt"
         label="Endereço de E-mail"
         placeholder="ex: alvo@gmail.com"
         buttonText="Verificar"
@@ -64,7 +73,9 @@ function GhuntTool() {
           <div className="space-y-6 animate-fade-in">
             {/* Main Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ResultCard title="Informações Gerais da Conta">
+              <ResultCard
+                exportData={result}
+                exportName="ghunt_export" title="Informações Gerais da Conta">
                 <KeyValue k="E-mail Verificado" v={result.email} />
                 <KeyValue k="Conta Google Válida" v={result.isGoogleAccount ? "SIM [VÁLIDA]" : "NÃO / DESCONHECIDA"} />
                 <KeyValue k="Provedor detectado" v={result.provider} />

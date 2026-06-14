@@ -1,5 +1,5 @@
-import { useState, type FormEvent, type ReactNode } from "react";
-import { Search, Loader2 } from "lucide-react";
+import { useState, useEffect, type FormEvent, type ReactNode } from "react";
+import { Search, Loader2, Download, Printer } from "lucide-react";
 
 function formatCNPJ(value: string) {
   const clean = value.replace(/\D/g, "").slice(0, 14);
@@ -38,6 +38,16 @@ function formatPhone(value: string) {
   return clean;
 }
 
+const exportToJson = (data: any, fileName: string) => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${fileName.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+};
+
 export function ToolForm({
   label,
   placeholder,
@@ -46,6 +56,8 @@ export function ToolForm({
   loading,
   error,
   inputType = "default",
+  defaultValue = "",
+  storageKey,
   children,
 }: {
   label: string;
@@ -55,9 +67,37 @@ export function ToolForm({
   loading: boolean;
   error: string | null;
   inputType?: "cnpj" | "cpf" | "phone" | "domain" | "ip" | "email" | "default";
+  defaultValue?: string;
+  storageKey?: string;
   children?: ReactNode;
 }) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultValue);
+  const [history, setHistory] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (defaultValue) {
+      setValue(defaultValue);
+    }
+  }, [defaultValue]);
+
+  useEffect(() => {
+    if (storageKey) {
+      const stored = localStorage.getItem(`caesar_history_${storageKey}`);
+      if (stored) {
+        try {
+          setHistory(JSON.parse(stored));
+        } catch (_) {}
+      }
+    }
+  }, [storageKey]);
+
+  const saveToHistory = (query: string) => {
+    if (!storageKey || !query.trim()) return;
+    const q = query.trim();
+    const updated = [q, ...history.filter((h) => h !== q)].slice(0, 5);
+    setHistory(updated);
+    localStorage.setItem(`caesar_history_${storageKey}`, JSON.stringify(updated));
+  };
 
   const handleChange = (val: string) => {
     let formatted = val;
@@ -88,9 +128,12 @@ export function ToolForm({
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault();
-          if (value.trim()) onSubmit(value.trim());
+          if (value.trim()) {
+            saveToHistory(value);
+            onSubmit(value.trim());
+          }
         }}
-        className="flex flex-col sm:flex-row gap-3 mb-8"
+        className="flex flex-col sm:flex-row gap-3 mb-4 no-print"
       >
         <label className="sr-only">{label}</label>
         <div className="flex-1 input-prompt-wrapper">
@@ -101,7 +144,7 @@ export function ToolForm({
             placeholder={placeholder}
             autoComplete="off"
             spellCheck={false}
-            className="w-full bg-background/40 border border-border/60 border-l-4 border-l-primary rounded-none pl-9 pr-4 py-3.5 font-mono text-sm text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
+            className="w-full bg-input border border-border/60 border-l-4 border-l-primary rounded-none pl-9 pr-4 py-3.5 font-mono text-sm text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
           />
         </div>
         <button
@@ -120,6 +163,37 @@ export function ToolForm({
         </button>
       </form>
 
+      {/* Histórico Recente */}
+      {storageKey && history.length > 0 && (
+        <div className="flex flex-wrap gap-2 items-center text-[10px] font-mono text-muted-foreground mb-8 no-print">
+          <span>REcentes //</span>
+          {history.map((h) => (
+            <button
+              key={h}
+              type="button"
+              onClick={() => {
+                setValue(h);
+                saveToHistory(h);
+                onSubmit(h);
+              }}
+              className="px-2 py-0.5 border border-border/40 hover:border-primary/50 text-muted-foreground hover:text-primary transition-colors cursor-pointer bg-card/40"
+            >
+              {h}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              setHistory([]);
+              localStorage.removeItem(`caesar_history_${storageKey}`);
+            }}
+            className="ml-auto text-destructive hover:underline text-[9px] cursor-pointer"
+          >
+            [ LIMPAR ]
+          </button>
+        </div>
+      )}
+
       {error && (
         <div className="mb-8 border border-destructive/40 bg-destructive/5 text-destructive px-5 py-4 rounded-none font-mono text-xs flex items-start gap-3 fade-in-up">
           <span className="text-destructive font-bold text-sm leading-none">✕ ERROR //</span>
@@ -128,7 +202,7 @@ export function ToolForm({
       )}
 
       {loading && (
-        <div className="mb-8 space-y-3 font-mono text-xs text-primary/70 animate-pulse">
+        <div className="mb-8 space-y-3 font-mono text-xs text-primary/70 animate-pulse no-print">
           <div className="flex items-center gap-2">
             <Loader2 size={12} className="animate-spin" />
             <span>CONNECTING TO OSINT DATABASE...</span>
@@ -147,10 +221,14 @@ export function ResultCard({
   title,
   children,
   className = "",
+  exportData,
+  exportName,
 }: {
   title: string;
   children: ReactNode;
   className?: string;
+  exportData?: any;
+  exportName?: string;
 }) {
   return (
     <div
@@ -160,7 +238,27 @@ export function ResultCard({
         <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary font-bold">
           [// {title}]
         </span>
-        <span className="font-mono text-[9px] text-muted-foreground/35">MODULE_SECURE // ON</span>
+        <div className="flex items-center gap-2.5 no-print">
+          {exportData && (
+            <button
+              onClick={() => exportToJson(exportData, exportName || title)}
+              className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono text-muted-foreground hover:text-primary border border-border/40 hover:border-primary transition-colors cursor-pointer bg-card/60"
+              title="Exportar dados como JSON"
+            >
+              <Download size={10} />
+              JSON
+            </button>
+          )}
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono text-muted-foreground hover:text-primary border border-border/40 hover:border-primary transition-colors cursor-pointer bg-card/60"
+            title="Imprimir / Gerar PDF"
+          >
+            <Printer size={10} />
+            PDF
+          </button>
+          <span className="font-mono text-[9px] text-muted-foreground/35">MODULE_SECURE // ON</span>
+        </div>
       </div>
       <div className="font-mono text-xs space-y-1">{children}</div>
     </div>

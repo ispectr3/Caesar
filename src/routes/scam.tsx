@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { ResultCard } from "../components/ToolForm";
 import { scamAnalyze, type ScamAnalysisResult } from "../lib/osint.functions";
 import { ShieldAlert, AlertTriangle, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/scam")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Phishing Analyzer" },
       {
@@ -20,20 +20,30 @@ export const Route = createFileRoute("/scam")({
 });
 
 function ScamTool() {
-  const [text, setText] = useState("");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q) {
+      setText(q);
+      handleAnalyze(q);
+    }
+  }, [q]);
+      const [text, setText] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ScamAnalysisResult | null>(null);
 
-  const handleAnalyze = async () => {
-    if (!text.trim()) return;
+  const handleAnalyze = async (textToAnalyze?: string) => {
+    const targetText = textToAnalyze !== undefined ? textToAnalyze : text;
+    if (!targetText.trim()) return;
+    
 
     setStatus("loading");
     setResult(null);
     setError(null);
 
     try {
-      const res = await scamAnalyze({ data: { text: text } });
+      const res = await scamAnalyze({ data: { text: targetText } });
       if (res.error) {
         setError(res.error);
         setStatus("error");
@@ -74,7 +84,7 @@ function ScamTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 14"
+        eyebrow="// Módulo 23"
         title="Scam & Phishing Analyzer"
         description="Verificador de engenharia social. Cole o texto de um SMS, e-mail ou mensagem suspeita para extrair vetores de urgência, promessas financeiras e links fraudulentos."
       />
@@ -99,7 +109,7 @@ function ScamTool() {
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Cole aqui o e-mail, SMS, mensagem de WhatsApp ou link suspeito para analisar..."
                     rows={8}
-                    className="w-full bg-background/40 border border-border/60 rounded-none pl-9 pr-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 resize-y"
+                    className="w-full bg-input border border-border/60 rounded-none pl-9 pr-4 py-3 font-mono text-sm text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 resize-y"
                   />
                 </div>
 
@@ -140,7 +150,9 @@ function ScamTool() {
 
             {status === "success" && result && (
               <div className="space-y-6">
-                <ResultCard title="Alertas e Indicadores Encontrados">
+                <ResultCard
+                exportData={result}
+                exportName="scam_export" title="Alertas e Indicadores Encontrados">
                   {result.indicators.length === 0 ? (
                     <div className="py-6 text-center text-muted-foreground">
                       <CheckCircle className="mx-auto text-green-500 mb-3" size={24} />

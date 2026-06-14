@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
 import { hashIdentify, type HashIdentification } from "@/lib/osint.functions";
 
 export const Route = createFileRoute("/hash")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Hash Identifier" },
       {
@@ -34,6 +34,13 @@ const CONFIDENCE_META = {
 };
 
 function HashPage() {
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
   const fn = useServerFn(hashIdentify);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,12 +64,14 @@ function HashPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 07"
+        eyebrow="// Módulo 25"
         title="Hash Identifier & Brute-Force"
         description="Cole um hash e descubra o algoritmo provável. Tentativa automática de quebra de hashes comuns (MD5/SHA1)."
       />
       
       <ToolForm
+        defaultValue={q}
+        storageKey="hash"
         label="Hash"
         placeholder="ex: d41d8cd98f00b204e9800998ecf8427e"
         buttonText="Identificar"
@@ -74,7 +83,9 @@ function HashPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2 space-y-4">
               {/* Hash info */}
-              <ResultCard title="Informações do Hash">
+              <ResultCard
+                exportData={result}
+                exportName="hash_export" title="Informações do Hash">
                 <KeyValue k="Comprimento" v={`${result.length} caracteres`} />
                 <KeyValue k="Charset" v={result.charset} />
                 <KeyValue

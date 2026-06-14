@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { useState, useEffect, type ReactNode } from "react";
 import {
   Globe,
   Server,
@@ -72,19 +72,93 @@ const MODULES = MODULE_CATEGORIES.flatMap((c) => c.items);
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setSearchQuery("");
+    setSearchOpen(false);
+  }, [location.pathname]);
+
+  const isModuleActive = MODULES.some((m) => location.pathname === m.to);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col noise-overlay">
       {/* ── Header ── */}
-      <header className="glass-strong sticky top-0 z-50 border-b border-border-active">
+      <header className="glass-strong sticky top-0 z-50 border-b border-border-active no-print">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-14 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <img src="/logo.png" alt="Caesar Logo" className="w-7 h-7 object-contain" />
-            <span className="font-mono text-sm tracking-wider text-foreground">
-              Caesar<span className="text-primary font-semibold">OSINT</span>
-            </span>
-          </Link>
+          <div className="flex items-center gap-6">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 group">
+              <img src="/logo.png" alt="Caesar Logo" className="w-7 h-7 object-contain" />
+              <span className="font-mono text-sm tracking-wider text-foreground hidden sm:inline">
+                Caesar<span className="text-primary font-semibold">OSINT</span>
+              </span>
+            </Link>
+
+            {/* Global Search (Desktop) */}
+            <div className="relative hidden md:block w-72">
+              <div className="relative">
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                <input
+                  type="text"
+                  placeholder="Busca global... (ex: IP, CPF, Domínio)"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setSearchOpen(e.target.value.length > 0);
+                  }}
+                  onFocus={() => {
+                    if (searchQuery.length > 0) setSearchOpen(true);
+                  }}
+                  className="w-full bg-input border border-border/85 rounded-none pl-8 pr-8 py-1.5 font-mono text-[10px] text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSearchOpen(false);
+                    }}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+
+              {/* Suggestions Panel */}
+              {searchOpen && (
+                <div className="absolute left-0 right-0 mt-1 max-h-80 overflow-y-auto bg-popover border border-border-active shadow-[0_10px_30px_rgba(0,0,0,0.9)] z-50 p-1 font-mono text-[11px] rounded-none">
+                  {getSuggestions(searchQuery).map((s, idx) => (
+                    <Link
+                      key={idx}
+                      to={s.to}
+                      search={s.query ? { q: s.query } : undefined}
+                      onClick={() => {
+                        setSearchQuery("");
+                        setSearchOpen(false);
+                      }}
+                      className="flex flex-col p-2 hover:bg-muted text-muted-foreground hover:text-foreground border-b border-border/10 last:border-b-0 cursor-pointer"
+                    >
+                      <div className="flex justify-between items-center mb-0.5">
+                        <span className="text-primary font-bold text-[9px]">{s.moduleName}</span>
+                        <span className="text-[8px] text-muted-foreground/50 uppercase tracking-widest">{s.action}</span>
+                      </div>
+                      <div className="text-[10px] text-foreground truncate">
+                        {s.label}
+                      </div>
+                    </Link>
+                  ))}
+                  {getSuggestions(searchQuery).length === 0 && (
+                    <div className="p-3 text-center text-muted-foreground/45 text-[10px]">
+                      Nenhum módulo correspondente.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-0.5">
@@ -102,12 +176,12 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 
             {/* Módulos Dropdown */}
             <div className="relative group">
-              <button className="flex items-center px-2.5 py-1.5 text-[11px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-none hover:bg-white/5">
+              <button className={`flex items-center px-2.5 py-1.5 text-[11px] font-mono uppercase tracking-wider transition-colors duration-200 rounded-none hover:bg-white/5 ${isModuleActive ? "text-primary font-bold glow-text" : "text-muted-foreground hover:text-foreground"}`}>
                 Módulos <ChevronDown size={14} className="ml-1 opacity-60" />
               </button>
               
               {/* Dropdown Box - Mega Menu */}
-              <div className="absolute right-0 top-full mt-0 hidden group-hover:grid grid-cols-3 gap-5 p-5 w-[680px] bg-black/95 backdrop-blur-md border border-border-active shadow-[0_10px_40px_rgba(0,0,0,0.85)] z-50">
+              <div className="absolute right-0 top-full mt-0 hidden group-hover:grid grid-cols-3 gap-5 p-5 w-[680px] bg-popover backdrop-blur-md border border-border-active shadow-[0_10px_40px_rgba(0,0,0,0.85)] z-50">
                 {MODULE_CATEGORIES.map((cat, idx) => (
                   <div key={idx} className="flex flex-col">
                     <span className="font-mono text-[10px] text-primary/80 uppercase tracking-widest font-bold border-b border-border/20 pb-1.5 mb-2.5">
@@ -119,6 +193,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                           key={m.to}
                           to={m.to}
                           className="px-2 py-1 text-[11px] font-mono hover:bg-white/5 text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+                          activeProps={{ className: "!text-primary bg-white/5 font-bold glow-text" }}
                         >
                           <Terminal size={10} className="opacity-40" />
                           {m.label}
@@ -164,6 +239,67 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         {mobileOpen && (
           <div className="lg:hidden border-t border-border/50 mobile-nav-open bg-black/95">
             <nav className="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-1 max-h-[70vh] overflow-y-auto">
+              {/* Mobile Search */}
+              <div className="relative mb-3 no-print">
+                <div className="relative">
+                  <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+                  <input
+                    type="text"
+                    placeholder="Busca global... (ex: IP, CPF, Domínio)"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setSearchOpen(e.target.value.length > 0);
+                    }}
+                    onFocus={() => {
+                      if (searchQuery.length > 0) setSearchOpen(true);
+                    }}
+                    className="w-full bg-input border border-border/80 rounded-none pl-8 pr-8 py-2 font-mono text-[10px] text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery("");
+                        setSearchOpen(false);
+                      }}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                    >
+                      <X size={12} />
+                    </button>
+                  )}
+                </div>
+                {searchOpen && (
+                  <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-popover border border-border-active shadow-[0_10px_30px_rgba(0,0,0,0.9)] z-50 p-1 font-mono text-[11px] rounded-none">
+                    {getSuggestions(searchQuery).map((s, idx) => (
+                      <Link
+                        key={idx}
+                        to={s.to}
+                        search={s.query ? { q: s.query } : undefined}
+                        onClick={() => {
+                          setSearchQuery("");
+                          setSearchOpen(false);
+                          setMobileOpen(false);
+                        }}
+                        className="flex flex-col p-2 hover:bg-muted text-muted-foreground hover:text-foreground border-b border-border/10 last:border-b-0 cursor-pointer"
+                      >
+                        <div className="flex justify-between items-center mb-0.5">
+                          <span className="text-primary font-bold text-[9px]">{s.moduleName}</span>
+                          <span className="text-[8px] text-muted-foreground/50 uppercase tracking-widest">{s.action}</span>
+                        </div>
+                        <div className="text-[10px] text-foreground truncate">
+                          {s.label}
+                        </div>
+                      </Link>
+                    ))}
+                    {getSuggestions(searchQuery).length === 0 && (
+                      <div className="p-3 text-center text-muted-foreground/45 text-[10px]">
+                        Nenhum módulo correspondente.
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <Link
                 to="/"
                 onClick={() => setMobileOpen(false)}

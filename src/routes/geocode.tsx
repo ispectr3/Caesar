@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { geocodeLookup } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/geocode")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "GEOINT" },
       {
@@ -20,7 +20,14 @@ export const Route = createFileRoute("/geocode")({
 });
 
 function GeocodeTool() {
-  const [query, setQuery] = useState("");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !results) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<any[] | null>(null);
@@ -51,11 +58,13 @@ function GeocodeTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 12"
+        eyebrow="// Módulo 04"
         title="GEOINT"
         description="OpenStreetMap Geocoding. Converta endereços em coordenadas ou faça buscas por locais."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="geocode"
         label="Endereço ou Local"
         placeholder="ex: Avenida Paulista, São Paulo"
         buttonText="Mapear"

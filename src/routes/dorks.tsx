@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ToolForm } from "../components/ToolForm";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 
 export const Route = createFileRoute("/dorks")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "Google Dorks" },
       {
@@ -45,6 +45,13 @@ const DORKS = [
 ];
 
 function DorksTool() {
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
   const [target, setTarget] = useState("");
   const [fileType, setFileType] = useState("");
   const [dateAfter, setDateAfter] = useState("");
@@ -66,11 +73,13 @@ function DorksTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 09"
+        eyebrow="// Módulo 19"
         title="Google Dorks"
         description="Gerador de pesquisas avançadas no Google para encontrar informações expostas."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="dorks"
         label="Alvo (Opcional)"
         placeholder="ex: site.com (deixe em branco para busca global)"
         buttonText="Gerar"

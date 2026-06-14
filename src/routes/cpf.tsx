@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
 import { cpfLookup, type CpfResult } from "../lib/osint.functions";
@@ -7,7 +7,7 @@ import { ShieldCheck, ShieldAlert, ShieldX, Copy, Check } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/cpf")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "CPF Search" },
       {
@@ -20,7 +20,14 @@ export const Route = createFileRoute("/cpf")({
 });
 
 function CpfTool() {
-  const fn = useServerFn(cpfLookup);
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(cpfLookup);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CpfResult | null>(null);
@@ -89,11 +96,13 @@ function CpfTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 11b"
+        eyebrow="// Módulo 01"
         title="CPF Search & Analyzer"
         description="Analise a legitimidade de CPFs, extraia a região geográfica de emissão e verifique a presença em vazamentos conhecidos de bancos de dados."
       />
       <ToolForm
+        defaultValue={q}
+        storageKey="cpf"
         label="CPF"
         placeholder="ex: 000.000.000-00"
         buttonText="Analisar CPF"
@@ -163,7 +172,9 @@ function CpfTool() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Validação Matemática */}
-                <ResultCard title="Estrutura e Validação">
+                <ResultCard
+                exportData={result}
+                exportName="cpf_export" title="Estrutura e Validação">
                   <KeyValue
                     k="Legitimidade Matemática"
                     v={

@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard } from "@/components/ToolForm";
 import { Copy, Check, Search, Filter, HelpCircle } from "lucide-react";
 
 export const Route = createFileRoute("/namint")({
-  head: () => ({
+    head: () => ({
     meta: [
       { title: "NAMINT Combiner" },
       {
@@ -18,7 +18,21 @@ export const Route = createFileRoute("/namint")({
 });
 
 function NamintTool() {
-  const [firstName, setFirstName] = useState("");
+  const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q) {
+      const parts = q.trim().split(/\s+/);
+      const first = parts[0] || "";
+      const last = parts.length > 1 ? parts[parts.length - 1] : "";
+      const middle = parts.slice(1, -1).join(" ");
+      setFirstName(first);
+      setMiddleName(middle);
+      setLastName(last);
+      setSubmitted(true);
+    }
+  }, [q]);
+      const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -172,7 +186,7 @@ function NamintTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 21"
+        eyebrow="// Módulo 06"
         title="NAMINT (Name Combinator)"
         description="Gere dezenas de formatos possíveis de e-mails e usernames corporativos ou pessoais a partir do nome real de um alvo."
       />
@@ -180,7 +194,9 @@ function NamintTool() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Painel de Entrada */}
         <div className="lg:col-span-1 space-y-4">
-          <ResultCard title="Dados do Alvo">
+          <ResultCard
+                exportData={result}
+                exportName="namint_export" title="Dados do Alvo">
             <form onSubmit={handleGenerate} className="space-y-4">
               <div>
                 <label className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
