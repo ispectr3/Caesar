@@ -73,7 +73,7 @@ export type IpInfo = {
 };
 
 export const ipLookup = createServerFn({ method: "POST" })
-  .inputValidator(ipSchema)
+  .validator(ipSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: IpInfo | null }> => {
     const res = await fetch(
       `http://ip-api.com/json/${encodeURIComponent(data.ip)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`,
@@ -104,7 +104,7 @@ export type WhoisInfo = {
 };
 
 export const whoisLookup = createServerFn({ method: "POST" })
-  .inputValidator(domainSchema)
+  .validator(domainSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: WhoisInfo | null }> => {
     const res = await fetch(`https://rdap.org/domain/${data.domain}`, {
       headers: { Accept: "application/rdap+json" },
@@ -171,7 +171,7 @@ export const whoisLookup = createServerFn({ method: "POST" })
 const DNS_TYPES = ["A", "AAAA", "MX", "NS", "TXT", "CNAME", "SOA"] as const;
 
 export const dnsLookup = createServerFn({ method: "POST" })
-  .inputValidator(domainSchema)
+  .validator(domainSchema)
   .handler(async ({ data }) => {
     const results = await Promise.all(
       DNS_TYPES.map(async (type) => {
@@ -230,7 +230,7 @@ const SOCIAL_SITES = [
 ];
 
 export const usernameSearch = createServerFn({ method: "POST" })
-  .inputValidator(querySchema)
+  .validator(querySchema)
   .handler(async ({ data }) => {
     const raw = data.query.trim();
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw);
@@ -352,7 +352,7 @@ const FREE_PROVIDERS = new Set([
 ]);
 
 export const emailValidate = createServerFn({ method: "POST" })
-  .inputValidator(emailSchema)
+  .validator(emailSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: EmailValidation | null }> => {
     const email = data.email;
     const [localPart, domain] = email.split("@");
@@ -473,7 +473,7 @@ const SECURITY_HEADERS: Array<{
 ];
 
 export const headersAnalyze = createServerFn({ method: "POST" })
-  .inputValidator(urlSchema)
+  .validator(urlSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: HeadersAnalysis | null }> => {
     try {
       const res = await fetch(data.url, {
@@ -692,7 +692,7 @@ const HASH_PATTERNS: Array<{
 ];
 
 export const hashIdentify = createServerFn({ method: "POST" })
-  .inputValidator(hashSchema)
+  .validator(hashSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: HashIdentification | null }> => {
     const hash = data.hash;
     const length = hash.length;
@@ -778,7 +778,7 @@ export type SubdomainResult = {
 };
 
 export const subdomainScan = createServerFn({ method: "POST" })
-  .inputValidator(domainSchema)
+  .validator(domainSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: SubdomainResult | null }> => {
     try {
       const cleanDomain = data.domain.replace(/^www\./i, "");
@@ -955,7 +955,7 @@ export type CnpjInfo = {
 };
 
 export const cnpjLookup = createServerFn({ method: "POST" })
-  .inputValidator(cnpjSchema)
+  .validator(cnpjSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: CnpjInfo | null }> => {
     try {
       const userAgent =
@@ -1085,7 +1085,7 @@ export type CpfResult = {
 };
 
 export const cpfLookup = createServerFn({ method: "POST" })
-  .inputValidator(cpfSchema)
+  .validator(cpfSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: CpfResult | null }> => {
     try {
       const clean = data.cpf.replace(/\D/g, "");
@@ -1279,7 +1279,7 @@ export type CveResult = {
 };
 
 export const cveSearch = createServerFn({ method: "POST" })
-  .inputValidator(querySchema)
+  .validator(querySchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: CveResult[] | null }> => {
     try {
       const keyword = encodeURIComponent(data.query);
@@ -1335,7 +1335,7 @@ export type GeocodeResult = {
 };
 
 export const geocodeLookup = createServerFn({ method: "POST" })
-  .inputValidator(querySchema)
+  .validator(querySchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: GeocodeResult[] | null }> => {
     try {
       const query = encodeURIComponent(data.query);
@@ -1389,7 +1389,7 @@ export type PhoneInfo = {
 };
 
 export const phoneLookup = createServerFn({ method: "POST" })
-  .inputValidator(phoneSchema)
+  .validator(phoneSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: PhoneInfo | null }> => {
     try {
       if (!isValidPhoneNumber(data.phone)) {
@@ -1464,7 +1464,7 @@ export type GravatarProfile = {
 };
 
 export const gravatarLookup = createServerFn({ method: "POST" })
-  .inputValidator(emailSchema)
+  .validator(emailSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: GravatarProfile | null }> => {
     try {
       const normalizedEmail = data.email.trim().toLowerCase();
@@ -1550,7 +1550,7 @@ export type BinResult = {
 };
 
 export const binLookup = createServerFn({ method: "POST" })
-  .inputValidator(binSchema)
+  .validator(binSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: BinResult | null }> => {
     try {
       const res = await fetch(`https://lookup.binlist.net/${data.bin}`, {
@@ -1592,7 +1592,7 @@ export type DddResult = {
 };
 
 export const dddLookup = createServerFn({ method: "POST" })
-  .inputValidator(dddSchema)
+  .validator(dddSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: DddResult | null }> => {
     try {
       const res = await fetch(`https://brasilapi.com.br/api/ddd/v1/${data.ddd}`, {
@@ -1631,7 +1631,7 @@ export type BankResult = {
 };
 
 export const banksLookup = createServerFn({ method: "POST" })
-  .inputValidator(bankSchema)
+  .validator(bankSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: BankResult | null }> => {
     try {
       const res = await fetch(`https://brasilapi.com.br/api/banks/v1/${data.code}`, {
@@ -1669,7 +1669,7 @@ export type CrmResult = {
 };
 
 export const crmLookup = createServerFn({ method: "POST" })
-  .inputValidator(crmSchema)
+  .validator(crmSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: CrmResult | null }> => {
     try {
       const crmNum = data.crm.replace(/\D/g, "");
@@ -1730,7 +1730,7 @@ export type ScamAnalysisResult = {
 };
 
 export const scamAnalyze = createServerFn({ method: "POST" })
-  .inputValidator(scamSchema)
+  .validator(scamSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: ScamAnalysisResult | null }> => {
     try {
       const text = data.text;
@@ -1955,7 +1955,7 @@ export type GitFiveResult = {
 };
 
 export const gitfiveLookup = createServerFn({ method: "POST" })
-  .inputValidator(gitfiveSchema)
+  .validator(gitfiveSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: GitFiveResult | null }> => {
     try {
       const username = encodeURIComponent(data.username);
@@ -2099,7 +2099,7 @@ export type GhuntResult = {
 };
 
 export const ghuntLookup = createServerFn({ method: "POST" })
-  .inputValidator(ghuntSchema)
+  .validator(ghuntSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: GhuntResult | null }> => {
     try {
       const email = data.email.toLowerCase();
@@ -2221,7 +2221,7 @@ export type LeakLookerResult = {
 };
 
 export const leaklookerScan = createServerFn({ method: "POST" })
-  .inputValidator(leaklookerSchema)
+  .validator(leaklookerSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: LeakLookerResult | null }> => {
     try {
       const target = data.target.toLowerCase();
@@ -2339,7 +2339,7 @@ const SHERLOCK_SITES = [
 ];
 
 export const sherlockScan = createServerFn({ method: "POST" })
-  .inputValidator(sherlockSchema)
+  .validator(sherlockSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: SherlockResult | null }> => {
     try {
       const username = data.username;
@@ -2400,7 +2400,7 @@ export type SocialScanResult = {
 };
 
 export const socialscanCheck = createServerFn({ method: "POST" })
-  .inputValidator(socialscanSchema)
+  .validator(socialscanSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: SocialScanResult | null }> => {
     try {
       const target = data.target.toLowerCase();
@@ -2481,7 +2481,7 @@ export type RedditAnalytics = {
 };
 
 export const redditAnalyze = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ username: z.string().trim() }))
+  .validator(z.object({ username: z.string().trim() }))
   .handler(async ({ data }): Promise<{ error: string | null; data: RedditAnalytics | null }> => {
     try {
       const res = await fetch(`https://www.reddit.com/user/${data.username}/about.json`, {
@@ -2569,7 +2569,7 @@ async function checkPort(host: string, port: number, timeoutMs = 2000): Promise<
 }
 
 export const portScan = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ target: z.string().trim() }))
+  .validator(z.object({ target: z.string().trim() }))
   .handler(async ({ data }): Promise<{ error: string | null; data: PortScanResult | null }> => {
     checkRateLimit();
     try {
@@ -2608,7 +2608,7 @@ export type HarvesterResult = {
 };
 
 export const theHarvesterScan = createServerFn({ method: "POST" })
-  .inputValidator(theharvesterSchema)
+  .validator(theharvesterSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: HarvesterResult | null }> => {
     try {
       const domain = data.domain.toLowerCase();
@@ -2702,7 +2702,7 @@ export type PhoneinfogaResult = {
 };
 
 export const phoneinfogaScan = createServerFn({ method: "POST" })
-  .inputValidator(phoneinfogaSchema)
+  .validator(phoneinfogaSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: PhoneinfogaResult | null }> => {
     try {
       const phoneInput = data.phone;
@@ -2796,7 +2796,7 @@ export type MailSleuthResult = {
 };
 
 export const mailsleuthCheck = createServerFn({ method: "POST" })
-  .inputValidator(mailsleuthSchema)
+  .validator(mailsleuthSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: MailSleuthResult | null }> => {
     try {
       const email = data.email.toLowerCase();
@@ -2897,7 +2897,7 @@ export type AbuseIpdbInfo = {
 };
 
 export const abuseIpdbLookup = createServerFn({ method: "POST" })
-  .inputValidator(ipSchema)
+  .validator(ipSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: AbuseIpdbInfo | null }> => {
     try {
       const apiKey = process.env.ABUSEIPDB_API_KEY;
@@ -3034,7 +3034,7 @@ const USERNAME_PLATFORMS = [
 ];
 
 export const usernameScan = createServerFn({ method: "POST" })
-  .inputValidator(usernameSchema)
+  .validator(usernameSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: UsernameScanResult | null }> => {
     try {
       const username = data.username;
@@ -3106,7 +3106,7 @@ export type WaybackResult = {
 };
 
 export const waybackLookup = createServerFn({ method: "POST" })
-  .inputValidator(waybackSchema)
+  .validator(waybackSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: WaybackResult | null }> => {
     try {
       const targetUrl = data.url;
