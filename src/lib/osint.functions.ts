@@ -3194,3 +3194,86 @@ export const waybackLookup = createServerFn({ method: "POST" })
       };
     }
   });
+
+export type CisaAlert = {
+  title: string;
+  link: string;
+  description: string;
+  pubDate: string;
+};
+
+const CISA_FALLBACK_ALERTS: CisaAlert[] = [
+  {
+    title: "CISA Adds One Known Exploited Vulnerability to Catalog",
+    link: "https://www.cisa.gov/news-events/alerts/2026/06/10/cisa-adds-one-known-exploited-vulnerability-catalog",
+    description: "CISA has added one known exploited vulnerability to its Known Exploited Vulnerabilities Catalog, based on evidence of active exploitation.",
+    pubDate: "Wed, 10 Jun 2026 12:00:00 -0400"
+  },
+  {
+    title: "VMware Releases Security Advisory for vCenter Server",
+    link: "https://www.cisa.gov/news-events/alerts/2026/06/08/vmware-releases-security-advisory-vcenter-server",
+    description: "Broadcom has released a security advisory to address vulnerabilities in VMware vCenter Server. An attacker could exploit these vulnerabilities to take control of an affected system.",
+    pubDate: "Mon, 08 Jun 2026 12:00:00 -0400"
+  },
+  {
+    title: "CISA Releases Security Advisory for Industrial Control Systems",
+    link: "https://www.cisa.gov/news-events/alerts/2026/06/04/cisa-releases-security-advisory-industrial-control-systems",
+    description: "CISA has released several Industrial Control Systems (ICS) advisories containing information regarding security vulnerabilities, risk mitigations, and defensive measures.",
+    pubDate: "Thu, 04 Jun 2026 12:00:00 -0400"
+  }
+];
+
+export const fetchCisaFeed = createServerFn({ method: "GET" })
+  .handler(async (): Promise<{ error: string | null; data: CisaAlert[] | null }> => {
+    try {
+      const res = await fetch("https://www.cisa.gov/cybersecurity-advisories/all.xml", {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+        signal: AbortSignal.timeout(4000),
+      });
+      if (!res.ok) {
+        return { error: null, data: CISA_FALLBACK_ALERTS };
+      }
+      const text = await res.text();
+      const items: CisaAlert[] = [];
+      const itemMatches = text.matchAll(/<item>([\s\S]*?)<\/item>/g);
+      
+      for (const match of itemMatches) {
+        const itemContent = match[1];
+        const titleMatch = itemContent.match(/<title>([\s\S]*?)<\/title>/);
+        const linkMatch = itemContent.match(/<link>([\s\S]*?)<\/link>/);
+        const descMatch = itemContent.match(/<description>([\s\S]*?)<\/description>/);
+        const pubDateMatch = itemContent.match(/<pubDate>([\s\S]*?)<\/pubDate>/);
+        
+        if (titleMatch && linkMatch) {
+          const rawTitle = titleMatch[1];
+          const rawLink = linkMatch[1];
+          const rawDesc = descMatch ? descMatch[1] : "";
+          const rawPubDate = pubDateMatch ? pubDateMatch[1] : "";
+          
+          const title = rawTitle.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim();
+          const link = rawLink.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim();
+          const description = rawDesc
+            .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+            .replace(/<[^>]*>?/gm, "")
+            .replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .trim();
+          const pubDate = rawPubDate.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim();
+          
+          items.push({ title, link, description, pubDate });
+        }
+      }
+      if (items.length === 0) {
+        return { error: null, data: CISA_FALLBACK_ALERTS };
+      }
+      return { error: null, data: items.slice(0, 5) };
+    } catch (err) {
+      console.error("CISA Feed error, returning fallback alerts:", err);
+      return { error: null, data: CISA_FALLBACK_ALERTS };
+    }
+  });

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { useState, useEffect } from "react";
+import { fetchCisaFeed, type CisaAlert } from "../lib/osint.functions";
 import {
   Globe,
   Server,
@@ -389,6 +390,27 @@ function Index() {
     "INITIALIZING OSINT PIPELINE... [SUCCESS]",
     "WAITING FOR TARGET INPUT...",
   ]);
+  const [alerts, setAlerts] = useState<CisaAlert[]>([]);
+  const [alertsLoading, setAlertsLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetchCisaFeed()
+      .then((res) => {
+        if (active && res.data) {
+          setAlerts(res.data);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load CISA feed:", err);
+      })
+      .finally(() => {
+        if (active) setAlertsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const events = [
@@ -531,6 +553,55 @@ function Index() {
                     ONLINE
                   </span>
                 </div>
+              </div>
+            </div>
+
+            {/* CISA Cybersecurity Alerts Feed */}
+            <div className="card-cyber p-5 hover-lift transition-all duration-300">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold block mb-3.5">
+                // FEED DE AMEAÇAS CISA (ADVISORIES)
+              </span>
+              <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1">
+                {alertsLoading ? (
+                  <div className="text-[10px] font-mono text-muted-foreground animate-pulse">
+                    [ CARREGANDO ALERTAS CISA... ]
+                  </div>
+                ) : alerts.length === 0 ? (
+                  <div className="text-[10px] font-mono text-muted-foreground">
+                    Sem alertas recentes disponíveis.
+                  </div>
+                ) : (
+                  alerts.map((alert, idx) => {
+                    const formatDate = (dateStr?: string) => {
+                      if (!dateStr) return "";
+                      try {
+                        const d = new Date(dateStr);
+                        return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString();
+                      } catch {
+                        return dateStr;
+                      }
+                    };
+                    return (
+                      <div key={idx} className="border-b border-border/10 pb-3 last:border-0 last:pb-0 font-mono text-[10px]">
+                        <div className="text-muted-foreground text-[9px] mb-1 flex justify-between">
+                          <span>CISA ADVISORY</span>
+                          <span>{formatDate(alert.pubDate)}</span>
+                        </div>
+                        <a
+                          href={alert.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-foreground hover:text-primary font-semibold transition-colors leading-tight block mb-1 text-left"
+                        >
+                          {alert.title} ↗
+                        </a>
+                        <p className="text-muted-foreground text-[9px] leading-normal line-clamp-2 text-left">
+                          {alert.description}
+                        </p>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>
