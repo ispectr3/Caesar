@@ -40,4 +40,7 @@ export default defineConfig({
       "@tanstack/query-core",
     ],
   },
+  ssr: {
+    noExternal: true,
+  },
 });
