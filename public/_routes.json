@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/assets/*",
+    "/favicon.ico",
+    "/robots.txt",
+    "/manifest.json",
+    "/*.png",
+    "/*.jpg",
+    "/*.jpeg",
+    "/*.gif",
+    "/*.svg",
+    "/*.webp"
+  ]
+}
