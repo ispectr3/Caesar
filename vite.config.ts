@@ -29,6 +29,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),
+      "node:stream/web": path.resolve(import.meta.dirname, "./stream-web-mock.js"),
     },
     dedupe: [
       "react",
