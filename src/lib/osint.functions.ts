@@ -4,6 +4,7 @@ import { z } from "zod";
 import { parsePhoneNumber, isValidPhoneNumber, type NumberType } from "libphonenumber-js/max";
 import md5 from "md5";
 import net from "node:net";
+import crypto from "node:crypto";
 
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
 
@@ -734,7 +735,7 @@ export const hashIdentify = createServerFn({ method: "POST" })
     
     let crackedPlaintext: string | undefined = undefined;
     let crackedAlgorithm: string | undefined = undefined;
-    const crypto = await import("crypto");
+    // Static crypto import used instead
     
     for (const word of commonWords) {
       if (crypto.createHash('md5').update(word).digest('hex') === hash.toLowerCase()) {

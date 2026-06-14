@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "build:cloudflare": "vite build && rm -rf .output && mkdir -p .output/public && cp -r dist/client/* .output/public/ && cp -rn dist/server/* .output/public/ && cp .output/public/server.js .output/public/_worker.js",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
