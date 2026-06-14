@@ -1,4 +1,4 @@
-// Standard Vite + TanStack Start configuration (no Lovable.dev dependencies)
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -29,7 +29,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),
-      "node:stream/web": path.resolve(import.meta.dirname, "./stream-web-mock.js"),
     },
     dedupe: [
       "react",
@@ -39,8 +38,5 @@ export default defineConfig({
       "@tanstack/react-query",
       "@tanstack/query-core",
     ],
-  },
-  ssr: {
-    noExternal: true,
   },
 });
