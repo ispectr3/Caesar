@@ -8,6 +8,31 @@ import crypto from "node:crypto";
 
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
 
+async function getCacheValue(key: string) {
+  try {
+    // Cloudflare Pages with Nitro/Vinxi often exposes bindings on process.env or globalThis
+    const CAESAR_CACHE = (process.env as any).CAESAR_CACHE || (globalThis as any).CAESAR_CACHE;
+    if (CAESAR_CACHE) {
+      const val = await CAESAR_CACHE.get(key);
+      if (val) return JSON.parse(val);
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
+
+async function setCacheValue(key: string, value: any, ttlSecs: number = 86400) {
+  try {
+    const CAESAR_CACHE = (process.env as any).CAESAR_CACHE || (globalThis as any).CAESAR_CACHE;
+    if (CAESAR_CACHE) {
+      await CAESAR_CACHE.put(key, JSON.stringify(value), { expirationTtl: ttlSecs });
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
 function checkRateLimit(): void {
   const now = Date.now();
   const windowMs = 60000; // 1 min
@@ -1003,20 +1028,32 @@ export const cnpjLookup = createServerFn({ method: "POST" })
     try {
       const userAgent =
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${data.cnpj}`, {
+      const cleanCnpj = data.cnpj.replace(/\D/g, "");
+      
+      const cacheKey = `cnpj_${cleanCnpj}`;
+      const cached = await getCacheValue(cacheKey);
+      if (cached) {
+        return { data: cached, error: null };
+      }
+
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`, {
         headers: { Accept: "application/json", "User-Agent": userAgent },
         signal: AbortSignal.timeout(8000),
       });
 
       if (res.ok) {
         const json = (await res.json()) as CnpjInfo;
+        if (json.cnpj) {
+          await setCacheValue(cacheKey, json, 86400 * 7); // Cache for 7 days
+          return { data: json, error: null };
+        }
         return { error: null, data: json };
       }
 
       console.log(
         `BrasilAPI CNPJ lookup returned status ${res.status}. Trying minha-receita.org fallback...`,
       );
-      const fallbackRes = await fetch(`https://minhareceita.org/${data.cnpj}`, {
+      const fallbackRes = await fetch(`https://minhareceita.org/${cleanCnpj}`, {
         headers: { Accept: "application/json", "User-Agent": userAgent },
         signal: AbortSignal.timeout(8000),
       });
@@ -1042,7 +1079,7 @@ export const cnpjLookup = createServerFn({ method: "POST" })
         }));
 
         const mappedCnpj: CnpjInfo = {
-          cnpj: json.cnpj ?? data.cnpj,
+          cnpj: json.cnpj ?? cleanCnpj,
           identificador_matriz_filial: json.identificador_matriz_filial ?? 1,
           descricao_matriz_filial:
             json.descricao_matriz_filial ??
@@ -1077,7 +1114,8 @@ export const cnpjLookup = createServerFn({ method: "POST" })
           cnaes_secundarios: mappedCnaesSecundarios,
           qsa: mappedQsa,
         };
-
+        
+        await setCacheValue(cacheKey, mappedCnpj, 86400 * 7);
         return { error: null, data: mappedCnpj };
       }
 
