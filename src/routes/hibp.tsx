@@ -17,6 +17,8 @@ export const Route = createFileRoute("/hibp")({
   component: HibpPage,
 });
 
+import { hibpEmailLookup } from "@/lib/osint.functions";
+
 function HibpPage() {
   const [activeTab, setActiveTab] = useState<"email" | "password">("email");
 
@@ -31,8 +33,7 @@ function HibpPage() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Email Leak Simulation (deterministic)
-  const handleEmailSubmit = (email: string) => {
+  const handleEmailSubmit = async (email: string) => {
     if (!email.includes("@")) {
       setEmailError("Insira um endereço de e-mail válido.");
       setEmailResult(null);
@@ -42,50 +43,18 @@ function HibpPage() {
     setEmailError(null);
     setEmailResult(null);
 
-    setTimeout(() => {
-      const parts = email.split("@");
-      const domain = parts[1].toLowerCase();
-      const name = parts[0].toLowerCase();
-      const lengthSum = name.length + domain.length;
-
-      // Deterministic simulation
-      let isLeaked = lengthSum % 2 === 0;
-      let breaches: any[] = [];
-
-      if (isLeaked) {
-        breaches = [
-          {
-            name: "Adobe Customer Database Leak (2013)",
-            date: "Outubro de 2013",
-            data: ["Endereço de E-mail", "Dica de Senha", "Nomes de Usuário", "Senhas Criptografadas (3DES)"],
-            compromisedAccounts: "153 milhões",
-          },
-          {
-            name: "Canva Breach Dump (2019)",
-            date: "Maio de 2019",
-            data: ["E-mail", "Nomes Completos", "Senhas Hashed (bcrypt)", "Localizações"],
-            compromisedAccounts: "137 milhões",
-          },
-        ];
-
-        if (domain === "gmail.com" || domain === "hotmail.com") {
-          breaches.push({
-            name: "Collection #1 Compilation Leak (2019)",
-            date: "Janeiro de 2019",
-            data: ["Endereços de E-mail", "Senhas em Texto Claro"],
-            compromisedAccounts: "773 milhões",
-          });
-        }
+    try {
+      const res = await hibpEmailLookup({ data: { email } });
+      if (res.error) {
+        setEmailError(res.error);
+      } else {
+        setEmailResult(res.data);
       }
-
-      setEmailResult({
-        email,
-        leaked: breaches.length > 0,
-        breaches,
-        breachCount: breaches.length,
-      });
+    } catch (err: any) {
+      setEmailError("Erro de comunicação com o servidor.");
+    } finally {
       setEmailLoading(false);
-    }, 1500);
+    }
   };
 
   // Password Real k-Anonymity HIBP API Lookup

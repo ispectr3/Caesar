@@ -100,6 +100,12 @@ export type IpInfo = {
 export const ipLookup = createServerFn({ method: "POST" })
   .validator(ipSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: IpInfo | null }> => {
+    const cacheKey = `ip_${data.ip}`;
+    const cached = await getCacheValue(cacheKey);
+    if (cached) {
+      return { data: cached, error: null };
+    }
+
     const res = await fetch(
       `http://ip-api.com/json/${encodeURIComponent(data.ip)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`,
     );
@@ -114,6 +120,8 @@ export const ipLookup = createServerFn({ method: "POST" })
       };
     }
     const { status: _s, message: _m, ...info } = json;
+    
+    await setCacheValue(cacheKey, info, 86400 * 3); // Cache IP for 3 days
     return { error: null, data: info };
   });
 
@@ -131,6 +139,12 @@ export type WhoisInfo = {
 export const whoisLookup = createServerFn({ method: "POST" })
   .validator(domainSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: WhoisInfo | null }> => {
+    const cacheKey = `whois_${data.domain}`;
+    const cached = await getCacheValue(cacheKey);
+    if (cached) {
+      return { data: cached, error: null };
+    }
+
     const res = await fetch(`https://rdap.org/domain/${data.domain}`, {
       headers: { Accept: "application/rdap+json" },
     });
@@ -178,18 +192,22 @@ export const whoisLookup = createServerFn({ method: "POST" })
       }
     }
 
+    const result = {
+      domain: json.ldhName ?? data.domain,
+      handle: json.handle ?? "",
+      status: json.status ?? [],
+      events: json.events ?? [],
+      nameservers,
+      entities,
+      registrarName,
+      registrarEmail,
+    };
+    
+    await setCacheValue(cacheKey, result, 86400); // Cache WHOIS for 24h
+
     return {
       error: null,
-      data: {
-        domain: json.ldhName ?? data.domain,
-        handle: json.handle ?? "",
-        status: json.status ?? [],
-        events: json.events ?? [],
-        nameservers,
-        entities,
-        registrarName,
-        registrarEmail,
-      },
+      data: result,
     };
   });
 
@@ -1362,6 +1380,14 @@ export type CveResult = {
 export const cveSearch = createServerFn({ method: "POST" })
   .validator(querySchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: CveResult[] | null }> => {
+    const cleanQuery = data.query.trim().toLowerCase();
+    const cacheKey = `cve_${cleanQuery.replace(/[^a-z0-9]/g, "_")}`;
+    
+    const cached = await getCacheValue(cacheKey);
+    if (cached) {
+      return { data: cached, error: null };
+    }
+
     try {
       const keyword = encodeURIComponent(data.query);
       const res = await fetch(
@@ -1381,6 +1407,8 @@ export const cveSearch = createServerFn({ method: "POST" })
       };
 
       const cves = (json.vulnerabilities ?? []).map((v) => v.cve);
+      
+      await setCacheValue(cacheKey, cves, 86400);
 
       return { error: null, data: cves };
     } catch (e) {
@@ -2927,6 +2955,12 @@ export type AbuseIpdbInfo = {
 export const abuseIpdbLookup = createServerFn({ method: "POST" })
   .validator(ipSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: AbuseIpdbInfo | null }> => {
+    const cacheKey = `abuseipdb_${data.ip}`;
+    const cached = await getCacheValue(cacheKey);
+    if (cached) {
+      return { data: cached, error: null };
+    }
+
     try {
       const apiKey = process.env.ABUSEIPDB_API_KEY;
       if (!apiKey) {
@@ -3000,6 +3034,7 @@ export const abuseIpdbLookup = createServerFn({ method: "POST" })
           reports,
         };
 
+        await setCacheValue(cacheKey, mockData, 86400 * 2);
         return { error: null, data: mockData };
       }
 
@@ -3356,5 +3391,118 @@ export const fetchCisaFeed = createServerFn({ method: "GET" })
     } catch (err) {
       console.error("CISA Feed error, returning fallback alerts:", err);
       return { error: null, data: CISA_FALLBACK_ALERTS };
+    }
+  });
+
+/* ═══════════════════════════════════════════
+   Module 37 — AI Tactical Dossier (Gemini)
+   ═══════════════════════════════════════════ */
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const aiDossierSchema = z.object({
+  moduleName: z.string(),
+  dataContext: z.string(),
+});
+
+export const generateAiDossier = createServerFn({ method: "POST" })
+  .validator(aiDossierSchema)
+  .handler(async ({ data }): Promise<{ error: string | null; data: string | null }> => {
+    try {
+      const apiKey = process.env.GEMINI_API_KEY || (globalThis as any).GEMINI_API_KEY;
+      if (!apiKey) {
+        return { 
+          error: "A Chave de API do Gemini não foi configurada (GEMINI_API_KEY ausente). Por favor, configure no Cloudflare.", 
+          data: null 
+        };
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+
+      const prompt = `Você é um analista sênior de inteligência cibernética (Cyber Threat Intelligence) trabalhando para uma agência de investigação corporativa ou do governo.
+Sua tarefa é ler os dados técnicos brutos abaixo (extraídos da ferramenta: ${data.moduleName}) e escrever um Dossiê Tático Executivo de no máximo 2 parágrafos incisivos e diretos.
+Identifique qualquer comportamento suspeito, vazamentos, infraestruturas maliciosas ou anomalias. Use tom militar e estritamente profissional, voltado para cibersegurança.
+Caso não encontre nada suspeito, descreva o perfil benigno. Retorne APENAS o relatório, sem introduções ou cumprimentos.
+
+DADOS DA INVESTIGAÇÃO:
+${data.dataContext}`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      return { error: null, data: text };
+    } catch (e: any) {
+      return {
+        error: e?.message || "Falha ao gerar dossiê tático com IA.",
+        data: null,
+      };
+    }
+  });
+
+/* ═══════════════════════════════════════════
+   Module 27 — HIBP Email Check (Real API + Mock Fallback)
+   ═══════════════════════════════════════════ */
+
+export const hibpEmailLookup = createServerFn({ method: "POST" })
+  .validator(emailSchema)
+  .handler(async ({ data }): Promise<{ error: string | null; data: any | null }> => {
+    try {
+      const apiKey = process.env.HIBP_API_KEY || (globalThis as any).HIBP_API_KEY;
+      
+      if (apiKey) {
+        // Attempt REAL HIBP API call
+        const res = await fetch(`https://haveibeenpwned.com/api/v3/breachedaccount/${encodeURIComponent(data.email)}?truncateResponse=false`, {
+          headers: {
+            "hibp-api-key": apiKey,
+            "User-Agent": "Caesar-OSINT",
+          }
+        });
+
+        if (res.status === 404) {
+          return { error: null, data: { email: data.email, leaked: false, breaches: [], breachCount: 0 } };
+        }
+
+        if (res.ok) {
+          const json = await res.json();
+          const breaches = (json as any[]).map(b => ({
+            name: b.Name,
+            date: b.BreachDate,
+            data: b.DataClasses,
+            compromisedAccounts: b.PwnCount.toLocaleString(),
+          }));
+          return { error: null, data: { email: data.email, leaked: breaches.length > 0, breaches, breachCount: breaches.length } };
+        }
+        
+        if (res.status === 401) {
+          console.warn("HIBP API Key inválida. Usando mock fallback.");
+        } else if (res.status === 429) {
+          return { error: "Rate limit excedido na API da HIBP.", data: null };
+        }
+      }
+
+      // FALLBACK MOCK (Deterministic)
+      const parts = data.email.split("@");
+      const domain = parts[1].toLowerCase();
+      const name = parts[0].toLowerCase();
+      const lengthSum = name.length + domain.length;
+      let isLeaked = lengthSum % 2 === 0;
+      let breaches: any[] = [];
+
+      if (isLeaked) {
+        breaches = [
+          { name: "Adobe Customer Database Leak (2013)", date: "2013-10-01", data: ["Email addresses", "Password hints", "Passwords", "Usernames"], compromisedAccounts: "153M" },
+          { name: "Canva Breach Dump (2019)", date: "2019-05-24", data: ["Email addresses", "Geographic locations", "Names", "Passwords"], compromisedAccounts: "137M" }
+        ];
+        if (domain === "gmail.com" || domain === "hotmail.com") {
+          breaches.push({ name: "Collection #1 Compilation (2019)", date: "2019-01-07", data: ["Email addresses", "Passwords"], compromisedAccounts: "773M" });
+        }
+      }
+
+      return { error: null, data: { email: data.email, leaked: breaches.length > 0, breaches, breachCount: breaches.length, isMock: true } };
+
+    } catch (err: any) {
+      return { error: "Erro ao consultar vazamentos: " + err.message, data: null };
     }
   });

@@ -42,6 +42,7 @@ const MODULE_CATEGORIES = [
   {
     title: "// Rede & Infraestrutura",
     items: [
+      { to: "/graph", label: "Visual OSINT Graph" },
       { to: "/ip", label: "IP Geolocation" },
       { to: "/whois", label: "WHOIS & Registry" },
       { to: "/dns", label: "DNS Records" },

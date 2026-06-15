@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent, type ReactNode } from "react";
-import { Search, Loader2, Download, Printer } from "lucide-react";
+import { Search, Loader2, Download, Printer, Brain } from "lucide-react";
+import { generateAiDossier } from "@/lib/osint.functions";
 
 function formatCNPJ(value: string) {
   const clean = value.replace(/\D/g, "").slice(0, 14);
@@ -252,6 +253,8 @@ export function ResultCard({
   exportName?: string;
 }) {
   const [cardId] = useState(`rc_${Math.random().toString(36).substring(2, 9)}`);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiDossier, setAiDossier] = useState<string | null>(null);
 
   return (
     <div
@@ -264,14 +267,42 @@ export function ResultCard({
         </span>
         <div className="flex items-center gap-2.5 no-print">
           {exportData && (
-            <button
-              onClick={() => exportToJson(exportData, exportName || title)}
-              className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono text-muted-foreground hover:text-primary border border-border/40 hover:border-primary transition-colors cursor-pointer bg-card/60"
-              title="Exportar dados como JSON"
-            >
-              <Download size={10} />
-              JSON
-            </button>
+            <>
+              <button
+                onClick={async () => {
+                  if (aiDossier) return;
+                  setAiLoading(true);
+                  try {
+                    const res = await generateAiDossier({
+                      data: {
+                        moduleName: title,
+                        dataContext: JSON.stringify(exportData, null, 2).slice(0, 8000),
+                      }
+                    });
+                    if (res.error) setAiDossier("Erro: " + res.error);
+                    else setAiDossier(res.data);
+                  } catch (e: any) {
+                    setAiDossier("Falha de rede ao consultar IA.");
+                  } finally {
+                    setAiLoading(false);
+                  }
+                }}
+                disabled={aiLoading}
+                className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono text-muted-foreground hover:text-primary border border-border/40 hover:border-primary transition-colors cursor-pointer bg-card/60 disabled:opacity-50"
+                title="Gerar Dossiê AI"
+              >
+                {aiLoading ? <Loader2 size={10} className="animate-spin" /> : <Brain size={10} />}
+                AI
+              </button>
+              <button
+                onClick={() => exportToJson(exportData, exportName || title)}
+                className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono text-muted-foreground hover:text-primary border border-border/40 hover:border-primary transition-colors cursor-pointer bg-card/60"
+                title="Exportar dados como JSON"
+              >
+                <Download size={10} />
+                JSON
+              </button>
+            </>
           )}
           <button
             onClick={() => exportToPdf(cardId, exportName || title)}
@@ -285,6 +316,14 @@ export function ResultCard({
         </div>
       </div>
       <div className="font-mono text-xs space-y-1">{children}</div>
+      {aiDossier && (
+        <div className="mt-4 p-4 border border-primary/40 bg-primary/5 rounded-none font-mono text-xs leading-relaxed text-foreground whitespace-pre-wrap fade-in-up">
+          <div className="flex items-center gap-2 text-primary font-bold mb-2">
+            <Brain size={14} /> [ DOSSIÊ TÁTICO - AI ]
+          </div>
+          {aiDossier}
+        </div>
+      )}
     </div>
   );
 }
