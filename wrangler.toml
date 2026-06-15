@@ -2,3 +2,8 @@ name = "caesar"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".output/public"
+
+[[kv_namespaces]]
+binding = "CAESAR_CACHE"
+id = "21cbfcfa1db04c1bad1afbe7590a0ac7"
+preview_id = "21cbfcfa1db04c1bad1afbe7590a0ac7"

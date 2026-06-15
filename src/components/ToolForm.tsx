@@ -217,6 +217,27 @@ export function ToolForm({
   );
 }
 
+const exportToPdf = async (elementId: string, fileName: string) => {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  try {
+    // @ts-ignore
+    const html2pdf = (await import("html2pdf.js")).default;
+    const opt = {
+      margin: 0.5,
+      filename: `${fileName.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#0e0e10" },
+      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+    };
+    html2pdf().set(opt).from(element).save();
+  } catch (err) {
+    console.error("Failed to generate PDF", err);
+    // fallback
+    window.print();
+  }
+};
+
 export function ResultCard({
   title,
   children,
@@ -230,11 +251,14 @@ export function ResultCard({
   exportData?: any;
   exportName?: string;
 }) {
+  const [cardId] = useState(`rc_${Math.random().toString(36).substring(2, 9)}`);
+
   return (
     <div
+      id={cardId}
       className={`card-cyber p-5 fade-in-up ${className}`}
     >
-      <div className="mb-4 pb-2 border-b border-border/30 flex items-center justify-between">
+      <div className="mb-4 pb-2 border-b border-border/30 flex items-center justify-between" data-html2canvas-ignore>
         <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary font-bold">
           [// {title}]
         </span>
@@ -250,9 +274,9 @@ export function ResultCard({
             </button>
           )}
           <button
-            onClick={() => window.print()}
+            onClick={() => exportToPdf(cardId, exportName || title)}
             className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono text-muted-foreground hover:text-primary border border-border/40 hover:border-primary transition-colors cursor-pointer bg-card/60"
-            title="Imprimir / Gerar PDF"
+            title="Exportar Dossiê (PDF)"
           >
             <Printer size={10} />
             PDF
