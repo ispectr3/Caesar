@@ -98,7 +98,6 @@ function UsernameTool() {
         onSubmit={handleSubmit}
         loading={loading}
         error={error}
-        defaultValue={q}
       >
         {result ? (
           <div className="space-y-6">
