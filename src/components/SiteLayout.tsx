@@ -129,6 +129,7 @@ function getSuggestions(query: string): Suggestion[] {
     );
   } else if (domainRegex.test(q)) {
     suggestions.push(
+      { moduleName: "Visual OSINT Graph", action: "Construir Grafo", label: `Construir grafo de: ${q}`, to: "/graph", query: q },
       { moduleName: "WHOIS & Registry", action: "WHOIS", label: `Consultar WHOIS de: ${q}`, to: "/whois", query: q },
       { moduleName: "DNS Records", action: "DNS Lookup", label: `Consultar DNS de: ${q}`, to: "/dns", query: q },
       { moduleName: "Subdomain Scanner", action: "Subdomínios", label: `Escanear subdomínios de: ${q}`, to: "/subdomains", query: q },

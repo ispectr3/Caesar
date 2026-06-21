@@ -228,6 +228,15 @@ const TOOLS = [
     icon: Globe,
     color: "from-primary/25 to-accent/10",
   },
+  {
+    code: "40",
+    to: "/graph" as const,
+    name: "Visual OSINT Graph",
+    desc: "Mapeamento relacional interativo. Descubra infraestruturas conectadas através de grafos (Estilo Maltego).",
+    input: "example.com",
+    icon: Network,
+    color: "from-primary/25 to-accent/10",
+  },
 
   // ── Web, Contas & Análise ──
   {
@@ -416,7 +425,7 @@ const TOOLS = [
 const SORTED_TOOLS = [...TOOLS].sort((a, b) => parseInt(a.code) - parseInt(b.code));
 
 const STATS = [
-  { icon: Zap, value: "39", label: "Ferramentas" },
+  { icon: Zap, value: "40", label: "Ferramentas" },
   { icon: Database, value: "Ativo", label: "Controle & Logs" },
   { icon: Eye, value: "100%", label: "Gratuito" },
 ];

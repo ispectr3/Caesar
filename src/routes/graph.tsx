@@ -134,7 +134,7 @@ function GraphPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 36"
+        eyebrow="// Módulo 40"
         title="Visual OSINT Graph"
         description="Mapeamento relacional interativo. Descubra infraestruturas conectadas através de grafos (Estilo Maltego)."
       />
