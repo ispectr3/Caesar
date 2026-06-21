@@ -374,13 +374,49 @@ const TOOLS = [
     icon: Coins,
     color: "from-primary/25 to-accent/10",
   },
+  {
+    code: "36",
+    to: "/password" as const,
+    name: "Gerador de Senha",
+    desc: "Gere senhas criptograficamente seguras com análise de entropia, força e critérios configuráveis.",
+    input: "Comprimento, charset...",
+    icon: Lock,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "37",
+    to: "/emailblacklist" as const,
+    name: "Email Blacklist",
+    desc: "Verifique se um IP ou domínio está listado em 12 blacklists DNSBL globais (Spamhaus, SORBS, etc).",
+    input: "1.2.3.4 ou domain.com",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "38",
+    to: "/emailverify" as const,
+    name: "Email Verify",
+    desc: "Verificação profunda de email: SPF, DKIM (20+ seletores), DMARC e score de autenticação.",
+    input: "user@domain.com",
+    icon: Mail,
+    color: "from-primary/25 to-accent/10",
+  },
+  {
+    code: "39",
+    to: "/speedtest" as const,
+    name: "Medidor de Velocidade",
+    desc: "Mede download e latência da sua conexão via Cloudflare CDN com velocímetro visual.",
+    input: "Clique em Iniciar Teste",
+    icon: Zap,
+    color: "from-primary/25 to-accent/10",
+  },
 ];
 
 // Sort tools by their logical codes to maintain index integrity
 const SORTED_TOOLS = [...TOOLS].sort((a, b) => parseInt(a.code) - parseInt(b.code));
 
 const STATS = [
-  { icon: Zap, value: "35", label: "Ferramentas" },
+  { icon: Zap, value: "39", label: "Ferramentas" },
   { icon: Database, value: "Ativo", label: "Controle & Logs" },
   { icon: Eye, value: "100%", label: "Gratuito" },
 ];
@@ -433,6 +469,10 @@ function Index() {
       "exif_extract: analyzing camera signatures and latent gps coordinates...",
       "hibp_query: executing k-anonymity ranges against database hashes...",
       "crypto_track: scanning blockchain balances and transaction logs...",
+      "password_gen: generating cryptographically secure password via randomBytes...",
+      "dnsbl_check: querying 12 blacklist databases for IP reputation...",
+      "email_verify: resolving SPF, DKIM selectors and DMARC policy records...",
+      "speedtest_run: downloading test payload from cloudflare edge node...",
     ];
     const interval = setInterval(() => {
       setLogs((prev) => {
