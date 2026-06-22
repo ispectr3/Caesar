@@ -1,689 +1,903 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
-import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
+import { useState, useEffect, useTransition } from "react";
+import { PageHeader, SiteLayout } from "../components/SiteLayout";
+import { ToolForm } from "../components/ToolForm";
+import { cryptoWalletLookup, generateAiDossier, type CryptoWalletResult } from "../lib/osint.functions";
 import { 
-  ShieldCheck, Coins, ArrowRight, Loader2, ArrowUpRight, ArrowDownLeft, 
-  Activity, Network, ShieldAlert, Cpu, Download, Bookmark, Brain, ChevronRight, Clock, AlertTriangle, CheckCircle, Search, Link as LinkIcon
+  Coins, 
+  ShieldAlert, 
+  History, 
+  FileText, 
+  Loader2, 
+  Database, 
+  ArrowRight, 
+  Terminal, 
+  Clock, 
+  TrendingUp, 
+  FolderPlus, 
+  Tags, 
+  UserCheck, 
+  Trash2, 
+  Download,
+  AlertTriangle
 } from "lucide-react";
-import CytoscapeComponent from 'react-cytoscapejs';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import html2pdf from 'html2pdf.js';
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  Tooltip as RechartsTooltip, 
+  Legend, 
+  LineChart, 
+  Line 
+} from "recharts";
+import { ReactFlow, Background, Controls, Node, Edge, Position, Handle } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
 export const Route = createFileRoute("/crypto")({
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      q: (search.q as string) || "",
-    };
-  },
   head: () => ({
     meta: [
-      { title: "Blockchain Intelligence" },
+      { title: "Crypto Forensics | Caesar OSINT" },
       {
         name: "description",
-        content: "Plataforma Forense de Criptomoedas e Blockchain Intelligence.",
+        content: "Investigação forense e rastreamento de carteiras criptografadas de forma profissional.",
       },
     ],
   }),
-  component: CryptoTrackerTool,
+  component: CryptoForensics,
 });
 
-function CryptoTrackerTool() {
-  const { q } = Route.useSearch();
+// React Flow Node type definition
+const nodeTypes = {
+  cyberNode: ({ data }: { data: any }) => {
+    let borderColor = "border-primary/50";
+    if (data.type === "exchange") borderColor = "border-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.3)]";
+    if (data.type === "mixer") borderColor = "border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]";
+    if (data.type === "contract") borderColor = "border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.3)]";
+    if (data.type === "wallet") borderColor = "border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.3)]";
+
+    return (
+      <div className={`bg-[#0e0e12]/95 border-2 ${borderColor} px-4 py-3 rounded-none shadow-[0_0_15px_rgba(0,0,0,0.8)] backdrop-blur-md min-w-[170px] relative font-mono text-left`}>
+        <Handle type="target" position={Position.Top} className="w-2 h-2 rounded-none bg-border border-0" />
+        <div className="flex flex-col">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{data.type}</span>
+            <span className="text-sm">{data.icon}</span>
+          </div>
+          <span className="text-xs font-bold text-foreground truncate max-w-[150px]">{data.label}</span>
+          {data.amount !== undefined && (
+            <span className="text-[10px] text-primary font-bold mt-1">
+              Vol: {data.amount} {data.network}
+            </span>
+          )}
+          {data.detail && (
+            <span className="text-[8px] text-muted-foreground mt-0.5 truncate">{data.detail}</span>
+          )}
+        </div>
+        <Handle type="source" position={Position.Bottom} className="w-2 h-2 rounded-none bg-primary border-0" />
+      </div>
+    );
+  },
+};
+
+type Case = {
+  id: string;
+  name: string;
+  wallets: string[];
+  tags: string[];
+  notes: string;
+  createdAt: string;
+};
+
+type SearchHistoryItem = {
+  address: string;
+  network: string;
+  timestamp: string;
+};
+
+function CryptoForensics() {
+  const { q } = Route.useSearch() as { q?: string };
+  const [isPending, startTransition] = useTransition();
+
+  // Core state
+  const [address, setAddress] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<CryptoWalletResult | null>(null);
+
+  // LocalStorage state
+  const [history, setHistory] = useState<SearchHistoryItem[]>([]);
+  const [cases, setCases] = useState<Case[]>([]);
+
+  // Case Manager Inputs
+  const [caseName, setCaseName] = useState("");
+  const [caseTags, setCaseTags] = useState("");
+  const [caseNotes, setCaseNotes] = useState("");
+  const [showCaseForm, setShowCaseForm] = useState(false);
+
+  // AI & Export State
+  const [aiDossier, setAiDossier] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  // React Flow state
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
 
   useEffect(() => {
-    if (q && !result) {
-      submit(q);
+    // Load local storage items
+    const savedHistory = localStorage.getItem("caesar_crypto_history");
+    if (savedHistory) setHistory(JSON.parse(savedHistory));
+
+    const savedCases = localStorage.getItem("caesar_crypto_cases");
+    if (savedCases) setCases(JSON.parse(savedCases));
+
+    if (q) {
+      handleLookup(q);
     }
   }, [q]);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState("overview");
-  const [aiSummary, setAiSummary] = useState<string | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [saveStatus, setSaveStatus] = useState(false);
-  
-  const reportRef = useRef<HTMLDivElement>(null);
+  const handleLookup = async (walletAddress: string) => {
+    const cleanAddr = walletAddress.trim();
+    if (!cleanAddr) return;
 
-  // Entities Knowledge Base
-  const KNOWN_ENTITIES = [
-    { name: "Binance", type: "Exchange", confidence: "98%", country: "Global" },
-    { name: "Coinbase", type: "Exchange", confidence: "95%", country: "USA" },
-    { name: "Kraken", type: "Exchange", confidence: "92%", country: "USA" },
-    { name: "Tornado Cash", type: "Mixer", confidence: "99%", country: "Descentralizado" },
-    { name: "Lazarus Group (Relacionado)", type: "Ameaça APT", confidence: "74%", country: "Coréia do Norte" },
-    { name: "LocalBitcoins", type: "P2P", confidence: "88%", country: "Finlândia" },
-  ];
-
-  const detectChain = (addr: string) => {
-    const a = addr.trim();
-    if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a) && !a.startsWith('1') && !a.startsWith('3') && !a.startsWith('bc1')) {
-      return { chainName: "solana", label: "Solana (SOL)", ticker: "SOL" };
-    }
-    if (/^0x[a-fA-F0-9]{40}$/.test(a)) {
-      return { chainName: "ethereum", label: "Ethereum (ETH)", ticker: "ETH" };
-    }
-    if (/^T[a-zA-Z0-9]{33}$/.test(a)) {
-      return { chainName: "tron", label: "Tron (TRX)", ticker: "TRX" };
-    }
-    if (/^[LM3][a-km-zA-HJ-NP-Z1-9]{26,33}$/.test(a) || /^ltc1[a-zA-HJ-NP-Z0-9]{25,39}$/.test(a)) {
-      return { chainName: "litecoin", label: "Litecoin (LTC)", ticker: "LTC" };
-    }
-    if (/^(1|3)[a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(a) || /^bc1[a-zA-HJ-NP-Z0-9]{25,39}$/.test(a)) {
-      return { chainName: "bitcoin", label: "Bitcoin (BTC)", ticker: "BTC" };
-    }
-    // Default
-    return { chainName: "bitcoin", label: "Bitcoin (BTC) [Auto-detect]", ticker: "BTC" };
-  };
-
-  const calculateRisk = (address: string, txs: any[], totalVol: number) => {
-    let score = 15;
-    const reasons = [];
-
-    if (txs.length < 5) {
-      score += 25;
-      reasons.push("Endereço recém-criado ou com atividade muito baixa.");
-    }
-
-    if (totalVol > 50) {
-      score += 20;
-      reasons.push("Volume movimentado é excessivamente alto.");
-    }
-
-    const addrLower = address.toLowerCase();
-    if (addrLower.includes("a") && addrLower.includes("0") && addrLower.includes("x")) {
-      score += 35;
-      reasons.push("Interação identificada com serviço de ofuscação (Mixer).");
-    }
-
-    if (txs.length > 50 && totalVol < 1) {
-      score += 15;
-      reasons.push("Alto volume de micro-transações (Padrão de poeira/Spam).");
-    }
-
-    score = Math.min(score, 100);
-
-    let category = "Baixo Risco";
-    let color = "text-green-500";
-    let bg = "bg-green-500/10";
-    let border = "border-green-500/30";
-
-    if (score > 40) { 
-      category = "Médio Risco"; 
-      color = "text-yellow-500"; 
-      bg = "bg-yellow-500/10";
-      border = "border-yellow-500/30";
-    }
-    if (score > 75) { 
-      category = "Alto Risco"; 
-      color = "text-red-500"; 
-      bg = "bg-red-500/10";
-      border = "border-red-500/30";
-    }
-
-    return { score, category, color, bg, border, reasons };
-  };
-
-  const generateGraphData = (address: string, ticker: string) => {
-    const nodes = [
-      { data: { id: address, label: `${address.substring(0, 8)}... (Alvo)`, type: 'target' } }
-    ];
-    const edges = [];
-    
-    // Generate 3-5 random connected wallets
-    const numConnections = Math.floor(Math.random() * 3) + 3;
-    for (let i = 0; i < numConnections; i++) {
-      const isEntity = Math.random() > 0.6;
-      const connectedId = isEntity ? KNOWN_ENTITIES[Math.floor(Math.random() * KNOWN_ENTITIES.length)].name : `Wallet_${Math.random().toString(36).substring(7)}`;
-      
-      if (!nodes.find(n => n.data.id === connectedId)) {
-        nodes.push({ data: { id: connectedId, label: connectedId, type: isEntity ? 'entity' : 'wallet' } });
-      }
-
-      const isIncoming = Math.random() > 0.5;
-      const val = (Math.random() * 5).toFixed(2);
-      
-      edges.push({
-        data: {
-          id: `edge_${i}`,
-          source: isIncoming ? connectedId : address,
-          target: isIncoming ? address : connectedId,
-          label: `${val} ${ticker}`
-        }
-      });
-    }
-
-    return [...nodes, ...edges];
-  };
-
-  const generateTimelineData = () => {
-    const data = [];
-    const now = new Date();
-    for (let i = 30; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      data.push({
-        date: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        entrada: Math.random() > 0.3 ? parseFloat((Math.random() * 2).toFixed(2)) : 0,
-        saida: Math.random() > 0.4 ? parseFloat((Math.random() * 1.5).toFixed(2)) : 0,
-      });
-    }
-    return data;
-  };
-
-  const submit = async (address: string) => {
-    const addr = address.trim();
-    if (!addr) {
-      setError("Insira um endereço de carteira cripto válido.");
-      setResult(null);
-      return;
-    }
-
-    setLoading(true);
+    setAddress(cleanAddr);
+    setStatus("loading");
     setError(null);
-    setResult(null);
-    setAiSummary(null);
-    setActiveTab("overview");
-    setSaveStatus(false);
+    setData(null);
+    setAiDossier(null);
 
-    const { chainName, label, ticker } = detectChain(addr);
+    startTransition(async () => {
+      try {
+        const res = await cryptoWalletLookup({ data: { address: cleanAddr } });
+        if (res.error) {
+          setError(res.error);
+          setStatus("error");
+        } else if (res.data) {
+          setData(res.data);
+          setStatus("success");
 
-    // Salvar no histórico local
-    try {
-      const history = JSON.parse(localStorage.getItem('crypto_history') || '[]');
-      const newEntry = { address: addr, chain: label, date: new Date().toISOString() };
-      localStorage.setItem('crypto_history', JSON.stringify([newEntry, ...history.filter((h: any) => h.address !== addr)].slice(0, 10)));
-    } catch (e) {}
+          // Save search to history
+          const newItem: SearchHistoryItem = {
+            address: res.data.address,
+            network: res.data.network,
+            timestamp: new Date().toLocaleString(),
+          };
+          setHistory((prev) => {
+            const filtered = prev.filter((item) => item.address !== res.data?.address);
+            const updated = [newItem, ...filtered].slice(0, 10);
+            localStorage.setItem("caesar_crypto_history", JSON.stringify(updated));
+            return updated;
+          });
 
-    try {
-      // Tentar Blockchair
-      const res = await fetch(`https://api.blockchair.com/${chainName}/dashboards/address/${addr}?limit=10`);
-      if (!res.ok) throw new Error("API Limit");
-      const raw = await res.json();
-      const addrData = raw.data[addr];
-      if (!addrData) throw new Error("Endereço não encontrado.");
-
-      const addressInfo = addrData.address;
-      const txs = addrData.calls || addrData.transactions || [];
-      const divisor = chainName === "ethereum" ? 1e18 : 1e8;
-
-      const totalRec = (addressInfo.received || addressInfo.total_received || 0) / divisor;
-      const totalSnt = (addressInfo.spent || addressInfo.total_sent || 0) / divisor;
-      const bal = addressInfo.balance / divisor;
-
-      processResult(addr, label, ticker, bal, totalRec, totalSnt, txs, divisor);
-
-    } catch (apiErr) {
-      // Mock Resiliente (para contornar Rate Limits em demonstração)
-      setTimeout(() => {
-        const length = addr.length;
-        const bal = length * 0.045;
-        const totalRec = length * 0.82;
-        const totalSnt = length * 0.775;
-        
-        const mockTxs = Array.from({ length: 15 }).map((_, i) => ({
-          hash: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-          value: Math.random() * 2,
-          time: new Date(Date.now() - Math.random() * 10000000000).toLocaleString(),
-          isIncome: Math.random() > 0.5
-        }));
-
-        processResult(addr, label, ticker, bal, totalRec, totalSnt, mockTxs, 1);
-      }, 1500);
-    }
-  };
-
-  const processResult = (addr: string, label: string, ticker: string, bal: number, totalRec: number, totalSnt: number, txs: any[], divisor: number) => {
-    const formattedTxs = txs.map((tx: any) => ({
-      hash: tx.hash || tx.transaction_hash || tx,
-      value: typeof tx.value !== 'undefined' ? (Math.abs(tx.value) / divisor).toFixed(4) : (Math.random() * 2).toFixed(4),
-      time: tx.time || new Date(Date.now() - Math.random() * 10000000000).toLocaleString(),
-      isIncome: typeof tx.isIncome !== 'undefined' ? tx.isIncome : ((tx.value || 0) >= 0 || Math.random() > 0.5)
-    }));
-
-    const risk = calculateRisk(addr, formattedTxs, totalRec + totalSnt);
-    const graphData = generateGraphData(addr, ticker);
-    const timelineData = generateTimelineData();
-    
-    // Simular entidades baseadas no endereço
-    const detectedEntities = [];
-    if (risk.score > 50) detectedEntities.push(KNOWN_ENTITIES[3]); // Mixer
-    if (addr.length % 2 === 0) detectedEntities.push(KNOWN_ENTITIES[0]); // Binance
-    if (addr.includes('0') || addr.includes('o')) detectedEntities.push(KNOWN_ENTITIES[1]); // Coinbase
-
-    setResult({
-      address: addr,
-      chainLabel: label,
-      ticker,
-      balance: `${bal.toFixed(4)} ${ticker}`,
-      totalReceived: `${totalRec.toFixed(4)} ${ticker}`,
-      totalSent: `${totalSnt.toFixed(4)} ${ticker}`,
-      txCount: formattedTxs.length + Math.floor(Math.random() * 100),
-      firstActive: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000 * Math.random()).toLocaleDateString(),
-      lastActive: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 * Math.random()).toLocaleDateString(),
-      transactions: formattedTxs.sort((a: any, b: any) => new Date(b.time).getTime() - new Date(a.time).getTime()),
-      risk,
-      graphData,
-      timelineData,
-      entities: detectedEntities
+          // Build React Flow graph
+          buildGraph(res.data);
+        }
+      } catch (err) {
+        setError("Erro na conexão com o motor de busca forense.");
+        setStatus("error");
+      }
     });
-    setLoading(false);
   };
 
-  const handleAIAnalysis = () => {
-    setAiLoading(true);
-    setActiveTab("risk");
-    setTimeout(() => {
-      const summary = `RELATÓRIO EXECUTIVO GERADO POR IA\n\n` +
-      `[+] ANÁLISE DE COMPORTAMENTO:\n` +
-      `O endereço analisado (${result.address.substring(0,8)}...) opera na rede ${result.chainLabel}. Observamos um volume total movimentado significativo, com um saldo atual de ${result.balance}.\n\n` +
-      `[+] PADRÕES IDENTIFICADOS:\n` +
-      `Foram detectados agrupamentos de transações (clusters) que sugerem uso de exchanges centralizadas. ` +
-      (result.risk.score > 50 ? `ATENÇÃO: A atividade interage com pools de liquidez anônimos ou mixers, justificando o alto risco.` : `O comportamento é típico de um usuário de varejo ou carteira de hold (fria).`) + `\n\n` +
-      `[+] CONCLUSÃO FORENSE:\n` +
-      `Score de Risco atribuído: ${result.risk.score}/100. Nível: ${result.risk.category}. Recomenda-se monitoramento passivo das saídas para rastreio final de fundos caso estejam vinculados a incidentes cibernéticos.`;
+  const buildGraph = (wallet: CryptoWalletResult) => {
+    const newNodes: Node[] = [];
+    const newEdges: Edge[] = [];
+
+    // Central Main Wallet Node
+    newNodes.push({
+      id: "main-wallet",
+      type: "cyberNode",
+      position: { x: 300, y: 150 },
+      data: {
+        label: wallet.address.slice(0, 8) + "..." + wallet.address.slice(-8),
+        icon: "💳",
+        type: "wallet",
+        network: wallet.network,
+        detail: `Saldo: ${wallet.balance.toFixed(4)}`,
+      },
+    });
+
+    let incomingOffset = 50;
+    let outgoingOffset = 50;
+
+    wallet.relatedAddresses.forEach((node, idx) => {
+      const isInput = node.type === "in";
+      const nodeId = `node-${node.address}-${idx}`;
       
-      setAiSummary(summary);
-      setAiLoading(false);
-    }, 2500);
+      const xPos = isInput ? 50 : 550;
+      const yPos = isInput ? incomingOffset : outgoingOffset;
+
+      if (isInput) incomingOffset += 110;
+      else outgoingOffset += 110;
+
+      let icon = "💼";
+      if (node.nodeType === "exchange") icon = "🏦";
+      if (node.nodeType === "mixer") icon = "🌪️";
+      if (node.nodeType === "contract") icon = "📜";
+
+      newNodes.push({
+        id: nodeId,
+        type: "cyberNode",
+        position: { x: xPos, y: yPos },
+        data: {
+          label: node.address,
+          icon,
+          type: node.nodeType,
+          network: wallet.network,
+          amount: node.amount.toFixed(2),
+          detail: node.label || "Endereço Externo",
+        },
+      });
+
+      newEdges.push({
+        id: `edge-${nodeId}`,
+        source: isInput ? nodeId : "main-wallet",
+        target: isInput ? "main-wallet" : nodeId,
+        animated: node.nodeType === "mixer" || node.amount > 10,
+        style: { 
+          stroke: node.nodeType === "mixer" ? "#a855f7" : node.nodeType === "exchange" ? "#3b82f6" : "#6D001A",
+          strokeWidth: node.amount > 10 ? 3 : 1.5,
+        },
+      });
+    });
+
+    setNodes(newNodes);
+    setEdges(newEdges);
   };
 
-  const handleExportPDF = () => {
-    if (!reportRef.current) return;
-    const opt = {
-      margin:       0.5,
-      filename:     `Relatorio_Forense_${result.address.substring(0,8)}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  // Case Manager Actions
+  const handleCreateCase = () => {
+    if (!caseName.trim() || !data) return;
+
+    const newCase: Case = {
+      id: `case-${Date.now()}`,
+      name: caseName.trim(),
+      wallets: [data.address],
+      tags: caseTags.split(",").map((t) => t.trim()).filter((t) => t.length > 0),
+      notes: caseNotes.trim(),
+      createdAt: new Date().toLocaleString(),
     };
-    html2pdf().set(opt).from(reportRef.current).save();
+
+    setCases((prev) => {
+      const updated = [newCase, ...prev];
+      localStorage.setItem("caesar_crypto_cases", JSON.stringify(updated));
+      return updated;
+    });
+
+    setCaseName("");
+    setCaseTags("");
+    setCaseNotes("");
+    setShowCaseForm(false);
   };
 
-  const handleSaveCase = () => {
-    setSaveStatus(true);
-    setTimeout(() => setSaveStatus(false), 3000);
+  const handleDeleteCase = (id: string) => {
+    setCases((prev) => {
+      const updated = prev.filter((c) => c.id !== id);
+      localStorage.setItem("caesar_crypto_cases", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleClearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem("caesar_crypto_history");
+  };
+
+  // AI Dossier Summary
+  const handleAnalyzeWithAi = async () => {
+    if (!data) return;
+    setAiLoading(true);
+    setAiDossier(null);
     try {
-      const cases = JSON.parse(localStorage.getItem('crypto_cases') || '[]');
-      cases.push({ id: `Case-${Math.floor(Math.random()*10000)}`, address: result.address, date: new Date().toISOString(), risk: result.risk.category });
-      localStorage.setItem('crypto_cases', JSON.stringify(cases));
-    } catch (e) {}
+      const dataContext = `
+      Endereço: ${data.address}
+      Blockchain: ${data.network}
+      Saldo Atual: ${data.balance}
+      Total Recebido: ${data.totalReceived}
+      Total Enviado: ${data.totalSent}
+      Contagem de Tx: ${data.txCount}
+      Score de Risco: ${data.riskScore}/100
+      Classificação: ${data.riskClassification}
+      Fatores de Risco: ${data.riskFactors.join(", ")}
+      Entidade Detectada: ${data.entity ? `${data.entity.name} (${data.entity.category})` : "Nenhuma"}
+      Cluster Detectado: ${data.cluster ? `${data.cluster.clusterId}` : "Nenhum"}
+      Menções OSINT: ${data.osintMentions.length} encontradas.
+      `;
+      const res = await generateAiDossier({ data: { moduleName: "Blockchain Intelligence Forensics", dataContext } });
+      if (res.error) {
+        setAiDossier(`Erro: ${res.error}`);
+      } else {
+        setAiDossier(res.data);
+      }
+    } catch {
+      setAiDossier("Erro de rede ao consultar o assistente de Inteligência Artificial.");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
-  const graphStylesheet: cytoscape.Stylesheet[] = [
-    {
-      selector: 'node',
-      style: {
-        'background-color': '#1f2937',
-        'label': 'data(label)',
-        'color': '#cbd5e1',
-        'font-size': '10px',
-        'text-valign': 'bottom',
-        'text-margin-y': 5,
-        'border-width': 2,
-        'border-color': '#475569'
-      }
-    },
-    {
-      selector: 'node[type="target"]',
-      style: {
-        'background-color': '#e11d48',
-        'border-color': '#f43f5e',
-        'color': '#fff',
-        'font-size': '12px',
-        'font-weight': 'bold',
-        'width': 40,
-        'height': 40
-      }
-    },
-    {
-      selector: 'node[type="entity"]',
-      style: {
-        'background-color': '#3b82f6',
-        'border-color': '#60a5fa',
-        'shape': 'hexagon'
-      }
-    },
-    {
-      selector: 'edge',
-      style: {
-        'width': 2,
-        'line-color': '#334155',
-        'target-arrow-color': '#334155',
-        'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier',
-        'label': 'data(label)',
-        'font-size': '8px',
-        'color': '#94a3b8',
-        'text-rotation': 'autorotate',
-        'text-margin-y': -10
-      }
+  // Export Forensic Reports
+  const handleExportPDF = async () => {
+    const html2pdf = (window as any).html2pdf;
+    if (!html2pdf) {
+      // Dinamicamente carrega html2pdf se não estiver global
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = () => triggerPDFExport();
+      document.head.appendChild(script);
+    } else {
+      triggerPDFExport();
     }
-  ];
+  };
+
+  const triggerPDFExport = () => {
+    const html2pdf = (window as any).html2pdf;
+    const element = document.getElementById("forensic-report-content");
+    if (!element) return;
+    
+    const opt = {
+      margin: 10,
+      filename: `caesar_forensic_report_${data?.address.slice(0, 8)}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#0c0c0e" },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    };
+    html2pdf().from(element).set(opt).save();
+  };
+
+  const handleExportJSON = () => {
+    if (!data) return;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `caesar_forensic_report_${data.address.slice(0, 8)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportCSV = () => {
+    if (!data) return;
+    let csv = "Data,Transacoes,Recebido,Enviado\n";
+    data.timeline.forEach((row) => {
+      csv += `${row.date},${row.count},${row.received},${row.sent}\n`;
+    });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `caesar_forensic_timeline_${data.address.slice(0, 8)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 35: Cyber Forensics"
+        eyebrow="// Módulo 35"
         title="Blockchain Intelligence"
-        description="Plataforma avançada para rastreio de fluxo de fundos, identificação de clusters e análise de risco em criptomoedas (BTC, ETH, SOL, TRX)."
+        description="Crypto Forensics & Threat Tracking. Rastreie fluxos financeiros, analise riscos de entidades, cruze dados OSINT e agrupe endereços (Tornando visível o invisível)."
       />
 
-      <ToolForm
-        defaultValue={q}
-        storageKey="crypto_intelligence"
-        label="Endereço de Criptomoeda (Alvo)"
-        placeholder="ex: bc1qxy2kgdygjrsqtzq2n0yrf... ou 0x..."
-        buttonText="Iniciar Investigação"
-        onSubmit={submit}
-        loading={loading}
-        error={error}
-      >
-        {result && (
-          <div className="space-y-6" ref={reportRef}>
-            {/* Top Dashboard Indicators */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="card-cyber p-4 border border-primary/20 flex flex-col justify-center">
-                <span className="text-xs text-muted-foreground uppercase mb-1 flex items-center gap-1"><Coins size={12}/> Saldo Atual</span>
-                <span className="text-xl font-bold text-foreground font-mono truncate" title={result.balance}>{result.balance}</span>
-                <span className="text-[10px] text-muted-foreground mt-1">Rede: {result.chainLabel}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mx-auto max-w-7xl px-4 sm:px-6 py-6">
+        
+        {/* Left Column - Form, History, Cases */}
+        <div className="lg:col-span-4 space-y-6">
+          
+          {/* Main Input Form */}
+          <div className="card-cyber p-6 bg-card/40 backdrop-blur-md border-border/80">
+            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-primary mb-4 flex items-center gap-2">
+              <Coins size={14} /> SCANNER DE CARTEIRAS
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="font-mono text-[10px] text-muted-foreground uppercase block mb-1">
+                  Endereço do Alvo
+                </label>
+                <input
+                  type="text"
+                  placeholder="BTC, ETH, SOL, TRX ou LTC"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full bg-input border border-border/85 rounded-none px-3 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
+                />
               </div>
-              <div className="card-cyber p-4 border border-primary/20 flex flex-col justify-center">
-                <span className="text-xs text-muted-foreground uppercase mb-1 flex items-center gap-1"><Activity size={12}/> Transações</span>
-                <span className="text-xl font-bold text-foreground font-mono">{result.txCount}</span>
-                <span className="text-[10px] text-muted-foreground mt-1">Desde: {result.firstActive}</span>
+              <button
+                onClick={() => handleLookup(address)}
+                disabled={status === "loading" || isPending}
+                className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none hover:shadow-[0_0_15px_var(--primary)] transition-all duration-300 disabled:opacity-50"
+              >
+                {status === "loading" || isPending ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    [ ANALISANDO BLOCKCHAIN... ]
+                  </>
+                ) : (
+                  <>
+                    <Terminal size={14} />
+                    [ EXECUTAR RASTREIO ]
+                  </>
+                )}
+              </button>
+            </div>
+            
+            {status === "error" && error && (
+              <div className="mt-4 p-3 border border-red-500/30 bg-red-950/20 text-red-400 font-mono text-[10px] rounded-none flex items-start gap-2">
+                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
-              <div className={`card-cyber p-4 border ${result.risk.border} ${result.risk.bg} flex flex-col justify-center`}>
-                <span className="text-xs text-muted-foreground uppercase mb-1 flex items-center gap-1"><ShieldAlert size={12}/> Score de Risco</span>
-                <div className="flex items-end gap-2">
-                  <span className={`text-2xl font-bold font-mono ${result.risk.color}`}>{result.risk.score}</span>
-                  <span className="text-sm font-bold text-muted-foreground mb-1">/100</span>
+            )}
+          </div>
+
+          {/* Search History */}
+          <div className="card-cyber p-6 bg-card/40 backdrop-blur-md border-border/80">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                <History size={14} /> HISTÓRICO DE PESQUISA
+              </h2>
+              {history.length > 0 && (
+                <button 
+                  onClick={handleClearHistory} 
+                  className="font-mono text-[9px] text-red-500 hover:text-red-400 border border-red-500/20 hover:border-red-500/40 px-1.5 py-0.5 rounded transition-colors"
+                >
+                  Limpar
+                </button>
+              )}
+            </div>
+
+            {history.length === 0 ? (
+              <div className="p-4 text-center font-mono text-[10px] text-muted-foreground/50 border border-border/10">
+                Nenhum endereço pesquisado nesta sessão.
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                {history.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    onClick={() => handleLookup(item.address)}
+                    className="p-2 border border-border/20 bg-black/30 hover:border-primary/50 cursor-pointer transition-all flex flex-col font-mono text-[10px]"
+                  >
+                    <div className="flex justify-between text-muted-foreground text-[8px] mb-1">
+                      <span className="text-primary font-bold">{item.network}</span>
+                      <span>{item.timestamp}</span>
+                    </div>
+                    <span className="text-foreground truncate">{item.address}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Case Manager */}
+          <div className="card-cyber p-6 bg-card/40 backdrop-blur-md border-border/80">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                <FolderPlus size={14} /> GERENCIADOR DE CASOS
+              </h2>
+              {data && (
+                <button 
+                  onClick={() => setShowCaseForm(!showCaseForm)}
+                  className="font-mono text-[9px] text-primary hover:underline"
+                >
+                  {showCaseForm ? "[ Cancelar ]" : "[ Novo Caso ]"}
+                </button>
+              )}
+            </div>
+
+            {showCaseForm && data && (
+              <div className="space-y-3 mb-4 p-3 border border-primary/20 bg-primary/5 font-mono text-[10px]">
+                <div>
+                  <label className="block mb-1 text-muted-foreground">Nome do Caso</label>
+                  <input
+                    type="text"
+                    placeholder="ex: Fraude BTC 2026"
+                    value={caseName}
+                    onChange={(e) => setCaseName(e.target.value)}
+                    className="w-full bg-black/60 border border-border/80 px-2 py-1 text-foreground"
+                  />
                 </div>
-                <span className={`text-[10px] font-bold mt-1 ${result.risk.color}`}>{result.risk.category}</span>
+                <div>
+                  <label className="block mb-1 text-muted-foreground">Tags (separadas por vírgula)</label>
+                  <input
+                    type="text"
+                    placeholder="ex: Hack, TornadoCash"
+                    value={caseTags}
+                    onChange={(e) => setCaseTags(e.target.value)}
+                    className="w-full bg-black/60 border border-border/80 px-2 py-1 text-foreground"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 text-muted-foreground">Notas Adicionais</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Notas da auditoria..."
+                    value={caseNotes}
+                    onChange={(e) => setCaseNotes(e.target.value)}
+                    className="w-full bg-black/60 border border-border/80 px-2 py-1 text-foreground resize-none"
+                  />
+                </div>
+                <button
+                  onClick={handleCreateCase}
+                  className="w-full py-1 bg-primary text-primary-foreground font-mono text-[10px] uppercase tracking-wider hover:bg-primary/85 transition-colors"
+                >
+                  [ Salvar Investigação ]
+                </button>
               </div>
-              <div className="card-cyber p-4 border border-primary/20 flex flex-col justify-center">
-                <span className="text-xs text-muted-foreground uppercase mb-1 flex items-center gap-1"><Search size={12}/> Entidades Ligadas</span>
-                <span className="text-xl font-bold text-foreground font-mono">{result.entities.length}</span>
-                <span className="text-[10px] text-muted-foreground mt-1">Clusters Detectados</span>
+            )}
+
+            {cases.length === 0 ? (
+              <div className="p-4 text-center font-mono text-[10px] text-muted-foreground/50 border border-border/10">
+                Nenhum caso salvo. Realize uma busca para criar um caso.
               </div>
-            </div>
-
-            {/* Navigation Tabs */}
-            <div className="flex flex-wrap gap-2 border-b border-border/50 pb-2">
-              <button onClick={() => setActiveTab("overview")} className={`px-4 py-2 text-sm font-mono transition-colors ${activeTab === 'overview' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}>[ VISÃO GERAL ]</button>
-              <button onClick={() => setActiveTab("graph")} className={`px-4 py-2 text-sm font-mono transition-colors ${activeTab === 'graph' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}>[ GRAFO FORENSE ]</button>
-              <button onClick={() => setActiveTab("timeline")} className={`px-4 py-2 text-sm font-mono transition-colors ${activeTab === 'timeline' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}>[ TIMELINE ]</button>
-              <button onClick={() => setActiveTab("risk")} className={`px-4 py-2 text-sm font-mono transition-colors ${activeTab === 'risk' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}>[ RISCO & IA ]</button>
-            </div>
-
-            {/* Tab Contents */}
-            <div className="min-h-[400px]">
-              
-              {/* OVERVIEW TAB */}
-              {activeTab === "overview" && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  <div className="lg:col-span-1 space-y-4">
-                    <ResultCard title="Informações do Alvo">
-                      <div className="space-y-4">
-                        <div>
-                          <span className="text-[10px] text-muted-foreground uppercase block">Endereço Principal</span>
-                          <span className="text-xs font-mono text-foreground break-all">{result.address}</span>
-                        </div>
-                        <KeyValue k="Rede" v={result.chainLabel} />
-                        <KeyValue k="Total Recebido" v={<span className="text-green-400">{result.totalReceived}</span>} />
-                        <KeyValue k="Total Enviado" v={<span className="text-red-400">{result.totalSent}</span>} />
-                        <KeyValue k="Última Atividade" v={result.lastActive} />
+            ) : (
+              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                {cases.map((c) => (
+                  <div key={c.id} className="p-3 border border-border/30 bg-black/40 font-mono text-[10px] space-y-2">
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold text-foreground text-xs">{c.name}</span>
+                      <button onClick={() => handleDeleteCase(c.id)} className="text-red-500 hover:text-red-400">
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                    
+                    <div className="text-[8px] text-muted-foreground">Criado em: {c.createdAt}</div>
+                    
+                    {c.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {c.tags.map((t, idx) => (
+                          <span key={idx} className="bg-primary/10 border border-primary/30 text-primary px-1 text-[8px] flex items-center gap-0.5">
+                            <Tags size={8} /> {t}
+                          </span>
+                        ))}
                       </div>
-                    </ResultCard>
+                    )}
+                    
+                    {c.notes && <p className="text-muted-foreground text-[9px] line-clamp-2 bg-black/20 p-1 border border-border/10">{c.notes}</p>}
+                    
+                    <div className="border-t border-border/15 pt-1.5 flex justify-between">
+                      <span className="text-muted-foreground text-[8px]">Wallets: {c.wallets.length}</span>
+                      <button 
+                        onClick={() => handleLookup(c.wallets[0])}
+                        className="text-primary hover:underline text-[9px] flex items-center gap-1"
+                      >
+                        Carregar <ArrowRight size={10} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-                    {result.entities.length > 0 && (
-                      <ResultCard title="Entidades Identificadas">
-                        <div className="space-y-3">
-                          {result.entities.map((ent: any, i: number) => (
-                            <div key={i} className="p-3 bg-black/30 border border-border/30 rounded-md">
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="font-bold text-sm text-blue-400">{ent.name}</span>
-                                <span className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">{ent.confidence} conf.</span>
-                              </div>
-                              <div className="flex justify-between text-xs text-muted-foreground">
-                                <span>Tipo: {ent.type}</span>
-                                <span>País: {ent.country}</span>
-                              </div>
-                            </div>
-                          ))}
+        </div>
+
+        {/* Right Column - Forensics Dashboard */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {status === "loading" && (
+            <div className="card-cyber p-16 text-center border-primary/30 bg-card/20 backdrop-blur-md flex flex-col items-center justify-center min-h-[400px]">
+              <Loader2 size={42} className="animate-spin text-primary mb-4" />
+              <p className="font-mono text-sm text-primary tracking-[0.2em] uppercase animate-pulse">
+                [ VARRENDO ESTRUTURA DE GRAFOS E REGISTROS DE BLOCKCHAIN ]
+              </p>
+              <p className="font-mono text-xs text-muted-foreground mt-2">
+                Buscando saldos reais, analisando risco do endereço e verificando dados OSINT...
+              </p>
+            </div>
+          )}
+
+          {status === "idle" && (
+            <div className="card-cyber p-16 text-center border-border/40 bg-card/25 backdrop-blur-md flex flex-col items-center justify-center min-h-[400px]">
+              <Database size={48} className="text-muted-foreground/35 mb-4" />
+              <p className="font-mono text-sm text-muted-foreground tracking-[0.1em] uppercase">
+                [ AGUARDANDO ENTRADA DE ENDEREÇO ALVO ]
+              </p>
+              <p className="font-mono text-xs text-muted-foreground/60 max-w-md mt-3 leading-relaxed">
+                Insira um endereço válido de Bitcoin, Ethereum, Solana, Tron ou Litecoin para construir a árvore relacional de transações e avaliar riscos.
+              </p>
+            </div>
+          )}
+
+          {status === "success" && data && (
+            <div className="space-y-6" id="forensic-report-content">
+              
+              {/* TOP DASHBOARD METRICS */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                
+                <div className="card-cyber p-3 bg-black/60 border-border/60 hover-lift transition-all">
+                  <span className="font-mono text-[8px] text-muted-foreground uppercase block mb-1">SALDO ATUAL</span>
+                  <div className="font-mono text-sm font-bold text-foreground truncate">
+                    {data.balance.toFixed(4)} <span className="text-[10px] text-primary">{data.network}</span>
+                  </div>
+                </div>
+
+                <div className="card-cyber p-3 bg-black/60 border-border/60 hover-lift transition-all">
+                  <span className="font-mono text-[8px] text-muted-foreground uppercase block mb-1">TRANSAÇÕES</span>
+                  <div className="font-mono text-sm font-bold text-foreground">
+                    {data.txCount} <span className="text-[9px] text-muted-foreground">txs</span>
+                  </div>
+                </div>
+
+                <div className="card-cyber p-3 bg-black/60 border-border/60 hover-lift transition-all">
+                  <span className="font-mono text-[8px] text-muted-foreground uppercase block mb-1">SCORE DE RISCO</span>
+                  <div className="font-mono text-sm font-bold flex items-baseline gap-1">
+                    <span className={data.riskScore >= 70 ? "text-red-500" : data.riskScore >= 35 ? "text-yellow-500" : "text-green-500"}>
+                      {data.riskScore}
+                    </span>
+                    <span className="text-[8px] text-muted-foreground">/100</span>
+                  </div>
+                </div>
+
+                <div className="card-cyber p-3 bg-black/60 border-border/60 hover-lift transition-all">
+                  <span className="font-mono text-[8px] text-muted-foreground uppercase block mb-1">CLUSTER</span>
+                  <div className="font-mono text-sm font-bold text-primary truncate">
+                    {data.cluster ? data.cluster.clusterId : "NÃO ASSOCIADO"}
+                  </div>
+                </div>
+
+                <div className="card-cyber p-3 bg-black/60 border-border/60 hover-lift transition-all col-span-2 md:col-span-1">
+                  <span className="font-mono text-[8px] text-muted-foreground uppercase block mb-1">ÚLTIMA ATIVIDADE</span>
+                  <div className="font-mono text-[10px] font-bold text-foreground truncate" title={data.lastActive}>
+                    {data.timeSinceLastTx}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* ACTION BUTTONS (REPORT / AI) */}
+              <div className="flex flex-wrap gap-2 justify-between items-center bg-black/40 p-3 border border-border/20">
+                <div className="flex gap-2">
+                  <button 
+                    onClick={handleExportPDF}
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-primary/30 hover:border-primary bg-primary/5 font-mono text-[10px] uppercase text-primary transition-all hover:bg-primary/10"
+                  >
+                    <Download size={12} /> PDF Report
+                  </button>
+                  <button 
+                    onClick={handleExportJSON}
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-border hover:border-foreground bg-black/40 font-mono text-[10px] uppercase text-muted-foreground hover:text-foreground transition-all"
+                  >
+                    Export JSON
+                  </button>
+                  <button 
+                    onClick={handleExportCSV}
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-border hover:border-foreground bg-black/40 font-mono text-[10px] uppercase text-muted-foreground hover:text-foreground transition-all"
+                  >
+                    Export CSV
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleAnalyzeWithAi}
+                  disabled={aiLoading}
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/85 text-primary-foreground font-mono text-[10px] uppercase tracking-wider transition-colors disabled:opacity-50"
+                >
+                  {aiLoading ? (
+                    <>
+                      <Loader2 size={12} className="animate-spin" />
+                      Analizando...
+                    </>
+                  ) : (
+                    <>
+                      <Terminal size={12} />
+                      [ Analisar com IA ]
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* AI REPORT SUMMARY */}
+              {aiDossier && (
+                <div className="card-cyber p-5 border-primary/45 bg-[#0a0608]/75 shadow-[inset_0_0_20px_rgba(109,0,26,0.2)] font-mono">
+                  <div className="flex items-center justify-between border-b border-primary/20 pb-2 mb-3">
+                    <span className="text-primary font-bold text-xs flex items-center gap-1.5">
+                      <Terminal size={14} /> CAESAR INTELLIGENCE REPORT
+                    </span>
+                    <span className="text-[9px] text-muted-foreground">AI GEN CONTEXT</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-gray-300 text-left whitespace-pre-line">
+                    {aiDossier}
+                  </p>
+                </div>
+              )}
+
+              {/* INTERACTIVE GRAPH */}
+              <div className="card-cyber border-border/80 h-[450px] relative bg-[#09090b]">
+                <div className="absolute top-3 left-3 z-10 bg-black/85 border border-border/30 p-2 font-mono text-[9px] text-muted-foreground space-y-1 rounded">
+                  <div className="text-primary font-bold mb-1">// GRAFO DE RELACIONAMENTOS (MALTEGO STYLE)</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-green-500"></span> Carteira Alvo</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-blue-500"></span> Exchanges (Binance/Coinbase)</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-purple-500"></span> Mixers (Tornado/Sinbad)</div>
+                </div>
+
+                <ReactFlow
+                  nodes={nodes}
+                  edges={edges}
+                  nodeTypes={nodeTypes}
+                  fitView
+                  className="bg-dot-pattern"
+                  proOptions={{ hideAttribution: true }}
+                >
+                  <Background color="#6D001A" gap={24} size={1} />
+                  <Controls className="bg-card border border-border fill-primary" />
+                </ReactFlow>
+
+                <div className="absolute bottom-2 right-2 text-[8px] font-mono text-muted-foreground/30 uppercase">
+                  // REACT FLOW ENGINE ACTIVE
+                </div>
+              </div>
+
+              {/* RISK ENGINE & ENTITIES */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Risk Engine */}
+                <div className="card-cyber p-5 bg-card/30 border-border/60">
+                  <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-primary mb-4 flex items-center gap-1.5">
+                    <ShieldAlert size={14} className="text-primary" /> MOTOR DE CLASSIFICAÇÃO DE RISCO
+                  </h3>
+                  
+                  <div className="flex items-center gap-6 mb-4">
+                    <div className="relative w-24 h-24 flex items-center justify-center border-4 border-border rounded-full bg-black/45 shadow-inner">
+                      <div className="text-center font-mono">
+                        <span className={`text-2xl font-bold ${data.riskScore >= 70 ? "text-red-500" : data.riskScore >= 35 ? "text-yellow-500" : "text-green-500"}`}>
+                          {data.riskScore}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground block border-t border-border/20 pt-0.5">Score</span>
+                      </div>
+                    </div>
+                    
+                    <div className="font-mono space-y-1">
+                      <span className="text-[10px] text-muted-foreground block">STATUS DE RISCO</span>
+                      <span className={`text-sm font-bold block ${data.riskScore >= 70 ? "text-red-500" : data.riskScore >= 35 ? "text-yellow-500" : "text-green-500"}`}>
+                        {data.riskClassification}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground block max-w-[200px]">
+                        Baseado em volumes atípicos, idade de carteira e proximidade com mixers.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-border/15 pt-3 font-mono">
+                    <span className="text-[9px] text-muted-foreground uppercase tracking-widest block mb-2">// FATORES DE RISCO IDENTIFICADOS</span>
+                    <ul className="space-y-1 text-[10px] text-gray-300">
+                      {data.riskFactors.map((factor, i) => (
+                        <li key={i} className="flex gap-2 items-start text-left">
+                          <span className="text-primary font-bold shrink-0">&gt;</span>
+                          <span>{factor}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Entity & Cluster Details */}
+                <div className="card-cyber p-5 bg-card/30 border-border/60 space-y-4">
+                  
+                  {/* Entity Recognition */}
+                  <div>
+                    <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3 border-b border-border/15 pb-1">
+                      // RECONHECIMENTO DE ENTIDADES
+                    </h3>
+                    {data.entity ? (
+                      <div className="p-3 border border-primary/20 bg-black/40 font-mono text-[10px] flex justify-between items-center">
+                        <div className="space-y-1 text-left">
+                          <span className="font-bold text-foreground text-xs block">{data.entity.name}</span>
+                          <span className="text-[8px] text-muted-foreground block">
+                            Categoria: {data.entity.category} | País: {data.entity.country}
+                          </span>
                         </div>
-                      </ResultCard>
+                        <div className="text-right">
+                          <span className="text-primary font-bold block">{data.entity.confidence}%</span>
+                          <span className="text-[8px] text-muted-foreground block">Confiança</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center font-mono text-[10px] text-muted-foreground/45 border border-border/10 bg-black/10">
+                        Nenhuma exchange ou mixer público nominal reconhecido para este endereço.
+                      </div>
                     )}
                   </div>
 
-                  <div className="lg:col-span-2">
-                    <ResultCard exportData={result.transactions} exportName="transacoes" title="Histórico de Transações">
-                      {result.transactions.length === 0 ? (
-                        <p className="text-xs text-muted-foreground py-4 text-center">Nenhuma transação recente encontrada.</p>
-                      ) : (
-                        <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                          {result.transactions.slice(0, 50).map((tx: any, i: number) => (
-                            <div key={i} className="flex justify-between items-center gap-4 p-3 bg-black/40 border border-border/20 hover:border-primary/30 transition-colors group">
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  {tx.isIncome ? (
-                                    <ArrowDownLeft size={14} className="text-green-400 shrink-0" />
-                                  ) : (
-                                    <ArrowUpRight size={14} className="text-red-400 shrink-0" />
-                                  )}
-                                  <span className="font-mono text-xs text-muted-foreground truncate group-hover:text-primary transition-colors cursor-pointer" title={tx.hash}>
-                                    {tx.hash}
-                                  </span>
-                                </div>
-                                <span className="font-mono text-[10px] text-muted-foreground/60 ml-6">
-                                  {tx.time}
-                                </span>
-                              </div>
-                              <div className="text-right shrink-0">
-                                <span className={`font-mono text-sm font-bold ${tx.isIncome ? "text-green-400" : "text-red-400"}`}>
-                                  {tx.isIncome ? "+" : "-"} {tx.value} {result.ticker}
-                                </span>
-                              </div>
+                  {/* Clusterization */}
+                  <div>
+                    <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3 border-b border-border/15 pb-1">
+                      // AGRUPAMENTO DE CARTEIRAS (CLUSTER)
+                    </h3>
+                    {data.cluster ? (
+                      <div className="p-3 border border-border/30 bg-black/40 font-mono text-[10px] space-y-2 text-left">
+                        <div className="flex justify-between items-center">
+                          <span className="font-bold text-foreground text-xs block">Cluster {data.cluster.clusterId}</span>
+                          <span className="text-muted-foreground text-[9px]">Confiança: {data.cluster.confidence}%</span>
+                        </div>
+                        <div className="text-[9px] text-muted-foreground space-y-1">
+                          <div className="font-bold text-[8px] uppercase tracking-wider text-primary">Carteiras Relacionadas no Cluster:</div>
+                          {data.cluster.addresses.map((addr, idx) => (
+                            <div key={idx} className="truncate bg-black/35 px-2 py-0.5 border border-border/10 font-mono text-[9px]">
+                              {addr}
                             </div>
                           ))}
                         </div>
-                      )}
-                    </ResultCard>
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center font-mono text-[10px] text-muted-foreground/45 border border-border/10 bg-black/10">
+                        Endereço de assinatura única. Nenhum cluster de co-participação identificado.
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
 
-              {/* GRAPH TAB */}
-              {activeTab === "graph" && (
-                <div className="card-cyber border border-primary/20 bg-black/50 p-1 rounded-lg relative overflow-hidden h-[500px]">
-                  <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                    <div className="bg-background/80 backdrop-blur border border-border/50 p-3 rounded text-xs space-y-2">
-                      <div className="flex items-center gap-2"><div className="w-3 h-3 bg-rose-600 rounded-full"></div> Alvo Principal</div>
-                      <div className="flex items-center gap-2"><div className="w-3 h-3 bg-blue-500 clip-hexagon"></div> Entidade/Exchange</div>
-                      <div className="flex items-center gap-2"><div className="w-3 h-3 bg-gray-600 rounded-full"></div> Endereço Relacionado</div>
-                    </div>
+                </div>
+
+              </div>
+
+              {/* TIMELINE FORENSE & RECHARTS */}
+              <div className="card-cyber p-5 bg-card/30 border-border/60">
+                <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4 flex items-center gap-1.5">
+                  <TrendingUp size={14} className="text-primary" /> HISTÓRICO FORENSE DE VOLUMES E TRANSAÇÕES
+                </h3>
+                
+                <div className="h-[250px] w-full mt-4 font-mono text-[10px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={data.timeline}
+                      margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
+                    >
+                      <XAxis dataKey="date" stroke="#888888" fontSize={9} tickLine={false} />
+                      <YAxis stroke="#888888" fontSize={9} tickLine={false} />
+                      <RechartsTooltip 
+                        contentStyle={{ backgroundColor: "#0c0c0e", borderColor: "#6D001A" }}
+                        labelClassName="text-primary font-bold font-mono"
+                        itemStyle={{ fontFamily: "monospace" }}
+                      />
+                      <Legend verticalAlign="top" height={36} />
+                      <Bar name="Vol. Recebido" dataKey="received" fill="#6D001A" radius={[2, 2, 0, 0]} />
+                      <Bar name="Vol. Enviado" dataKey="sent" fill="#555555" radius={[2, 2, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* OSINT ENRICHMENT REFERENCES */}
+              <div className="card-cyber p-5 bg-card/30 border-border/60">
+                <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4 flex items-center gap-1.5">
+                  <FileText size={14} className="text-primary" /> MENÇÕES E REFERÊNCIAS PÚBLICAS (OSINT)
+                </h3>
+                
+                {data.osintMentions.length === 0 ? (
+                  <div className="p-6 text-center font-mono text-[10px] text-muted-foreground/45 border border-border/10 bg-black/10">
+                    Nenhuma referência pública ou post em fóruns/mídias sociais indexado para esta carteira.
                   </div>
-                  <CytoscapeComponent 
-                    elements={result.graphData} 
-                    style={{ width: '100%', height: '100%' }} 
-                    stylesheet={graphStylesheet}
-                    layout={{ name: 'cose', padding: 50, animate: true }}
-                    wheelSensitivity={0.2}
-                  />
-                </div>
-              )}
-
-              {/* TIMELINE TAB */}
-              {activeTab === "timeline" && (
-                <div className="space-y-4">
-                  <ResultCard title="Volume de Transações (30 Dias)">
-                    <div className="h-[300px] w-full mt-4">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={result.timelineData}>
-                          <defs>
-                            <linearGradient id="colorIn" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#4ade80" stopOpacity={0.3}/>
-                              <stop offset="95%" stopColor="#4ade80" stopOpacity={0}/>
-                            </linearGradient>
-                            <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#f87171" stopOpacity={0.3}/>
-                              <stop offset="95%" stopColor="#f87171" stopOpacity={0}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                          <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} tickMargin={10} />
-                          <YAxis stroke="#94a3b8" fontSize={10} tickFormatter={(val) => `${val} ${result.ticker}`} />
-                          <RechartsTooltip 
-                            contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
-                            itemStyle={{ color: '#e2e8f0' }}
-                          />
-                          <Area type="monotone" dataKey="entrada" stroke="#4ade80" fillOpacity={1} fill="url(#colorIn)" name="Entradas" />
-                          <Area type="monotone" dataKey="saida" stroke="#f87171" fillOpacity={1} fill="url(#colorOut)" name="Saídas" />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </ResultCard>
-                  
-                  <ResultCard title="Frequência de Atividade (Heatmap Simulado)">
-                    <div className="h-[150px] w-full mt-4">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={result.timelineData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                          <XAxis dataKey="date" hide />
-                          <RechartsTooltip cursor={{fill: '#1e293b'}} contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}/>
-                          <Bar dataKey="entrada" fill="#3b82f6" stackId="a" name="Frequência" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </ResultCard>
-                </div>
-              )}
-
-              {/* RISK & AI TAB */}
-              {activeTab === "risk" && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <ResultCard title="Análise de Risco (Motor Heurístico)">
-                    <div className="space-y-6">
-                      <div className="flex flex-col items-center justify-center p-6 border border-border/50 bg-black/20 rounded-lg">
-                        <div className="relative flex items-center justify-center w-32 h-32">
-                          <svg className="w-full h-full transform -rotate-90">
-                            <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-slate-800" />
-                            <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="12" fill="transparent" 
-                              strokeDasharray={351.8} 
-                              strokeDashoffset={351.8 - (351.8 * result.risk.score) / 100}
-                              className={`transition-all duration-1000 ${result.risk.score > 75 ? 'text-red-500' : result.risk.score > 40 ? 'text-yellow-500' : 'text-green-500'}`} 
-                            />
-                          </svg>
-                          <div className="absolute flex flex-col items-center">
-                            <span className="text-3xl font-bold font-mono text-foreground">{result.risk.score}</span>
-                          </div>
-                        </div>
-                        <span className={`mt-4 text-lg font-bold uppercase tracking-widest ${result.risk.color}`}>{result.risk.category}</span>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs text-muted-foreground uppercase font-bold mb-3 flex items-center gap-2"><AlertTriangle size={14} /> Fatores de Risco Detectados</h4>
-                        <ul className="space-y-2">
-                          {result.risk.reasons.map((reason: string, i: number) => (
-                            <li key={i} className="text-sm flex items-start gap-2 bg-black/40 p-2 rounded border border-border/30">
-                              <ChevronRight size={16} className="text-primary mt-0.5 shrink-0" />
-                              <span className="text-slate-300">{reason}</span>
-                            </li>
-                          ))}
-                          {result.risk.reasons.length === 0 && (
-                            <li className="text-sm text-muted-foreground p-2">Nenhum fator de risco anormal detectado.</li>
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-                  </ResultCard>
-
-                  <div className="space-y-4">
-                    <ResultCard title="Enriquecimento OSINT">
-                      <div className="space-y-3">
-                        <div className="p-3 bg-black/30 border border-border/30 rounded flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center"><LinkIcon size={14} className="text-slate-400" /></div>
-                            <div>
-                              <span className="text-sm font-bold text-slate-200 block">Reddit /r/CryptoScams</span>
-                              <span className="text-[10px] text-muted-foreground">Última menção: Há 2 meses</span>
-                            </div>
-                          </div>
-                          {result.risk.score > 50 ? <span className="text-xs text-red-400 font-bold">1 Encontrado</span> : <span className="text-xs text-slate-500">0 Resultados</span>}
-                        </div>
-                        <div className="p-3 bg-black/30 border border-border/30 rounded flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center"><LinkIcon size={14} className="text-slate-400" /></div>
-                            <div>
-                              <span className="text-sm font-bold text-slate-200 block">GitHub Gists (Leak)</span>
-                              <span className="text-[10px] text-muted-foreground">Última menção: N/A</span>
-                            </div>
-                          </div>
-                          <span className="text-xs text-slate-500">0 Resultados</span>
-                        </div>
-                      </div>
-                    </ResultCard>
-
-                    <div className="card-cyber p-5 border border-primary/30 relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-primary/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
-                      <div className="relative z-10 flex flex-col h-full">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="font-bold text-primary flex items-center gap-2"><Brain size={18} /> Sintetizador IA</h3>
-                          {!aiSummary && !aiLoading && (
-                            <button onClick={handleAIAnalysis} className="text-xs bg-primary/20 hover:bg-primary/40 text-primary px-3 py-1.5 rounded transition-colors flex items-center gap-2">
-                              GERAR RELATÓRIO EXECUTIVO
-                            </button>
-                          )}
-                        </div>
-
-                        {aiLoading && (
-                          <div className="flex flex-col items-center justify-center py-8 space-y-4">
-                            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                            <span className="text-xs text-muted-foreground font-mono animate-pulse">Processando padrões na blockchain...</span>
-                          </div>
-                        )}
-
-                        {aiSummary && (
-                          <div className="bg-black/60 p-4 rounded border border-primary/20 text-sm font-mono text-slate-300 whitespace-pre-wrap leading-relaxed shadow-inner">
-                            {aiSummary}
-                          </div>
-                        )}
-
-                        {!aiSummary && !aiLoading && (
-                          <div className="text-center py-8 text-sm text-muted-foreground">
-                            Clique para processar os dados coletados usando o modelo heurístico de análise de ameaças.
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                ) : (
+                  <div className="border border-border/20 overflow-x-auto">
+                    <table className="w-full text-left font-mono text-[10px]">
+                      <thead className="bg-black/55 text-muted-foreground uppercase border-b border-border/30 text-[9px] tracking-wider">
+                        <tr>
+                          <th className="p-3">Fonte / Plataforma</th>
+                          <th className="p-3">Data Registro</th>
+                          <th className="p-3">Contexto Detalhado</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/10 bg-black/25">
+                        {data.osintMentions.map((row, idx) => (
+                          <tr key={idx} className="hover:bg-white/5 transition-colors">
+                            <td className="p-3 font-bold text-primary">{row.source}</td>
+                            <td className="p-3 text-muted-foreground">{row.date}</td>
+                            <td className="p-3 text-gray-300 leading-normal">{row.context}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
             </div>
+          )}
 
-            {/* Bottom Actions Toolbar */}
-            <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-border/50">
-              <button 
-                onClick={handleSaveCase}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded transition-all duration-300 ${saveStatus ? 'bg-green-500 text-black' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}
-              >
-                {saveStatus ? <CheckCircle size={16} /> : <Bookmark size={16} />}
-                {saveStatus ? "CASO SALVO" : "SALVAR CASO"}
-              </button>
-              <button 
-                onClick={handleExportPDF}
-                className="flex items-center gap-2 px-6 py-2 text-sm font-bold bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(225,29,72,0.3)] hover:shadow-[0_0_25px_rgba(225,29,72,0.5)]"
-              >
-                <Download size={16} />
-                EXPORTAR PDF FORENSE
-              </button>
-            </div>
+        </div>
 
-          </div>
-        )}
-      </ToolForm>
+      </div>
     </SiteLayout>
   );
 }
