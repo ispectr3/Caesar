@@ -70,91 +70,92 @@
 
 :root {
   --radius: 0px;
-  /* Caesar OSINT Theme - Cinza Escuro Quente e Vermelho Tático */
-  --background: #141416; /* fundo */
-  --foreground: #f2f2f3; /* texto */
-  --card: #242428; /* card */
-  --card-foreground: #f2f2f3;
-  --popover: #1c1c1f; /* superfície */
-  --popover-foreground: #f2f2f3;
-  --primary: #e53e3e; /* acento */
-  --primary-foreground: #f2f2f3;
-  --secondary: #1c1c1f; /* superfície */
-  --secondary-foreground: #f2f2f3;
-  --muted: #2e2e33; /* hover */
-  --muted-foreground: #a1a1aa; /* muted text */
-  --accent: #ff7070; /* acento + */
-  --accent-foreground: #f2f2f3;
-  --destructive: #e53e3e;
-  --destructive-foreground: #f2f2f3;
-  --border: #242428; /* borda sutil baseada no card */
-  --border-active: #2e2e33; /* borda ativa baseada no hover */
-  --input: #1c1c1f; /* fundos de inputs na superfície */
-  --ring: #e53e3e;
+  /* Caesar OSINT Theme - Dossiê Classificado */
+  --background: #000000; /* fundo preto absoluto */
+  --foreground: #F5F5F5; /* texto */
+  --card: #050505; /* card */
+  --card-foreground: #F5F5F5;
+  --popover: #050505; /* superfície */
+  --popover-foreground: #F5F5F5;
+  --primary: #8B0000; /* blood-red */
+  --primary-foreground: #F5F5F5;
+  --secondary: #050505; /* superfície */
+  --secondary-foreground: #F5F5F5;
+  --muted: #111111; /* hover */
+  --muted-foreground: #8A8A8A; /* muted text / gray */
+  --accent: #FF2400; /* scarlet (alertas/destaques pontuais) */
+  --accent-foreground: #F5F5F5;
+  --destructive: #FF2400;
+  --destructive-foreground: #F5F5F5;
+  --border: #1a0505; /* borda vermelha extremamente escura */
+  --border-active: #8B0000;
+  --input: #050505;
+  --ring: #8B0000;
   /* Glow & accents */
-  --glow: #e53e3e;
-  --glow-subtle: rgba(229, 62, 62, 0.2);
-  --cyan: #ff7070;
-  --success: #48bb78;
-  --warning: #ed8936;
+  --glow: #8B0000;
+  --glow-subtle: rgba(139, 0, 0, 0.25);
+  --cyan: #B22222; /* crimson */
+  --success: #4a5d4e; /* verde militar/oliva desaturado, discreto */
+  --warning: #B22222;
   /* Charts */
-  --chart-1: #e53e3e;
-  --chart-2: #ff7070;
-  --chart-3: #2e2e33;
-  --chart-4: #1c1c1f;
-  --chart-5: #141416;
-  --sidebar: #0e0e10; /* base */
-  --sidebar-foreground: #f2f2f3;
-  --sidebar-primary: #e53e3e;
-  --sidebar-primary-foreground: #f2f2f3;
-  --sidebar-accent: #242428;
-  --sidebar-accent-foreground: #f2f2f3;
-  --sidebar-border: #1c1c1f;
-  --sidebar-ring: #e53e3e;
+  --chart-1: #8B0000;
+  --chart-2: #B22222;
+  --chart-3: #111111;
+  --chart-4: #050505;
+  --chart-5: #000000;
+  --sidebar: #000000;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #8B0000;
+  --sidebar-primary-foreground: #F5F5F5;
+  --sidebar-accent: #050505;
+  --sidebar-accent-foreground: #F5F5F5;
+  --sidebar-border: #1a0505;
+  --sidebar-ring: #8B0000;
   /* Fonts */
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --font-sans: var(--font-mono);
+  --font-sans: "Inter", sans-serif;
+  --font-title: "Bebas Neue", sans-serif;
 }
 
 .dark {
-  --background: #141416;
-  --foreground: #f2f2f3;
-  --card: #242428;
-  --card-foreground: #f2f2f3;
-  --popover: #1c1c1f;
-  --popover-foreground: #f2f2f3;
-  --primary: #e53e3e;
-  --primary-foreground: #f2f2f3;
-  --secondary: #1c1c1f;
-  --secondary-foreground: #f2f2f3;
-  --muted: #2e2e33;
-  --muted-foreground: #a1a1aa;
-  --accent: #ff7070;
-  --accent-foreground: #f2f2f3;
-  --destructive: #e53e3e;
-  --destructive-foreground: #f2f2f3;
-  --border: #242428;
-  --border-active: #2e2e33;
-  --input: #1c1c1f;
-  --ring: #e53e3e;
-  --glow: #e53e3e;
-  --glow-subtle: rgba(229, 62, 62, 0.2);
-  --cyan: #ff7070;
-  --success: #48bb78;
-  --warning: #ed8936;
-  --chart-1: #e53e3e;
-  --chart-2: #ff7070;
-  --chart-3: #2e2e33;
-  --chart-4: #1c1c1f;
-  --chart-5: #141416;
-  --sidebar: #0e0e10;
-  --sidebar-foreground: #f2f2f3;
-  --sidebar-primary: #e53e3e;
-  --sidebar-primary-foreground: #f2f2f3;
-  --sidebar-accent: #242428;
-  --sidebar-accent-foreground: #f2f2f3;
-  --sidebar-border: #1c1c1f;
-  --sidebar-ring: #e53e3e;
+  --background: #000000;
+  --foreground: #F5F5F5;
+  --card: #050505;
+  --card-foreground: #F5F5F5;
+  --popover: #050505;
+  --popover-foreground: #F5F5F5;
+  --primary: #8B0000;
+  --primary-foreground: #F5F5F5;
+  --secondary: #050505;
+  --secondary-foreground: #F5F5F5;
+  --muted: #111111;
+  --muted-foreground: #8A8A8A;
+  --accent: #FF2400;
+  --accent-foreground: #F5F5F5;
+  --destructive: #FF2400;
+  --destructive-foreground: #F5F5F5;
+  --border: #1a0505;
+  --border-active: #8B0000;
+  --input: #050505;
+  --ring: #8B0000;
+  --glow: #8B0000;
+  --glow-subtle: rgba(139, 0, 0, 0.25);
+  --cyan: #B22222;
+  --success: #4a5d4e;
+  --warning: #B22222;
+  --chart-1: #8B0000;
+  --chart-2: #B22222;
+  --chart-3: #111111;
+  --chart-4: #050505;
+  --chart-5: #000000;
+  --sidebar: #000000;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #8B0000;
+  --sidebar-primary-foreground: #F5F5F5;
+  --sidebar-accent: #050505;
+  --sidebar-accent-foreground: #F5F5F5;
+  --sidebar-border: #1a0505;
+  --sidebar-ring: #8B0000;
 }
 
 /* ═══════════════════════════════════════════
@@ -167,11 +168,19 @@
   }
 
   body {
-    background-color: var(--color-background);
-    background-image: none;
+    background:
+      radial-gradient(circle at top right, rgba(139,0,0,.25), transparent 40%),
+      radial-gradient(circle at bottom left, rgba(178,34,34,.15), transparent 35%),
+      #000000;
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-title);
+    letter-spacing: 2px;
+    text-transform: uppercase;
   }
 
   /* Smooth scrolling */
@@ -189,7 +198,7 @@
   }
   ::-webkit-scrollbar-thumb {
     background: var(--color-border);
-    border-radius: 3px;
+    border-radius: 0px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-muted-foreground);
@@ -203,12 +212,13 @@
 .bg-grid {
   position: relative;
   overflow: hidden;
-  background-color: var(--background);
+  background:
+    radial-gradient(circle at top right, rgba(139, 0, 0, 0.15), transparent 45%),
+    radial-gradient(circle at bottom left, rgba(178, 34, 34, 0.1), transparent 40%),
+    #000000;
   background-image:
-    repeating-linear-gradient(35deg, var(--border-active) 0, var(--border-active) 1px, transparent 1px, transparent 30px),
-    repeating-linear-gradient(-35deg, var(--border-active) 0, var(--border-active) 1px, transparent 1px, transparent 30px),
-    repeating-linear-gradient(75deg, var(--border-active) 0, var(--border-active) 1px, transparent 1px, transparent 50px),
-    repeating-linear-gradient(-75deg, var(--border-active) 0, var(--border-active) 1px, transparent 1px, transparent 50px);
+    repeating-linear-gradient(35deg, rgba(139, 0, 0, 0.04) 0, rgba(139, 0, 0, 0.04) 1px, transparent 1px, transparent 30px),
+    repeating-linear-gradient(-35deg, rgba(139, 0, 0, 0.04) 0, rgba(139, 0, 0, 0.04) 1px, transparent 1px, transparent 30px);
 }
 
 .bg-grid::before {
@@ -218,8 +228,8 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at 50% 50%, rgba(229, 62, 62, 0.06) 0%, transparent 60%);
-  animation: radar-spin 15s linear infinite;
+  background: radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.04) 0%, transparent 60%);
+  animation: radar-spin 20s linear infinite;
   pointer-events: none;
   z-index: 0;
 }
@@ -235,23 +245,19 @@
 }
 
 /* ═══════════════════════════════════════════
-   Glassmorphism
+   Glassmorphism (Simplified to Brutalist panels)
    ═══════════════════════════════════════════ */
 
 .glass {
-  background: linear-gradient(135deg, var(--card) 0%, var(--popover) 100%);
-  backdrop-filter: blur(16px) saturate(1.2);
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  background: #050505;
   border: 1px solid var(--border);
-  box-shadow: 0 4px 20px 0 oklch(0 0 0 / 30%);
+  box-shadow: 0 4px 20px 0 oklch(0 0 0 / 40%);
 }
 
 .glass-strong {
-  background: var(--popover);
-  backdrop-filter: blur(30px) saturate(1.4);
-  -webkit-backdrop-filter: blur(30px) saturate(1.4);
-  border: 1px solid var(--primary);
-  box-shadow: 0 8px 32px 0 oklch(0 0 0 / 50%);
+  background: #000000;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px 0 oklch(0 0 0 / 60%);
 }
 
 /* ═══════════════════════════════════════════
@@ -565,7 +571,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   Noise texture overlay (very subtle)
+   Noise and scanline texture overlay
    ═══════════════════════════════════════════ */
 
 .noise-overlay::after {
@@ -578,21 +584,37 @@
   z-index: 9999;
 }
 
+.noise-overlay::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background-image: linear-gradient(
+    transparent 95%,
+    rgba(255, 255, 255, 0.015) 100%
+  );
+  background-size: 100% 4px;
+  opacity: 0.85;
+}
+
 /* ═══════════════════════════════════════════
-   Cyber Ops Hacker Styles
+   Cyber Ops Hacker Styles (Dossier Look)
    ═══════════════════════════════════════════ */
 
 .card-cyber {
   position: relative;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 4px !important; /* Slight rounding for GitHub feel */
+  border-left: 3px solid var(--primary);
+  border-radius: 0px !important; /* Fully sharp corners */
   box-shadow: 0 1px 3px 0 rgba(0,0,0,0.5);
   transition: all 0.2s ease;
 }
 
 .card-cyber:hover {
-  border-color: var(--primary);
+  border-color: var(--border-active);
+  border-left-color: var(--accent);
   box-shadow: 0 0 12px var(--glow-subtle), 0 4px 12px 0 rgba(0,0,0,0.6);
   transform: translateY(-2px);
 }
