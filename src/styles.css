@@ -1,22 +1,9 @@
+cat>/mnt/user-data/outputs/globals.css << 'EOF'
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -60,7 +47,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  /* Custom semantic colors */
   --color-glow: var(--glow);
   --color-glow-subtle: var(--glow-subtle);
   --color-cyan: var(--cyan);
@@ -68,94 +54,144 @@
   --color-warning: var(--warning);
 }
 
+/* ═══════════════════════════════════════════
+   DARK MODE — Carvão Quente + Scarlet
+   Fundo: preto com subtom marrom-avermelhado
+   Texto: bege suave
+   Vermelho: scarlet com gradiente vibrante
+   ═══════════════════════════════════════════ */
+
 :root {
   --radius: 0px;
-  /* Caesar OSINT Theme - Dossiê Classificado */
-  --background: #000000; /* fundo preto absoluto */
-  --foreground: #F5F5F5; /* texto */
-  --card: #050505; /* card */
-  --card-foreground: #F5F5F5;
-  --popover: #050505; /* superfície */
-  --popover-foreground: #F5F5F5;
-  --primary: #8B0000; /* blood-red */
-  --primary-foreground: #F5F5F5;
-  --secondary: #050505; /* superfície */
-  --secondary-foreground: #F5F5F5;
-  --muted: #111111; /* hover */
-  --muted-foreground: #8A8A8A; /* muted text / gray */
-  --accent: #FF2400; /* scarlet (alertas/destaques pontuais) */
-  --accent-foreground: #F5F5F5;
-  --destructive: #FF2400;
-  --destructive-foreground: #F5F5F5;
-  --border: #1a0505; /* borda vermelha extremamente escura */
-  --border-active: #8B0000;
-  --input: #050505;
-  --ring: #8B0000;
-  /* Glow & accents */
-  --glow: #8B0000;
-  --glow-subtle: rgba(139, 0, 0, 0.25);
-  --cyan: #B22222; /* crimson */
-  --success: #4a5d4e; /* verde militar/oliva desaturado, discreto */
-  --warning: #B22222;
+
+  /* Backgrounds — carvão quente */
+  --background: #120C0C;
+  --foreground: #E8DDD0;
+
+  --card: #1E1413;
+  --card-foreground: #E8DDD0;
+
+  --popover: #1E1413;
+  --popover-foreground: #E8DDD0;
+
+  /* Vermelho scarlet — primary mais vibrante */
+  --primary: #E53935;
+  --primary-foreground: #FFF5F5;
+
+  --secondary: #2A1A18;
+  --secondary-foreground: #E8DDD0;
+
+  --muted: #2A1A18;
+  --muted-foreground: #7A6B5D;
+
+  /* Accent: scarlet mais quente para hover/destaque */
+  --accent: #FF5252;
+  --accent-foreground: #FFF5F5;
+
+  --destructive: #FF5252;
+  --destructive-foreground: #FFF5F5;
+
+  /* Bordas sutis com subtom marrom */
+  --border: #2A1A18;
+  --border-active: #E53935;
+
+  --input: #1E1413;
+  --ring: #E53935;
+
+  /* Glow scarlet — mais amplo, menos opaco */
+  --glow: #E53935;
+  --glow-subtle: rgba(229, 57, 53, 0.18);
+
+  /* Crimson para detalhes secundários */
+  --cyan: #C62828;
+
+  /* Success: verde militar discreto */
+  --success: #4a5d4e;
+  --warning: #C62828;
+
   /* Charts */
-  --chart-1: #8B0000;
-  --chart-2: #B22222;
-  --chart-3: #111111;
-  --chart-4: #050505;
-  --chart-5: #000000;
-  --sidebar: #000000;
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-primary: #8B0000;
-  --sidebar-primary-foreground: #F5F5F5;
-  --sidebar-accent: #050505;
-  --sidebar-accent-foreground: #F5F5F5;
-  --sidebar-border: #1a0505;
-  --sidebar-ring: #8B0000;
+  --chart-1: #E53935;
+  --chart-2: #C62828;
+  --chart-3: #2A1A18;
+  --chart-4: #1E1413;
+  --chart-5: #120C0C;
+
+  /* Sidebar */
+  --sidebar: #0E0909;
+  --sidebar-foreground: #E8DDD0;
+  --sidebar-primary: #E53935;
+  --sidebar-primary-foreground: #FFF5F5;
+  --sidebar-accent: #1E1413;
+  --sidebar-accent-foreground: #E8DDD0;
+  --sidebar-border: #2A1A18;
+  --sidebar-ring: #E53935;
+
   /* Fonts */
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-sans: "Inter", sans-serif;
   --font-title: "Bebas Neue", sans-serif;
 }
 
-.dark {
-  --background: #000000;
-  --foreground: #F5F5F5;
-  --card: #050505;
-  --card-foreground: #F5F5F5;
-  --popover: #050505;
-  --popover-foreground: #F5F5F5;
-  --primary: #8B0000;
-  --primary-foreground: #F5F5F5;
-  --secondary: #050505;
-  --secondary-foreground: #F5F5F5;
-  --muted: #111111;
-  --muted-foreground: #8A8A8A;
-  --accent: #FF2400;
-  --accent-foreground: #F5F5F5;
-  --destructive: #FF2400;
-  --destructive-foreground: #F5F5F5;
-  --border: #1a0505;
-  --border-active: #8B0000;
-  --input: #050505;
-  --ring: #8B0000;
-  --glow: #8B0000;
-  --glow-subtle: rgba(139, 0, 0, 0.25);
-  --cyan: #B22222;
+/* ═══════════════════════════════════════════
+   LIGHT MODE — Pergaminho + Scarlet
+   Fundo: sépia claro, papel envelhecido
+   Texto: quase preto quente
+   Vermelho: scarlet com gradiente
+   ═══════════════════════════════════════════ */
+
+.light {
+  --background: #F5F0E8;
+  --foreground: #1C1410;
+
+  --card: #FDF8F0;
+  --card-foreground: #1C1410;
+
+  --popover: #FDF8F0;
+  --popover-foreground: #1C1410;
+
+  --primary: #C62828;
+  --primary-foreground: #FFF5F5;
+
+  --secondary: #EDE8DE;
+  --secondary-foreground: #1C1410;
+
+  --muted: #E8E0D0;
+  --muted-foreground: #6B5A3E;
+
+  --accent: #E53935;
+  --accent-foreground: #FFF5F5;
+
+  --destructive: #E53935;
+  --destructive-foreground: #FFF5F5;
+
+  --border: #D8CFC0;
+  --border-active: #C62828;
+
+  --input: #EDE8DE;
+  --ring: #C62828;
+
+  --glow: #C62828;
+  --glow-subtle: rgba(198, 40, 40, 0.15);
+
+  --cyan: #B71C1C;
+
   --success: #4a5d4e;
-  --warning: #B22222;
-  --chart-1: #8B0000;
-  --chart-2: #B22222;
-  --chart-3: #111111;
-  --chart-4: #050505;
-  --chart-5: #000000;
-  --sidebar: #000000;
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-primary: #8B0000;
-  --sidebar-primary-foreground: #F5F5F5;
-  --sidebar-accent: #050505;
-  --sidebar-accent-foreground: #F5F5F5;
-  --sidebar-border: #1a0505;
-  --sidebar-ring: #8B0000;
+  --warning: #B71C1C;
+
+  --chart-1: #C62828;
+  --chart-2: #E53935;
+  --chart-3: #E8E0D0;
+  --chart-4: #EDE8DE;
+  --chart-5: #F5F0E8;
+
+  --sidebar: #EDE8DE;
+  --sidebar-foreground: #1C1410;
+  --sidebar-primary: #C62828;
+  --sidebar-primary-foreground: #FFF5F5;
+  --sidebar-accent: #E8E0D0;
+  --sidebar-accent-foreground: #1C1410;
+  --sidebar-border: #D8CFC0;
+  --sidebar-ring: #C62828;
 }
 
 /* ═══════════════════════════════════════════
@@ -165,42 +201,58 @@
 @layer base {
   * {
     border-color: var(--color-border);
+    transition: color 0.2s ease, background-color 0.25s ease, border-color 0.2s ease;
   }
 
   body {
     background:
-      radial-gradient(ellipse at 95% 90%, rgba(139, 0, 0, 0.45) 0%, transparent 45%),
-      radial-gradient(ellipse at 5% 10%, rgba(100, 0, 0, 0.55) 0%, transparent 55%),
-      radial-gradient(ellipse at 50% 50%, rgba(80, 0, 0, 0.15) 0%, transparent 70%),
-      #0a0a0a;
+      radial-gradient(ellipse at 90% 95%, rgba(229, 57, 53, 0.22) 0%, transparent 40%),
+      radial-gradient(ellipse at 8% 8%, rgba(180, 30, 30, 0.28) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(120, 20, 20, 0.08) 0%, transparent 65%),
+      #120C0C;
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  .light body {
+    background:
+      radial-gradient(ellipse at 90% 95%, rgba(198, 40, 40, 0.07) 0%, transparent 40%),
+      radial-gradient(ellipse at 8% 8%, rgba(198, 40, 40, 0.05) 0%, transparent 45%),
+      #F5F0E8;
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-title);
     letter-spacing: 2px;
     text-transform: uppercase;
   }
 
-  /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
+
   ::-webkit-scrollbar-track {
     background: var(--color-background);
   }
+
   ::-webkit-scrollbar-thumb {
     background: var(--color-border);
     border-radius: 0px;
+    transition: background 0.2s ease;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-muted-foreground);
   }
@@ -214,13 +266,13 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 95% 90%, rgba(139, 0, 0, 0.40) 0%, transparent 45%),
-    radial-gradient(ellipse at 5% 10%, rgba(100, 0, 0, 0.50) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 50%, rgba(80, 0, 0, 0.12) 0%, transparent 70%),
-    #0a0a0a;
+    radial-gradient(ellipse at 90% 95%, rgba(229, 57, 53, 0.20) 0%, transparent 40%),
+    radial-gradient(ellipse at 8% 8%, rgba(180, 30, 30, 0.25) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(120, 20, 20, 0.07) 0%, transparent 65%),
+    #120C0C;
   background-image:
-    repeating-linear-gradient(35deg, rgba(139, 0, 0, 0.04) 0, rgba(139, 0, 0, 0.04) 1px, transparent 1px, transparent 30px),
-    repeating-linear-gradient(-35deg, rgba(139, 0, 0, 0.04) 0, rgba(139, 0, 0, 0.04) 1px, transparent 1px, transparent 30px);
+    repeating-linear-gradient(35deg, rgba(229, 57, 53, 0.03) 0, rgba(229, 57, 53, 0.03) 1px, transparent 1px, transparent 30px),
+    repeating-linear-gradient(-35deg, rgba(229, 57, 53, 0.03) 0, rgba(229, 57, 53, 0.03) 1px, transparent 1px, transparent 30px);
 }
 
 .bg-grid::before {
@@ -230,68 +282,71 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.04) 0%, transparent 60%);
-  animation: radar-spin 20s linear infinite;
+  background: radial-gradient(circle at 50% 50%, rgba(229, 57, 53, 0.03) 0%, transparent 60%);
+  animation: radar-spin 25s linear infinite;
   pointer-events: none;
   z-index: 0;
 }
 
 @keyframes radar-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.bg-grid > * {
+.bg-grid>* {
   position: relative;
   z-index: 1;
 }
 
 /* ═══════════════════════════════════════════
-   Glassmorphism (Simplified to Brutalist panels)
+   Glassmorphism (Brutalist panels)
    ═══════════════════════════════════════════ */
 
 .glass {
-  background: #050505;
+  background: #1E1413;
   border: 1px solid var(--border);
-  box-shadow: 0 4px 20px 0 oklch(0 0 0 / 40%);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.35);
 }
 
 .glass-strong {
-  background: #000000;
+  background: #120C0C;
   border: 1px solid var(--border);
-  box-shadow: 0 8px 32px 0 oklch(0 0 0 / 60%);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.50);
 }
 
 /* ═══════════════════════════════════════════
-   Glow effects
+   Glow effects — scarlet, mais suave
    ═══════════════════════════════════════════ */
 
 .glow-border {
   box-shadow:
     0 0 0 1px var(--glow-subtle),
-    0 0 15px -3px var(--glow-subtle),
-    inset 0 0 15px -8px var(--glow-subtle);
+    0 0 18px -4px var(--glow-subtle);
 }
 
 .glow-border-hover:hover {
   box-shadow:
-    0 0 0 1px var(--primary),
-    0 0 25px -3px var(--glow-subtle),
-    inset 0 0 20px -8px var(--glow-subtle);
+    0 0 0 1px rgba(229, 57, 53, 0.5),
+    0 0 28px -4px var(--glow-subtle);
 }
 
 .glow-text {
-  text-shadow: 0 0 15px var(--glow-subtle);
+  text-shadow: 0 0 18px var(--glow-subtle);
 }
 
 .glow-text-strong {
   text-shadow:
-    0 0 8px var(--primary),
-    0 0 30px var(--glow-subtle);
+    0 0 10px rgba(229, 57, 53, 0.5),
+    0 0 35px var(--glow-subtle);
 }
 
 /* ═══════════════════════════════════════════
-   Gradient accent bar (top of cards)
+   Gradient accent bar — agora com scarlet gradiente
    ═══════════════════════════════════════════ */
 
 .accent-bar {
@@ -305,14 +360,13 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(
-    90deg,
-    var(--primary) 0%,
-    var(--cyan) 50%,
-    var(--accent) 100%
-  );
+  background: linear-gradient(90deg,
+      #7B1C1C 0%,
+      #E53935 40%,
+      #FF5252 70%,
+      #FF8A80 100%);
   border-radius: 2px 2px 0 0;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .accent-bar-left {
@@ -326,17 +380,16 @@
   left: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(
-    180deg,
-    var(--primary) 0%,
-    var(--cyan) 50%,
-    var(--accent) 100%
-  );
+  background: linear-gradient(180deg,
+      #7B1C1C 0%,
+      #E53935 40%,
+      #FF5252 70%,
+      #FF8A80 100%);
   border-radius: 2px 0 0 2px;
 }
 
 /* ═══════════════════════════════════════════
-   Scan-line loading animation
+   Scan-line — mais sutil
    ═══════════════════════════════════════════ */
 
 .scan-line {
@@ -350,27 +403,29 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--primary) 50%, transparent 100%);
-  animation: scan 1.5s ease-in-out infinite;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(229, 57, 53, 0.6) 50%, transparent 100%);
+  animation: scan 2s ease-in-out infinite;
 }
 
 @keyframes scan {
   0% {
     top: 0;
-    opacity: 1;
+    opacity: 0.8;
   }
+
   50% {
-    opacity: 0.5;
+    opacity: 0.3;
   }
+
   100% {
     top: 100%;
-    opacity: 1;
+    opacity: 0.8;
   }
 }
 
 /* ═══════════════════════════════════════════
-   Pulse dot (status indicator)
+   Pulse dot
    ═══════════════════════════════════════════ */
 
 .pulse-dot {
@@ -387,7 +442,7 @@
   position: absolute;
   inset: -3px;
   border-radius: 50%;
-  background: #C9D0D966;
+  background: rgba(74, 93, 78, 0.4);
   animation: pulse-ring 2s ease-out infinite;
 }
 
@@ -396,6 +451,7 @@
     transform: scale(1);
     opacity: 1;
   }
+
   100% {
     transform: scale(2.2);
     opacity: 0;
@@ -414,28 +470,31 @@
 }
 
 @keyframes blink {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
 }
 
 /* ═══════════════════════════════════════════
-   Fade-in / stagger animations
+   Fade-in / stagger — duração aumentada para transição suave
    ═══════════════════════════════════════════ */
 
 .fade-in-up {
-  animation: fadeInUp 0.5s ease-out both;
+  animation: fadeInUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -445,32 +504,40 @@
 .stagger-1 {
   animation-delay: 0.05s;
 }
+
 .stagger-2 {
-  animation-delay: 0.1s;
+  animation-delay: 0.10s;
 }
+
 .stagger-3 {
   animation-delay: 0.15s;
 }
+
 .stagger-4 {
-  animation-delay: 0.2s;
+  animation-delay: 0.20s;
 }
+
 .stagger-5 {
   animation-delay: 0.25s;
 }
+
 .stagger-6 {
-  animation-delay: 0.3s;
+  animation-delay: 0.30s;
 }
+
 .stagger-7 {
   animation-delay: 0.35s;
 }
+
 .stagger-8 {
-  animation-delay: 0.4s;
+  animation-delay: 0.40s;
 }
 
 .hover-lift {
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+    background-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .hover-lift:hover {
@@ -479,23 +546,22 @@
 }
 
 /* ═══════════════════════════════════════════
-   Gradient text
+   Gradient text — scarlet vibrante
    ═══════════════════════════════════════════ */
 
 .gradient-text {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--accent) 55%,
-    var(--foreground) 100%
-  );
+  background: linear-gradient(135deg,
+      #C62828 0%,
+      #E53935 35%,
+      #FF5252 65%,
+      #FF8A80 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-text-warm {
-  background: linear-gradient(135deg, var(--warning) 0%, var(--primary) 100%);
+  background: linear-gradient(135deg, #FF5252 0%, #C62828 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -507,47 +573,46 @@
 
 .status-secure {
   color: var(--success);
-  border-color: rgba(151, 7, 11, 0.4);
-  background: rgba(151, 7, 11, 0.1);
+  border-color: rgba(74, 93, 78, 0.4);
+  background: rgba(74, 93, 78, 0.1);
 }
 
 .status-warning {
-  color: var(--warning);
-  border-color: rgba(237, 4, 8, 0.4);
-  background: rgba(237, 4, 8, 0.1);
+  color: #FF8A80;
+  border-color: rgba(229, 57, 53, 0.35);
+  background: rgba(229, 57, 53, 0.08);
 }
 
 .status-danger {
-  color: var(--destructive);
-  border-color: rgba(237, 4, 8, 0.4);
-  background: rgba(237, 4, 8, 0.1);
+  color: #FF5252;
+  border-color: rgba(229, 57, 53, 0.45);
+  background: rgba(229, 57, 53, 0.12);
 }
 
 .status-info {
-  color: var(--primary);
+  color: var(--foreground);
   border-color: var(--border);
   background: var(--input);
 }
 
 /* ═══════════════════════════════════════════
-   Shimmer loading
+   Shimmer
    ═══════════════════════════════════════════ */
 
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--card) 25%,
-    var(--border-active) 50%,
-    var(--card) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--card) 25%,
+      var(--border-active) 50%,
+      var(--card) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer 1.8s ease-in-out infinite;
 }
 
 @keyframes shimmer {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -558,7 +623,7 @@
    ═══════════════════════════════════════════ */
 
 .mobile-nav-open {
-  animation: slideDown 0.3s ease-out;
+  animation: slideDown 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes slideDown {
@@ -566,6 +631,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -573,14 +639,14 @@
 }
 
 /* ═══════════════════════════════════════════
-   Noise and scanline texture overlay
+   Noise overlay — bem reduzido, quase imperceptível
    ═══════════════════════════════════════════ */
 
 .noise-overlay::after {
   content: "";
   position: fixed;
   inset: 0;
-  opacity: 0.065;
+  opacity: 0.022;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 9999;
@@ -592,16 +658,14 @@
   inset: 0;
   pointer-events: none;
   z-index: 9998;
-  background-image: linear-gradient(
-    transparent 95%,
-    rgba(255, 255, 255, 0.015) 100%
-  );
-  background-size: 100% 4px;
-  opacity: 0.85;
+  background-image: linear-gradient(transparent 96%,
+      rgba(255, 255, 255, 0.008) 100%);
+  background-size: 100% 6px;
+  opacity: 0.5;
 }
 
 /* ═══════════════════════════════════════════
-   Cyber Ops Hacker Styles (Dossier Look)
+   Card cyber — com transição suave
    ═══════════════════════════════════════════ */
 
 .card-cyber {
@@ -609,19 +673,25 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-left: 3px solid var(--primary);
-  border-radius: 0px !important; /* Fully sharp corners */
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.5);
-  transition: all 0.2s ease;
+  border-radius: 0px !important;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.4);
+  transition:
+    border-color 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card-cyber:hover {
   border-color: var(--border-active);
   border-left-color: var(--accent);
-  box-shadow: 0 0 12px var(--glow-subtle), 0 4px 12px 0 rgba(0,0,0,0.6);
+  box-shadow: 0 0 16px rgba(229, 57, 53, 0.15), 0 4px 14px 0 rgba(0, 0, 0, 0.5);
   transform: translateY(-2px);
 }
 
-/* Terminal Input prompt */
+/* ═══════════════════════════════════════════
+   Terminal input
+   ═══════════════════════════════════════════ */
+
 .input-prompt-wrapper {
   position: relative;
   display: flex;
@@ -636,18 +706,21 @@
   font-size: 14px;
   font-weight: bold;
   color: var(--primary);
-  opacity: 0.8;
+  opacity: 0.75;
   pointer-events: none;
 }
 
-/* CLI Text divider */
+/* ═══════════════════════════════════════════
+   CLI divider
+   ═══════════════════════════════════════════ */
+
 .cli-divider {
   display: flex;
   align-items: center;
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--primary);
-  opacity: 0.4;
+  opacity: 0.35;
   margin: 1rem 0;
   user-select: none;
 }
@@ -661,9 +734,55 @@
 }
 
 /* ═══════════════════════════════════════════
-   Print layout optimizations (JSON/PDF)
+   Page transitions — suaves entre rotas
    ═══════════════════════════════════════════ */
+
+.page-enter {
+  animation: pageEnter 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-exit {
+  animation: pageExit 0.2s ease-in both;
+}
+
+@keyframes pageExit {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* Links e botões com transição suave */
+a,
+button {
+  transition:
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+/* ═══════════════════════════════════════════
+   Print
+   ═══════════════════════════════════════════ */
+
 @media print {
+
   header,
   footer,
   form,
@@ -674,7 +793,7 @@
   .accent-bar-left::before {
     display: none !important;
   }
-  
+
   body {
     background: #ffffff !important;
     color: #000000 !important;
@@ -711,7 +830,8 @@
     font-weight: bold;
   }
 
-  .glow-text, .glow-text-strong {
+  .glow-text,
+  .glow-text-strong {
     text-shadow: none !important;
   }
 
@@ -720,5 +840,3 @@
     color: #000000 !important;
   }
 }
-
-
