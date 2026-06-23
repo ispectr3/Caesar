@@ -14,11 +14,13 @@ import { Route as WaybackRouteImport } from './routes/wayback'
 import { Route as UsernameRouteImport } from './routes/username'
 import { Route as TimestampRouteImport } from './routes/timestamp'
 import { Route as SubdomainsRouteImport } from './routes/subdomains'
+import { Route as SpeedtestRouteImport } from './routes/speedtest'
 import { Route as ScamRouteImport } from './routes/scam'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as RegexRouteImport } from './routes/regex'
 import { Route as PortscanRouteImport } from './routes/portscan'
 import { Route as PhoneRouteImport } from './routes/phone'
+import { Route as PasswordRouteImport } from './routes/password'
 import { Route as NamintRouteImport } from './routes/namint'
 import { Route as MosintRouteImport } from './routes/mosint'
 import { Route as LeaklookerRouteImport } from './routes/leaklooker'
@@ -34,6 +36,8 @@ import { Route as FilephishRouteImport } from './routes/filephish'
 import { Route as FaviconRouteImport } from './routes/favicon'
 import { Route as ExifRouteImport } from './routes/exif'
 import { Route as EncoderRouteImport } from './routes/encoder'
+import { Route as EmailverifyRouteImport } from './routes/emailverify'
+import { Route as EmailblacklistRouteImport } from './routes/emailblacklist'
 import { Route as EmailRouteImport } from './routes/email'
 import { Route as ElaRouteImport } from './routes/ela'
 import { Route as DorksRouteImport } from './routes/dorks'
@@ -73,6 +77,11 @@ const SubdomainsRoute = SubdomainsRouteImport.update({
   path: '/subdomains',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SpeedtestRoute = SpeedtestRouteImport.update({
+  id: '/speedtest',
+  path: '/speedtest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScamRoute = ScamRouteImport.update({
   id: '/scam',
   path: '/scam',
@@ -96,6 +105,11 @@ const PortscanRoute = PortscanRouteImport.update({
 const PhoneRoute = PhoneRouteImport.update({
   id: '/phone',
   path: '/phone',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PasswordRoute = PasswordRouteImport.update({
+  id: '/password',
+  path: '/password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NamintRoute = NamintRouteImport.update({
@@ -171,6 +185,16 @@ const ExifRoute = ExifRouteImport.update({
 const EncoderRoute = EncoderRouteImport.update({
   id: '/encoder',
   path: '/encoder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailverifyRoute = EmailverifyRouteImport.update({
+  id: '/emailverify',
+  path: '/emailverify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailblacklistRoute = EmailblacklistRouteImport.update({
+  id: '/emailblacklist',
+  path: '/emailblacklist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailRoute = EmailRouteImport.update({
@@ -253,6 +277,8 @@ export interface FileRoutesByFullPath {
   '/dorks': typeof DorksRoute
   '/ela': typeof ElaRoute
   '/email': typeof EmailRoute
+  '/emailblacklist': typeof EmailblacklistRoute
+  '/emailverify': typeof EmailverifyRoute
   '/encoder': typeof EncoderRoute
   '/exif': typeof ExifRoute
   '/favicon': typeof FaviconRoute
@@ -268,17 +294,20 @@ export interface FileRoutesByFullPath {
   '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
+  '/password': typeof PasswordRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
+  '/speedtest': typeof SpeedtestRoute
   '/subdomains': typeof SubdomainsRoute
   '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
+
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
@@ -293,6 +322,8 @@ export interface FileRoutesByTo {
   '/dorks': typeof DorksRoute
   '/ela': typeof ElaRoute
   '/email': typeof EmailRoute
+  '/emailblacklist': typeof EmailblacklistRoute
+  '/emailverify': typeof EmailverifyRoute
   '/encoder': typeof EncoderRoute
   '/exif': typeof ExifRoute
   '/favicon': typeof FaviconRoute
@@ -308,19 +339,22 @@ export interface FileRoutesByTo {
   '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
+  '/password': typeof PasswordRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
+  '/speedtest': typeof SpeedtestRoute
   '/subdomains': typeof SubdomainsRoute
   '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
+
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
+  '__root__': typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -334,6 +368,8 @@ export interface FileRoutesById {
   '/dorks': typeof DorksRoute
   '/ela': typeof ElaRoute
   '/email': typeof EmailRoute
+  '/emailblacklist': typeof EmailblacklistRoute
+  '/emailverify': typeof EmailverifyRoute
   '/encoder': typeof EncoderRoute
   '/exif': typeof ExifRoute
   '/favicon': typeof FaviconRoute
@@ -349,17 +385,20 @@ export interface FileRoutesById {
   '/leaklooker': typeof LeaklookerRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
+  '/password': typeof PasswordRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
+  '/speedtest': typeof SpeedtestRoute
   '/subdomains': typeof SubdomainsRoute
   '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
+
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
@@ -376,6 +415,8 @@ export interface FileRouteTypes {
     | '/dorks'
     | '/ela'
     | '/email'
+    | '/emailblacklist'
+    | '/emailverify'
     | '/encoder'
     | '/exif'
     | '/favicon'
@@ -391,11 +432,13 @@ export interface FileRouteTypes {
     | '/leaklooker'
     | '/mosint'
     | '/namint'
+    | '/password'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
     | '/scam'
+    | '/speedtest'
     | '/subdomains'
     | '/timestamp'
     | '/username'
@@ -416,6 +459,8 @@ export interface FileRouteTypes {
     | '/dorks'
     | '/ela'
     | '/email'
+    | '/emailblacklist'
+    | '/emailverify'
     | '/encoder'
     | '/exif'
     | '/favicon'
@@ -431,11 +476,13 @@ export interface FileRouteTypes {
     | '/leaklooker'
     | '/mosint'
     | '/namint'
+    | '/password'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
     | '/scam'
+    | '/speedtest'
     | '/subdomains'
     | '/timestamp'
     | '/username'
@@ -456,6 +503,8 @@ export interface FileRouteTypes {
     | '/dorks'
     | '/ela'
     | '/email'
+    | '/emailblacklist'
+    | '/emailverify'
     | '/encoder'
     | '/exif'
     | '/favicon'
@@ -471,11 +520,13 @@ export interface FileRouteTypes {
     | '/leaklooker'
     | '/mosint'
     | '/namint'
+    | '/password'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
     | '/scam'
+    | '/speedtest'
     | '/subdomains'
     | '/timestamp'
     | '/username'
@@ -483,6 +534,7 @@ export interface FileRouteTypes {
     | '/whois'
   fileRoutesById: FileRoutesById
 }
+
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
@@ -497,6 +549,8 @@ export interface RootRouteChildren {
   DorksRoute: typeof DorksRoute
   ElaRoute: typeof ElaRoute
   EmailRoute: typeof EmailRoute
+  EmailblacklistRoute: typeof EmailblacklistRoute
+  EmailverifyRoute: typeof EmailverifyRoute
   EncoderRoute: typeof EncoderRoute
   ExifRoute: typeof ExifRoute
   FaviconRoute: typeof FaviconRoute
@@ -512,11 +566,13 @@ export interface RootRouteChildren {
   LeaklookerRoute: typeof LeaklookerRoute
   MosintRoute: typeof MosintRoute
   NamintRoute: typeof NamintRoute
+  PasswordRoute: typeof PasswordRoute
   PhoneRoute: typeof PhoneRoute
   PortscanRoute: typeof PortscanRoute
   RegexRoute: typeof RegexRoute
   RegistroRoute: typeof RegistroRoute
   ScamRoute: typeof ScamRoute
+  SpeedtestRoute: typeof SpeedtestRoute
   SubdomainsRoute: typeof SubdomainsRoute
   TimestampRoute: typeof TimestampRoute
   UsernameRoute: typeof UsernameRoute
@@ -561,6 +617,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubdomainsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/speedtest': {
+      id: '/speedtest'
+      path: '/speedtest'
+      fullPath: '/speedtest'
+      preLoaderRoute: typeof SpeedtestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/scam': {
       id: '/scam'
       path: '/scam'
@@ -594,6 +657,13 @@ declare module '@tanstack/react-router' {
       path: '/phone'
       fullPath: '/phone'
       preLoaderRoute: typeof PhoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/password': {
+      id: '/password'
+      path: '/password'
+      fullPath: '/password'
+      preLoaderRoute: typeof PasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/namint': {
@@ -699,6 +769,20 @@ declare module '@tanstack/react-router' {
       path: '/encoder'
       fullPath: '/encoder'
       preLoaderRoute: typeof EncoderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emailverify': {
+      id: '/emailverify'
+      path: '/emailverify'
+      fullPath: '/emailverify'
+      preLoaderRoute: typeof EmailverifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emailblacklist': {
+      id: '/emailblacklist'
+      path: '/emailblacklist'
+      fullPath: '/emailblacklist'
+      preLoaderRoute: typeof EmailblacklistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email': {
@@ -809,6 +893,8 @@ const rootRouteChildren: RootRouteChildren = {
   DorksRoute: DorksRoute,
   ElaRoute: ElaRoute,
   EmailRoute: EmailRoute,
+  EmailblacklistRoute: EmailblacklistRoute,
+  EmailverifyRoute: EmailverifyRoute,
   EncoderRoute: EncoderRoute,
   ExifRoute: ExifRoute,
   FaviconRoute: FaviconRoute,
@@ -824,17 +910,20 @@ const rootRouteChildren: RootRouteChildren = {
   LeaklookerRoute: LeaklookerRoute,
   MosintRoute: MosintRoute,
   NamintRoute: NamintRoute,
+  PasswordRoute: PasswordRoute,
   PhoneRoute: PhoneRoute,
   PortscanRoute: PortscanRoute,
   RegexRoute: RegexRoute,
   RegistroRoute: RegistroRoute,
   ScamRoute: ScamRoute,
+  SpeedtestRoute: SpeedtestRoute,
   SubdomainsRoute: SubdomainsRoute,
   TimestampRoute: TimestampRoute,
   UsernameRoute: UsernameRoute,
   WaybackRoute: WaybackRoute,
   WhoisRoute: WhoisRoute,
 }
+
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
