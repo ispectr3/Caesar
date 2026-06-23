@@ -191,6 +191,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                 <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
                 <input
                   type="text"
+                  autoComplete="off"
                   placeholder="Busca global... (ex: IP, CPF, Domínio)"
                   value={searchQuery}
                   onChange={(e) => {
@@ -333,6 +334,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                   <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
                   <input
                     type="text"
+                    autoComplete="off"
                     placeholder="Busca global... (ex: IP, CPF, Domínio)"
                     value={searchQuery}
                     onChange={(e) => {
