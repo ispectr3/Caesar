@@ -26,6 +26,7 @@ import { Route as IpRouteImport } from './routes/ip'
 import { Route as HibpRouteImport } from './routes/hibp'
 import { Route as HeadersRouteImport } from './routes/headers'
 import { Route as HashRouteImport } from './routes/hash'
+import { Route as GraphRouteImport } from './routes/graph'
 import { Route as GitfiveRouteImport } from './routes/gitfive'
 import { Route as GhuntRouteImport } from './routes/ghunt'
 import { Route as GeocodeRouteImport } from './routes/geocode'
@@ -130,6 +131,11 @@ const HeadersRoute = HeadersRouteImport.update({
 const HashRoute = HashRouteImport.update({
   id: '/hash',
   path: '/hash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GraphRoute = GraphRouteImport.update({
+  id: '/graph',
+  path: '/graph',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GitfiveRoute = GitfiveRouteImport.update({
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/geocode': typeof GeocodeRoute
   '/ghunt': typeof GhuntRoute
   '/gitfive': typeof GitfiveRoute
+  '/graph': typeof GraphRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/hibp': typeof HibpRoute
@@ -293,6 +300,7 @@ export interface FileRoutesByTo {
   '/geocode': typeof GeocodeRoute
   '/ghunt': typeof GhuntRoute
   '/gitfive': typeof GitfiveRoute
+  '/graph': typeof GraphRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/hibp': typeof HibpRoute
@@ -333,6 +341,7 @@ export interface FileRoutesById {
   '/geocode': typeof GeocodeRoute
   '/ghunt': typeof GhuntRoute
   '/gitfive': typeof GitfiveRoute
+  '/graph': typeof GraphRoute
   '/hash': typeof HashRoute
   '/headers': typeof HeadersRoute
   '/hibp': typeof HibpRoute
@@ -374,6 +383,7 @@ export interface FileRouteTypes {
     | '/geocode'
     | '/ghunt'
     | '/gitfive'
+    | '/graph'
     | '/hash'
     | '/headers'
     | '/hibp'
@@ -413,6 +423,7 @@ export interface FileRouteTypes {
     | '/geocode'
     | '/ghunt'
     | '/gitfive'
+    | '/graph'
     | '/hash'
     | '/headers'
     | '/hibp'
@@ -452,6 +463,7 @@ export interface FileRouteTypes {
     | '/geocode'
     | '/ghunt'
     | '/gitfive'
+    | '/graph'
     | '/hash'
     | '/headers'
     | '/hibp'
@@ -492,6 +504,7 @@ export interface RootRouteChildren {
   GeocodeRoute: typeof GeocodeRoute
   GhuntRoute: typeof GhuntRoute
   GitfiveRoute: typeof GitfiveRoute
+  GraphRoute: typeof GraphRoute
   HashRoute: typeof HashRoute
   HeadersRoute: typeof HeadersRoute
   HibpRoute: typeof HibpRoute
@@ -630,6 +643,13 @@ declare module '@tanstack/react-router' {
       path: '/hash'
       fullPath: '/hash'
       preLoaderRoute: typeof HashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/graph': {
+      id: '/graph'
+      path: '/graph'
+      fullPath: '/graph'
+      preLoaderRoute: typeof GraphRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gitfive': {
@@ -796,6 +816,7 @@ const rootRouteChildren: RootRouteChildren = {
   GeocodeRoute: GeocodeRoute,
   GhuntRoute: GhuntRoute,
   GitfiveRoute: GitfiveRoute,
+  GraphRoute: GraphRoute,
   HashRoute: HashRoute,
   HeadersRoute: HeadersRoute,
   HibpRoute: HibpRoute,

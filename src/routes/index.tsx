@@ -542,69 +542,6 @@ function Index() {
               </div>
             </div>
 
-            {/* Terminal simulation */}
-            <div className="card-cyber p-5 font-mono text-[10px] text-muted-foreground bg-black/60 relative overflow-hidden min-h-[160px] hover-lift transition-all duration-300 border-l-4 border-l-primary/45 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]">
-              <div className="flex items-center justify-between border-b border-border/30 pb-2 mb-3">
-                <span className="text-primary font-bold">SYSTEM_LOG // STREAM</span>
-                <span className="text-muted-foreground/35">AUDIT_MODE: SECURE</span>
-              </div>
-              <div className="space-y-1.5 max-h-[100px] overflow-y-auto pr-1">
-                {logs.map((log, i) => (
-                  <div key={i} className="truncate select-none opacity-85 hover:opacity-100 transition-opacity">
-                    <span className="text-primary mr-1">&gt;</span> {log}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Services Health */}
-            <div className="card-cyber p-5 hover-lift transition-all duration-300">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground block mb-3.5">
-                // EXTERNAL_ENGINES // INTEGRIDADE
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] font-mono">
-                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
-                  <span className="text-muted-foreground block mb-1">HackerTarget API</span>
-                  <span className="text-green-400 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    ONLINE
-                  </span>
-                </div>
-
-                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
-                  <span className="text-muted-foreground block mb-1">Wayback Machine</span>
-                  <span className="text-green-400 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    ONLINE
-                  </span>
-                </div>
-
-                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
-                  <span className="text-muted-foreground block mb-1">GitHub API Engine</span>
-                  <span className="text-green-400 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    ONLINE
-                  </span>
-                </div>
-
-                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
-                  <span className="text-muted-foreground block mb-1">AbuseIPDB Threat</span>
-                  <span className="text-green-400 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    ONLINE
-                  </span>
-                </div>
-
-                <div className="border border-border/10 p-2.5 bg-background/25 flex flex-col justify-between">
-                  <span className="text-muted-foreground block mb-1">BrasilAPI (CNPJ/CEP)</span>
-                  <span className="text-green-400 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    ONLINE
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {/* CISA Cybersecurity Alerts Feed */}
             <div className="card-cyber p-5 hover-lift transition-all duration-300">
               <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold block mb-3.5">
