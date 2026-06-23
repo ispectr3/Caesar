@@ -502,7 +502,7 @@ function Index() {
             <p className="font-mono text-xs uppercase tracking-[0.4em] text-primary mb-5 fade-in-up">
               // Caesar OSINT
             </p>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight max-w-4xl fade-in-up stagger-1 font-mono">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-wider max-w-4xl fade-in-up stagger-1 font-title">
               A verdade está <span className="text-primary">nos dados</span>.
             </h1>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl fade-in-up stagger-2 leading-relaxed">
