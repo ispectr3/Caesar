@@ -70,12 +70,19 @@ function EmailBlacklistTool() {
       let resolvedIp = "";
       const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
       
-      if (ipRegex.test(target)) {
-        resolvedIp = target;
+      // Extract domain if target is an email address, or strip protocol/subpaths
+      let cleanTarget = target.trim();
+      if (cleanTarget.includes("@")) {
+        cleanTarget = cleanTarget.split("@").pop() || cleanTarget;
+      }
+      cleanTarget = cleanTarget.replace(/https?:\/\//, "").split("/")[0].split(":")[0];
+
+      if (ipRegex.test(cleanTarget)) {
+        resolvedIp = cleanTarget;
       } else {
         // Resolve Domain via Google DoH
         const resolveRes = await fetch(
-          `https://dns.google/resolve?name=${encodeURIComponent(target)}&type=A`
+          `https://dns.google/resolve?name=${encodeURIComponent(cleanTarget)}&type=A`
         );
         if (!resolveRes.ok) throw new Error("Erro ao resolver domínio.");
         const resolveJson = await resolveRes.json();
