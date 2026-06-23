@@ -54,8 +54,9 @@
 }
 
 /* ═══════════════════════════════════════════
-   DARK MODE — Carvão Quente + Scarlet
-   Fundo: preto com subtom marrom-avermelhado
+   DARK MODE — Preto OLED + Carvão Quente + Scarlet
+   Fundo: #080808 (preto OLED, evita burn)
+   Cards/surfaces: carvão quente #1E1413
    Texto: bege suave
    Vermelho: scarlet com gradiente vibrante
    ═══════════════════════════════════════════ */
@@ -63,8 +64,8 @@
 :root {
   --radius: 0px;
 
-  /* Backgrounds — carvão quente */
-  --background: #120C0C;
+  /* Fundo preto OLED */
+  --background: #080808;
   --foreground: #E8DDD0;
 
   --card: #1E1413;
@@ -113,10 +114,10 @@
   --chart-2: #C62828;
   --chart-3: #2A1A18;
   --chart-4: #1E1413;
-  --chart-5: #120C0C;
+  --chart-5: #080808;
 
   /* Sidebar */
-  --sidebar: #0E0909;
+  --sidebar: #080808;
   --sidebar-foreground: #E8DDD0;
   --sidebar-primary: #E53935;
   --sidebar-primary-foreground: #FFF5F5;
@@ -205,10 +206,10 @@
 
   body {
     background:
-      radial-gradient(ellipse at 90% 95%, rgba(229, 57, 53, 0.22) 0%, transparent 40%),
-      radial-gradient(ellipse at 8% 8%, rgba(180, 30, 30, 0.28) 0%, transparent 45%),
-      radial-gradient(ellipse at 50% 50%, rgba(120, 20, 20, 0.08) 0%, transparent 65%),
-      #120C0C;
+      radial-gradient(ellipse at 90% 95%, rgba(229, 57, 53, 0.20) 0%, transparent 40%),
+      radial-gradient(ellipse at 8% 8%, rgba(180, 30, 30, 0.25) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(120, 20, 20, 0.07) 0%, transparent 65%),
+      #080808;
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -268,7 +269,7 @@
     radial-gradient(ellipse at 90% 95%, rgba(229, 57, 53, 0.20) 0%, transparent 40%),
     radial-gradient(ellipse at 8% 8%, rgba(180, 30, 30, 0.25) 0%, transparent 45%),
     radial-gradient(ellipse at 50% 50%, rgba(120, 20, 20, 0.07) 0%, transparent 65%),
-    #120C0C;
+    #080808;
   background-image:
     repeating-linear-gradient(35deg, rgba(229, 57, 53, 0.03) 0, rgba(229, 57, 53, 0.03) 1px, transparent 1px, transparent 30px),
     repeating-linear-gradient(-35deg, rgba(229, 57, 53, 0.03) 0, rgba(229, 57, 53, 0.03) 1px, transparent 1px, transparent 30px);
@@ -313,7 +314,7 @@
 }
 
 .glass-strong {
-  background: #120C0C;
+  background: #080808;
   border: 1px solid var(--border);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.50);
 }
