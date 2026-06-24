@@ -164,36 +164,7 @@ export function ToolForm({
         </button>
       </form>
 
-      {/* Histórico Recente */}
-      {storageKey && history.length > 0 && (
-        <div className="flex flex-wrap gap-2 items-center text-[10px] font-mono text-muted-foreground mb-8 no-print">
-          <span>RECENTES //</span>
-          {history.map((h) => (
-            <button
-              key={h}
-              type="button"
-              onClick={() => {
-                setValue(h);
-                saveToHistory(h);
-                onSubmit(h);
-              }}
-              className="px-2 py-0.5 border border-border/40 hover:border-primary/50 text-muted-foreground hover:text-primary transition-colors cursor-pointer bg-card/40"
-            >
-              {h}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => {
-              setHistory([]);
-              localStorage.removeItem(`caesar_history_${storageKey}`);
-            }}
-            className="ml-auto text-destructive hover:underline text-[9px] cursor-pointer"
-          >
-            [ LIMPAR ]
-          </button>
-        </div>
-      )}
+
 
       {error && (
         <div className="mb-8 border border-destructive/40 bg-destructive/5 text-destructive px-5 py-4 rounded-none font-mono text-xs flex items-start gap-3 fade-in-up">
