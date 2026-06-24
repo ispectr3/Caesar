@@ -3189,6 +3189,13 @@ export const waybackLookup = createServerFn({ method: "POST" })
         }
       );
 
+      if (availRes.status === 429) {
+        return {
+          error: "O servidor do Wayback Machine (Archive.org) retornou limite de requisições (Erro 429). Por favor, tente novamente mais tarde.",
+          data: null,
+        };
+      }
+
       let isAvailable = false;
       let closestSnapshot: WaybackSnapshot | null = null;
 
@@ -3218,6 +3225,13 @@ export const waybackLookup = createServerFn({ method: "POST" })
         );
       } catch (err) {
         // Ignore CDX timeout/network errors to allow fallback
+      }
+
+      if (cdxRes && cdxRes.status === 429) {
+        return {
+          error: "O servidor do Wayback Machine (Archive.org) retornou limite de requisições (Erro 429). Por favor, tente novamente mais tarde.",
+          data: null,
+        };
       }
 
       const snapshots: WaybackSnapshot[] = [];
