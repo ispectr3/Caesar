@@ -1,0 +1,9 @@
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self' * data: blob: 'unsafe-inline' 'unsafe-eval'
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer-when-downgrade
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  X-XSS-Protection: 1; mode=block
+  Access-Control-Allow-Origin: https://caesar.ispectr.com
