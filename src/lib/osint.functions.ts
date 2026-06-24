@@ -3408,19 +3408,7 @@ const aiDossierSchema = z.object({
 export const generateAiDossier = createServerFn({ method: "POST" })
   .validator(aiDossierSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: string | null }> => {
-    try {
-      const apiKey = process.env.GEMINI_API_KEY || (globalThis as any).GEMINI_API_KEY;
-      if (!apiKey) {
-        return { 
-          error: "A Chave de API do Gemini não foi configurada (GEMINI_API_KEY ausente). Por favor, configure no Cloudflare.", 
-          data: null 
-        };
-      }
-
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-
-      const prompt = `Você é um analista sênior de inteligência cibernética (Cyber Threat Intelligence) trabalhando para uma agência de investigação corporativa ou do governo.
+    const prompt = `Você é um analista sênior de inteligência cibernética (Cyber Threat Intelligence) trabalhando para uma agência de investigação corporativa ou do governo.
 Sua tarefa é ler os dados técnicos brutos abaixo (extraídos da ferramenta: ${data.moduleName}) e escrever um Dossiê Tático Executivo de no máximo 2 parágrafos incisivos e diretos.
 Identifique qualquer comportamento suspeito, vazamentos, infraestruturas maliciosas ou anomalias. Use tom militar e estritamente profissional, voltado para cibersegurança.
 Caso não encontre nada suspeito, descreva o perfil benigno. Retorne APENAS o relatório, sem introduções ou cumprimentos.
@@ -3428,17 +3416,87 @@ Caso não encontre nada suspeito, descreva o perfil benigno. Retorne APENAS o re
 DADOS DA INVESTIGAÇÃO:
 ${data.dataContext}`;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
+    const apiKey = process.env.GEMINI_API_KEY || (globalThis as any).GEMINI_API_KEY;
+    const groqApiKey = process.env.GROQ_API_KEY || (globalThis as any).GROQ_API_KEY;
 
-      return { error: null, data: text };
-    } catch (e: any) {
-      return {
-        error: e?.message || "Falha ao gerar dossiê tático com IA.",
-        data: null,
-      };
+    const runGroq = async (): Promise<string> => {
+      if (!groqApiKey) {
+        throw new Error("Chave do Groq não configurada.");
+      }
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${groqApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.2,
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Erro na API do Groq: ${response.status} - ${errText}`);
+      }
+
+      const resJson = await response.json();
+      const content = resJson.choices?.[0]?.message?.content;
+      if (!content) {
+        throw new Error("Resposta vazia da API do Groq.");
+      }
+      return content;
+    };
+
+    // Tenta primeiro Gemini se a chave existir
+    if (apiKey) {
+      try {
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        return { error: null, data: text };
+      } catch (geminiError: any) {
+        console.error("Falha no Gemini, tentando fallback para Groq...", geminiError);
+        if (groqApiKey) {
+          try {
+            const text = await runGroq();
+            return { error: null, data: text };
+          } catch (groqError: any) {
+            return {
+              error: `Ambos os motores de IA falharam. Gemini: ${geminiError?.message || "Erro"}. Groq: ${groqError?.message || "Erro"}`,
+              data: null,
+            };
+          }
+        } else {
+          return {
+            error: `Erro no Gemini: ${geminiError?.message || "Falha ao gerar dossiê."} (Groq indisponível sem chave)`,
+            data: null,
+          };
+        }
+      }
     }
+
+    // Se não tiver Gemini mas tiver Groq, tenta Groq direto
+    if (groqApiKey) {
+      try {
+        const text = await runGroq();
+        return { error: null, data: text };
+      } catch (groqError: any) {
+        return {
+          error: `Erro ao gerar dossiê via Groq: ${groqError?.message || "Falha"}.`,
+          data: null,
+        };
+      }
+    }
+
+    // Nenhuma chave configurada
+    return {
+      error: "Nenhuma chave de API de IA configurada (GEMINI_API_KEY e GROQ_API_KEY ausentes). Por favor, configure no Cloudflare.",
+      data: null,
+    };
   });
 
 /* ═══════════════════════════════════════════

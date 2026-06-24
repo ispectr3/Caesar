@@ -138,6 +138,7 @@ function WaybackTool() {
                                 href={result.firstSnapshot.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                referrerPolicy="no-referrer"
                                 className="px-2.5 py-1 text-[10px] font-mono border border-border/40 hover:border-primary text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
                               >
                                 <Link2 size={11} />
@@ -165,6 +166,7 @@ function WaybackTool() {
                                 href={result.lastSnapshot.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                referrerPolicy="no-referrer"
                                 className="px-2.5 py-1 text-[10px] font-mono border border-border/40 hover:border-primary text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
                               >
                                 <Link2 size={11} />
@@ -239,6 +241,7 @@ function WaybackTool() {
                                 href={shot.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                referrerPolicy="no-referrer"
                                 className="px-2.5 py-1 text-[10px] font-mono border border-border/40 hover:border-primary text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 shrink-0"
                               >
                                 <ExternalLink size={11} className="w-3.5 h-3.5" />

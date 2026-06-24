@@ -435,26 +435,12 @@ function Index() {
     "INITIALIZING OSINT PIPELINE... [SUCCESS]",
     "WAITING FOR TARGET INPUT...",
   ]);
-  const [alerts, setAlerts] = useState<CisaAlert[]>([]);
-  const [alertsLoading, setAlertsLoading] = useState(true);
+  const [randomPath, setRandomPath] = useState<string>("/ip");
 
   useEffect(() => {
-    let active = true;
-    fetchCisaFeed()
-      .then((res) => {
-        if (active && res.data) {
-          setAlerts(res.data);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to load CISA feed:", err);
-      })
-      .finally(() => {
-        if (active) setAlertsLoading(false);
-      });
-    return () => {
-      active = false;
-    };
+    const paths = TOOLS.map((t) => t.to);
+    const random = paths[Math.floor(Math.random() * paths.length)];
+    setRandomPath(random);
   }, []);
 
   useEffect(() => {
@@ -512,7 +498,7 @@ function Index() {
             {/* CTAs */}
             <div className="mt-10 flex flex-wrap gap-4 fade-in-up stagger-3">
               <Link
-                to="/ip"
+                to={randomPath}
                 className="group inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none hover:shadow-[0_0_20px_var(--primary)] transition-all duration-300"
               >
                 [ COMEÇAR INVESTIGAÇÃO ]
@@ -542,52 +528,17 @@ function Index() {
               </div>
             </div>
 
-            {/* CISA Cybersecurity Alerts Feed */}
-            <div className="card-cyber p-5 hover-lift transition-all duration-300">
+            {/* Terminal de Operações (Logs) */}
+            <div className="card-cyber p-5 hover-lift transition-all duration-300 h-full flex flex-col">
               <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold block mb-3.5">
-                // FEED DE AMEAÇAS CISA (ADVISORIES)
+                // TERMINAL DE OPERAÇÕES (LOGS EM TEMPO REAL)
               </span>
-              <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1">
-                {alertsLoading ? (
-                  <div className="text-[10px] font-mono text-muted-foreground animate-pulse">
-                    [ CARREGANDO ALERTAS CISA... ]
+              <div className="space-y-1.5 max-h-[250px] overflow-y-auto pr-1 font-mono text-[9px] text-green-500/80 scrollbar-thin flex-1 text-left">
+                {logs.map((log, idx) => (
+                  <div key={idx} className="truncate">
+                    <span className="text-primary mr-1">&gt;</span> {log}
                   </div>
-                ) : alerts.length === 0 ? (
-                  <div className="text-[10px] font-mono text-muted-foreground">
-                    Sem alertas recentes disponíveis.
-                  </div>
-                ) : (
-                  alerts.map((alert, idx) => {
-                    const formatDate = (dateStr?: string) => {
-                      if (!dateStr) return "";
-                      try {
-                        const d = new Date(dateStr);
-                        return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString();
-                      } catch {
-                        return dateStr;
-                      }
-                    };
-                    return (
-                      <div key={idx} className="border-b border-border/10 pb-3 last:border-0 last:pb-0 font-mono text-[10px]">
-                        <div className="text-muted-foreground text-[9px] mb-1 flex justify-between">
-                          <span>CISA ADVISORY</span>
-                          <span>{formatDate(alert.pubDate)}</span>
-                        </div>
-                        <a
-                          href={alert.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-foreground hover:text-primary font-semibold transition-colors leading-tight block mb-1 text-left"
-                        >
-                          {alert.title} ↗
-                        </a>
-                        <p className="text-muted-foreground text-[9px] leading-normal line-clamp-2 text-left">
-                          {alert.description}
-                        </p>
-                      </div>
-                    );
-                  })
-                )}
+                ))}
               </div>
             </div>
           </div>

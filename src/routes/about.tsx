@@ -80,16 +80,7 @@ function AboutPage() {
           </div>
         </section>
 
-        <section className="fade-in-up stagger-2">
-          <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-4">
-            // Auditoria & Controle
-          </h2>
-          <p className="text-foreground leading-relaxed">
-            Para fins de auditoria, segurança e conformidade, todos os logs de consultas realizadas e
-            ferramentas utilizadas nesta plataforma são registrados e monitorados. Mantemos total controle
-            e rastreamento das atividades para garantir o uso seguro e legítimo das funcionalidades.
-          </p>
-        </section>
+
 
         <section className="fade-in-up stagger-3">
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-4">

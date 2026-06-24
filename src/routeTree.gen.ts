@@ -307,7 +307,6 @@ export interface FileRoutesByFullPath {
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
@@ -352,9 +351,8 @@ export interface FileRoutesByTo {
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
-
 export interface FileRoutesById {
-  '__root__': typeof rootRouteImport
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -398,7 +396,6 @@ export interface FileRoutesById {
   '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
@@ -534,7 +531,6 @@ export interface FileRouteTypes {
     | '/whois'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
@@ -923,7 +919,6 @@ const rootRouteChildren: RootRouteChildren = {
   WaybackRoute: WaybackRoute,
   WhoisRoute: WhoisRoute,
 }
-
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()

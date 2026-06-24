@@ -837,3 +837,45 @@ button {
     color: #000000 !important;
   }
 }
+
+/* ═══════════════════════════════════════════
+   React Flow Controls — Estilização Customizada
+   ═══════════════════════════════════════════ */
+
+.react-flow__controls {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  padding: 4px !important;
+}
+
+.react-flow__controls-button {
+  background: var(--input) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0px !important;
+  color: var(--foreground) !important;
+  fill: var(--foreground) !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--muted) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  fill: var(--primary) !important;
+}
+
+.react-flow__controls-button svg {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+  width: 12px !important;
+  height: 12px !important;
+}

@@ -431,44 +431,7 @@ function CryptoForensics() {
             )}
           </div>
 
-          {/* Search History */}
-          <div className="card-cyber p-6 bg-card/40 backdrop-blur-md border-border/80">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                <History size={14} /> HISTÓRICO DE PESQUISA
-              </h2>
-              {history.length > 0 && (
-                <button 
-                  onClick={handleClearHistory} 
-                  className="font-mono text-[9px] text-red-500 hover:text-red-400 border border-red-500/20 hover:border-red-500/40 px-1.5 py-0.5 rounded transition-colors"
-                >
-                  Limpar
-                </button>
-              )}
-            </div>
 
-            {history.length === 0 ? (
-              <div className="p-4 text-center font-mono text-[10px] text-muted-foreground/50 border border-border/10">
-                Nenhum endereço pesquisado nesta sessão.
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                {history.map((item, idx) => (
-                  <div 
-                    key={idx} 
-                    onClick={() => handleLookup(item.address)}
-                    className="p-2 border border-border/20 bg-black/30 hover:border-primary/50 cursor-pointer transition-all flex flex-col font-mono text-[10px]"
-                  >
-                    <div className="flex justify-between text-muted-foreground text-[8px] mb-1">
-                      <span className="text-primary font-bold">{item.network}</span>
-                      <span>{item.timestamp}</span>
-                    </div>
-                    <span className="text-foreground truncate">{item.address}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* Case Manager */}
           <div className="card-cyber p-6 bg-card/40 backdrop-blur-md border-border/80">
