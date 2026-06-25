@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Building2, MapPin, Phone, Users, ShieldCheck, Landmark } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
 import { cnpjLookup, type CnpjInfo } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/cnpj")({

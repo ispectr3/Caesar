@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent, type ReactNode } from "react";
-import { Search, Loader2, Download, Printer, Brain } from "lucide-react";
+import { Search, Loader2, Download, Printer, Brain, ArrowRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { generateAiDossier } from "@/lib/osint.functions";
 
 function formatCNPJ(value: string) {
@@ -308,6 +309,42 @@ export function KeyValue({ k, v }: { k: string; v: ReactNode }) {
       <span className="text-foreground break-all group-hover:text-primary/95 transition-colors duration-200">
         {v}
       </span>
+    </div>
+  );
+}
+
+/**
+ * PivotLinks — Navegação rápida entre ferramentas relacionadas.
+ * Exibe badges clicáveis que redirecionam para outra ferramenta
+ * pré-preenchida com o valor extraído dos resultados atuais.
+ */
+export function PivotLinks({
+  pivots,
+}: {
+  pivots: { label: string; to: string; query: string; tag?: string }[];
+}) {
+  if (!pivots || pivots.length === 0) return null;
+  return (
+    <div className="mt-5 pt-4 border-t border-border/20">
+      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 block mb-2.5">
+        // Continuar Investigação
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {pivots.map((p, i) => (
+          <Link
+            key={i}
+            to={p.to as any}
+            search={{ q: p.query }}
+            className="group flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[10px] border border-border/30 bg-card/50 text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-200"
+          >
+            <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+            {p.label}
+            {p.tag && (
+              <span className="text-[8px] text-muted-foreground/40 uppercase tracking-wider ml-0.5">→ {p.tag}</span>
+            )}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

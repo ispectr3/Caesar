@@ -54,77 +54,77 @@
 }
 
 /* ═══════════════════════════════════════════
-   DARK MODE — Preto OLED + Carvão Quente + Scarlet
-   Fundo: #080808 (preto OLED, evita burn)
-   Cards: #111111 (cinza escuro neutro)
-   Texto: bege suave
-   Vermelho: scarlet com gradiente vibrante
+   CAESAR INTELLIGENCE — Scarlet Ops × Blood Steel × Deep Crimson
+   Fundo: #08080E (OLED com subtom frio sideral)
+   Cards: #0E1420 (naval dark)
+   Primary: #E8253A (crimson preciso — inteligência, não alarme)
+   Steel: #455A64 (estrutura e ícones)
    ═══════════════════════════════════════════ */
 
 :root {
   --radius: 0px;
 
-  /* Fundo preto OLED */
-  --background: #080808;
-  --foreground: #F5F5F5;
+  /* Fundo OLED com subtom frio-sideral */
+  --background: #08080E;
+  --foreground: #E8EDF2;
 
-  --card: #111111;
-  --card-foreground: #F5F5F5;
+  --card: #0E1420;
+  --card-foreground: #E8EDF2;
 
-  --popover: #111111;
-  --popover-foreground: #F5F5F5;
+  --popover: #0E1420;
+  --popover-foreground: #E8EDF2;
 
-  /* Vermelho scarlet — primary mais vibrante */
-  --primary: #E53935;
+  /* Vermelho crimson preciso — inteligência, não alarme */
+  --primary: #E8253A;
   --primary-foreground: #FFFFFF;
 
-  --secondary: #1A1A1A;
-  --secondary-foreground: #F5F5F5;
+  --secondary: #131B28;
+  --secondary-foreground: #E8EDF2;
 
-  --muted: #1A1A1A;
-  --muted-foreground: #8A8A8A;
+  --muted: #131B28;
+  --muted-foreground: #6E7E8A;
 
-  /* Accent: scarlet mais quente para hover/destaque */
-  --accent: #FF5252;
+  /* Accent: crimson-rose mais profundo para hover/destaque */
+  --accent: #C2185B;
   --accent-foreground: #FFFFFF;
 
-  --destructive: #FF5252;
+  --destructive: #E8253A;
   --destructive-foreground: #FFFFFF;
 
-  /* Bordas sutis com subtom marrom */
-  --border: #1F1F1F;
-  --border-active: #E53935;
+  /* Bordas com subtom steel frio */
+  --border: #1A2535;
+  --border-active: #E8253A;
 
-  --input: #111111;
-  --ring: #E53935;
+  --input: #0E1420;
+  --ring: #E8253A;
 
-  /* Glow scarlet — mais amplo, menos opaco */
-  --glow: #E53935;
-  --glow-subtle: rgba(229, 57, 53, 0.18);
+  /* Glow crimson — restrito e preciso */
+  --glow: #E8253A;
+  --glow-subtle: rgba(232, 37, 58, 0.14);
 
-  /* Crimson para detalhes secundários */
-  --cyan: #C62828;
+  /* Steel azul-cinza para elementos estruturais */
+  --cyan: #455A64;
 
-  /* Success: verde militar discreto */
-  --success: #4a5d4e;
-  --warning: #C62828;
+  /* Success: verde-aço frio */
+  --success: #37474F;
+  --warning: #C2185B;
 
   /* Charts */
-  --chart-1: #E53935;
-  --chart-2: #C62828;
-  --chart-3: #1A1A1A;
-  --chart-4: #111111;
-  --chart-5: #080808;
+  --chart-1: #E8253A;
+  --chart-2: #C2185B;
+  --chart-3: #455A64;
+  --chart-4: #1A2535;
+  --chart-5: #0E1420;
 
   /* Sidebar */
-  --sidebar: #080808;
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-primary: #E53935;
+  --sidebar: #08080E;
+  --sidebar-foreground: #E8EDF2;
+  --sidebar-primary: #E8253A;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #111111;
-  --sidebar-accent-foreground: #F5F5F5;
-  --sidebar-border: #1F1F1F;
-  --sidebar-ring: #E53935;
+  --sidebar-accent: #131B28;
+  --sidebar-accent-foreground: #E8EDF2;
+  --sidebar-border: #1A2535;
+  --sidebar-ring: #E8253A;
 
   /* Fonts */
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -133,64 +133,61 @@
 }
 
 /* ═══════════════════════════════════════════
-   LIGHT MODE — Pergaminho + Scarlet
-   Fundo: sépia claro, papel envelhecido
-   Texto: quase preto quente
-   Vermelho: scarlet com gradiente
+   LIGHT MODE — Intel Paper / Dossier
    ═══════════════════════════════════════════ */
 
 .light {
-  --background: #F5F0E8;
-  --foreground: #1C1410;
+  --background: #F0F4F8;
+  --foreground: #0D1520;
 
-  --card: #FDF8F0;
-  --card-foreground: #1C1410;
+  --card: #FFFFFF;
+  --card-foreground: #0D1520;
 
-  --popover: #FDF8F0;
-  --popover-foreground: #1C1410;
+  --popover: #FFFFFF;
+  --popover-foreground: #0D1520;
 
   --primary: #C62828;
   --primary-foreground: #FFFFFF;
 
-  --secondary: #EDE8DE;
-  --secondary-foreground: #1C1410;
+  --secondary: #E8ECF0;
+  --secondary-foreground: #0D1520;
 
-  --muted: #E8E0D0;
-  --muted-foreground: #6B5A3E;
+  --muted: #E2E8F0;
+  --muted-foreground: #5A6B7A;
 
-  --accent: #E53935;
+  --accent: #AD1457;
   --accent-foreground: #FFFFFF;
 
-  --destructive: #E53935;
+  --destructive: #C62828;
   --destructive-foreground: #FFFFFF;
 
-  --border: #D8CFC0;
+  --border: #CBD5E1;
   --border-active: #C62828;
 
-  --input: #EDE8DE;
+  --input: #E8ECF0;
   --ring: #C62828;
 
   --glow: #C62828;
-  --glow-subtle: rgba(198, 40, 40, 0.15);
+  --glow-subtle: rgba(198, 40, 40, 0.12);
 
-  --cyan: #B71C1C;
+  --cyan: #37474F;
 
-  --success: #4a5d4e;
-  --warning: #B71C1C;
+  --success: #37474F;
+  --warning: #AD1457;
 
   --chart-1: #C62828;
-  --chart-2: #E53935;
-  --chart-3: #E8E0D0;
-  --chart-4: #EDE8DE;
-  --chart-5: #F5F0E8;
+  --chart-2: #AD1457;
+  --chart-3: #E2E8F0;
+  --chart-4: #E8ECF0;
+  --chart-5: #F0F4F8;
 
-  --sidebar: #EDE8DE;
-  --sidebar-foreground: #1C1410;
+  --sidebar: #E8ECF0;
+  --sidebar-foreground: #0D1520;
   --sidebar-primary: #C62828;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #E8E0D0;
-  --sidebar-accent-foreground: #1C1410;
-  --sidebar-border: #D8CFC0;
+  --sidebar-accent: #E2E8F0;
+  --sidebar-accent-foreground: #0D1520;
+  --sidebar-border: #CBD5E1;
   --sidebar-ring: #C62828;
 }
 
@@ -206,9 +203,10 @@
 
   body {
     background:
-      radial-gradient(ellipse at 50% 0%, rgba(229, 57, 53, 0.06) 0%, transparent 55%),
-      radial-gradient(ellipse at 50% 100%, rgba(229, 57, 53, 0.04) 0%, transparent 50%),
-      #080808;
+      radial-gradient(ellipse at 20% 0%, rgba(232, 37, 58, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(194, 24, 91, 0.04) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(69, 90, 100, 0.03) 0%, transparent 60%),
+      #08080E;
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -216,9 +214,9 @@
 
   .light body {
     background:
-      radial-gradient(ellipse at 90% 95%, rgba(198, 40, 40, 0.07) 0%, transparent 40%),
-      radial-gradient(ellipse at 8% 8%, rgba(198, 40, 40, 0.05) 0%, transparent 45%),
-      #F5F0E8;
+      radial-gradient(ellipse at 90% 95%, rgba(198, 40, 40, 0.06) 0%, transparent 40%),
+      radial-gradient(ellipse at 8% 8%, rgba(173, 20, 87, 0.04) 0%, transparent 45%),
+      #F0F4F8;
     background-attachment: fixed;
   }
 

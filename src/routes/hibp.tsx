@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { ShieldAlert, ShieldCheck, Mail, Lock, Loader2, AlertTriangle, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/hibp")({

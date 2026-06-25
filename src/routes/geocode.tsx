@@ -2,7 +2,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
-import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { geocodeLookup } from "../lib/osint.functions";
 

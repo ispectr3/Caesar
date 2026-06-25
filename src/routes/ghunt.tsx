@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { ghuntLookup, type GhuntResult } from "@/lib/osint.functions";
 import { ShieldCheck, Mail, Globe, Database, HelpCircle } from "lucide-react";
 

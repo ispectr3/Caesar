@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { gitfiveLookup, type GitFiveResult } from "@/lib/osint.functions";
 import { Github, Mail, Database, Terminal } from "lucide-react";
 

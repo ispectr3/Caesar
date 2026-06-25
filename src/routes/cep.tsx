@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { MapPin } from "lucide-react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
 
 export const Route = createFileRoute("/cep")({
   head: () => ({

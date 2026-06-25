@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { ipLookup, type IpInfo } from "@/lib/osint.functions";
 
 export const Route = createFileRoute("/ip")({
@@ -146,6 +146,14 @@ function IpPage() {
                     Utilize a ferramenta de DNS Lookup para descobrir quais outros domínios estão hospedados sob este mesmo endereço IP.
                   </div>
                 </div>
+                <PivotLinks
+                  pivots={[
+                    { label: "Port Scanner", to: "/portscan", query: result.query, tag: "rede" },
+                    { label: "AbuseIPDB", to: "/abuseipdb", query: result.query, tag: "threat" },
+                    { label: "DNS Reverso", to: "/dns", query: result.query, tag: "rede" },
+                    { label: "BGP / ASN", to: "/bgp", query: result.as?.split(" ")[0] || result.query, tag: "infra" },
+                  ]}
+                />
               </ResultCard>
             </div>
           </div>

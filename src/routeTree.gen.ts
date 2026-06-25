@@ -10,10 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhoisRouteImport } from './routes/whois'
+import { Route as WafRouteImport } from './routes/waf'
+import { Route as VirustotalRouteImport } from './routes/virustotal'
 import { Route as UsernameRouteImport } from './routes/username'
+import { Route as UrlscanRouteImport } from './routes/urlscan'
+import { Route as TorRouteImport } from './routes/tor'
 import { Route as TimestampRouteImport } from './routes/timestamp'
+import { Route as TelegramRouteImport } from './routes/telegram'
 import { Route as SubdomainsRouteImport } from './routes/subdomains'
 import { Route as SpeedtestRouteImport } from './routes/speedtest'
+import { Route as ShodanRouteImport } from './routes/shodan'
 import { Route as ScamRouteImport } from './routes/scam'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as RegexRouteImport } from './routes/regex'
@@ -22,6 +28,8 @@ import { Route as PhoneRouteImport } from './routes/phone'
 import { Route as PasswordRouteImport } from './routes/password'
 import { Route as NamintRouteImport } from './routes/namint'
 import { Route as MosintRouteImport } from './routes/mosint'
+import { Route as MalwarebazaarRouteImport } from './routes/malwarebazaar'
+import { Route as LinkedinRouteImport } from './routes/linkedin'
 import { Route as LeaklookerRouteImport } from './routes/leaklooker'
 import { Route as IpRouteImport } from './routes/ip'
 import { Route as HibpRouteImport } from './routes/hibp'
@@ -46,8 +54,10 @@ import { Route as CveRouteImport } from './routes/cve'
 import { Route as CryptoRouteImport } from './routes/crypto'
 import { Route as CpfRouteImport } from './routes/cpf'
 import { Route as CnpjRouteImport } from './routes/cnpj'
+import { Route as CloudrangeRouteImport } from './routes/cloudrange'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as CepRouteImport } from './routes/cep'
+import { Route as BgpRouteImport } from './routes/bgp'
 import { Route as AbuseipdbRouteImport } from './routes/abuseipdb'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -57,14 +67,39 @@ const WhoisRoute = WhoisRouteImport.update({
   path: '/whois',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WafRoute = WafRouteImport.update({
+  id: '/waf',
+  path: '/waf',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VirustotalRoute = VirustotalRouteImport.update({
+  id: '/virustotal',
+  path: '/virustotal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsernameRoute = UsernameRouteImport.update({
   id: '/username',
   path: '/username',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UrlscanRoute = UrlscanRouteImport.update({
+  id: '/urlscan',
+  path: '/urlscan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TorRoute = TorRouteImport.update({
+  id: '/tor',
+  path: '/tor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TimestampRoute = TimestampRouteImport.update({
   id: '/timestamp',
   path: '/timestamp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TelegramRoute = TelegramRouteImport.update({
+  id: '/telegram',
+  path: '/telegram',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubdomainsRoute = SubdomainsRouteImport.update({
@@ -75,6 +110,11 @@ const SubdomainsRoute = SubdomainsRouteImport.update({
 const SpeedtestRoute = SpeedtestRouteImport.update({
   id: '/speedtest',
   path: '/speedtest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShodanRoute = ShodanRouteImport.update({
+  id: '/shodan',
+  path: '/shodan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScamRoute = ScamRouteImport.update({
@@ -115,6 +155,16 @@ const NamintRoute = NamintRouteImport.update({
 const MosintRoute = MosintRouteImport.update({
   id: '/mosint',
   path: '/mosint',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MalwarebazaarRoute = MalwarebazaarRouteImport.update({
+  id: '/malwarebazaar',
+  path: '/malwarebazaar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LinkedinRoute = LinkedinRouteImport.update({
+  id: '/linkedin',
+  path: '/linkedin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaklookerRoute = LeaklookerRouteImport.update({
@@ -237,6 +287,11 @@ const CnpjRoute = CnpjRouteImport.update({
   path: '/cnpj',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CloudrangeRoute = CloudrangeRouteImport.update({
+  id: '/cloudrange',
+  path: '/cloudrange',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CertificatesRoute = CertificatesRouteImport.update({
   id: '/certificates',
   path: '/certificates',
@@ -245,6 +300,11 @@ const CertificatesRoute = CertificatesRouteImport.update({
 const CepRoute = CepRouteImport.update({
   id: '/cep',
   path: '/cep',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BgpRoute = BgpRouteImport.update({
+  id: '/bgp',
+  path: '/bgp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AbuseipdbRoute = AbuseipdbRouteImport.update({
@@ -267,8 +327,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
+  '/bgp': typeof BgpRoute
   '/cep': typeof CepRoute
   '/certificates': typeof CertificatesRoute
+  '/cloudrange': typeof CloudrangeRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
@@ -293,6 +355,8 @@ export interface FileRoutesByFullPath {
   '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
   '/leaklooker': typeof LeaklookerRoute
+  '/linkedin': typeof LinkedinRoute
+  '/malwarebazaar': typeof MalwarebazaarRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/password': typeof PasswordRoute
@@ -301,18 +365,26 @@ export interface FileRoutesByFullPath {
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
+  '/shodan': typeof ShodanRoute
   '/speedtest': typeof SpeedtestRoute
   '/subdomains': typeof SubdomainsRoute
+  '/telegram': typeof TelegramRoute
   '/timestamp': typeof TimestampRoute
+  '/tor': typeof TorRoute
+  '/urlscan': typeof UrlscanRoute
   '/username': typeof UsernameRoute
+  '/virustotal': typeof VirustotalRoute
+  '/waf': typeof WafRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
+  '/bgp': typeof BgpRoute
   '/cep': typeof CepRoute
   '/certificates': typeof CertificatesRoute
+  '/cloudrange': typeof CloudrangeRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
@@ -337,6 +409,8 @@ export interface FileRoutesByTo {
   '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
   '/leaklooker': typeof LeaklookerRoute
+  '/linkedin': typeof LinkedinRoute
+  '/malwarebazaar': typeof MalwarebazaarRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/password': typeof PasswordRoute
@@ -345,10 +419,16 @@ export interface FileRoutesByTo {
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
+  '/shodan': typeof ShodanRoute
   '/speedtest': typeof SpeedtestRoute
   '/subdomains': typeof SubdomainsRoute
+  '/telegram': typeof TelegramRoute
   '/timestamp': typeof TimestampRoute
+  '/tor': typeof TorRoute
+  '/urlscan': typeof UrlscanRoute
   '/username': typeof UsernameRoute
+  '/virustotal': typeof VirustotalRoute
+  '/waf': typeof WafRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesById {
@@ -356,8 +436,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
+  '/bgp': typeof BgpRoute
   '/cep': typeof CepRoute
   '/certificates': typeof CertificatesRoute
+  '/cloudrange': typeof CloudrangeRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
@@ -382,6 +464,8 @@ export interface FileRoutesById {
   '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
   '/leaklooker': typeof LeaklookerRoute
+  '/linkedin': typeof LinkedinRoute
+  '/malwarebazaar': typeof MalwarebazaarRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
   '/password': typeof PasswordRoute
@@ -390,10 +474,16 @@ export interface FileRoutesById {
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
   '/scam': typeof ScamRoute
+  '/shodan': typeof ShodanRoute
   '/speedtest': typeof SpeedtestRoute
   '/subdomains': typeof SubdomainsRoute
+  '/telegram': typeof TelegramRoute
   '/timestamp': typeof TimestampRoute
+  '/tor': typeof TorRoute
+  '/urlscan': typeof UrlscanRoute
   '/username': typeof UsernameRoute
+  '/virustotal': typeof VirustotalRoute
+  '/waf': typeof WafRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRouteTypes {
@@ -402,8 +492,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/abuseipdb'
+    | '/bgp'
     | '/cep'
     | '/certificates'
+    | '/cloudrange'
     | '/cnpj'
     | '/cpf'
     | '/crypto'
@@ -428,6 +520,8 @@ export interface FileRouteTypes {
     | '/hibp'
     | '/ip'
     | '/leaklooker'
+    | '/linkedin'
+    | '/malwarebazaar'
     | '/mosint'
     | '/namint'
     | '/password'
@@ -436,18 +530,26 @@ export interface FileRouteTypes {
     | '/regex'
     | '/registro'
     | '/scam'
+    | '/shodan'
     | '/speedtest'
     | '/subdomains'
+    | '/telegram'
     | '/timestamp'
+    | '/tor'
+    | '/urlscan'
     | '/username'
+    | '/virustotal'
+    | '/waf'
     | '/whois'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/abuseipdb'
+    | '/bgp'
     | '/cep'
     | '/certificates'
+    | '/cloudrange'
     | '/cnpj'
     | '/cpf'
     | '/crypto'
@@ -472,6 +574,8 @@ export interface FileRouteTypes {
     | '/hibp'
     | '/ip'
     | '/leaklooker'
+    | '/linkedin'
+    | '/malwarebazaar'
     | '/mosint'
     | '/namint'
     | '/password'
@@ -480,18 +584,26 @@ export interface FileRouteTypes {
     | '/regex'
     | '/registro'
     | '/scam'
+    | '/shodan'
     | '/speedtest'
     | '/subdomains'
+    | '/telegram'
     | '/timestamp'
+    | '/tor'
+    | '/urlscan'
     | '/username'
+    | '/virustotal'
+    | '/waf'
     | '/whois'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/abuseipdb'
+    | '/bgp'
     | '/cep'
     | '/certificates'
+    | '/cloudrange'
     | '/cnpj'
     | '/cpf'
     | '/crypto'
@@ -516,6 +628,8 @@ export interface FileRouteTypes {
     | '/hibp'
     | '/ip'
     | '/leaklooker'
+    | '/linkedin'
+    | '/malwarebazaar'
     | '/mosint'
     | '/namint'
     | '/password'
@@ -524,10 +638,16 @@ export interface FileRouteTypes {
     | '/regex'
     | '/registro'
     | '/scam'
+    | '/shodan'
     | '/speedtest'
     | '/subdomains'
+    | '/telegram'
     | '/timestamp'
+    | '/tor'
+    | '/urlscan'
     | '/username'
+    | '/virustotal'
+    | '/waf'
     | '/whois'
   fileRoutesById: FileRoutesById
 }
@@ -535,8 +655,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AbuseipdbRoute: typeof AbuseipdbRoute
+  BgpRoute: typeof BgpRoute
   CepRoute: typeof CepRoute
   CertificatesRoute: typeof CertificatesRoute
+  CloudrangeRoute: typeof CloudrangeRoute
   CnpjRoute: typeof CnpjRoute
   CpfRoute: typeof CpfRoute
   CryptoRoute: typeof CryptoRoute
@@ -561,6 +683,8 @@ export interface RootRouteChildren {
   HibpRoute: typeof HibpRoute
   IpRoute: typeof IpRoute
   LeaklookerRoute: typeof LeaklookerRoute
+  LinkedinRoute: typeof LinkedinRoute
+  MalwarebazaarRoute: typeof MalwarebazaarRoute
   MosintRoute: typeof MosintRoute
   NamintRoute: typeof NamintRoute
   PasswordRoute: typeof PasswordRoute
@@ -569,10 +693,16 @@ export interface RootRouteChildren {
   RegexRoute: typeof RegexRoute
   RegistroRoute: typeof RegistroRoute
   ScamRoute: typeof ScamRoute
+  ShodanRoute: typeof ShodanRoute
   SpeedtestRoute: typeof SpeedtestRoute
   SubdomainsRoute: typeof SubdomainsRoute
+  TelegramRoute: typeof TelegramRoute
   TimestampRoute: typeof TimestampRoute
+  TorRoute: typeof TorRoute
+  UrlscanRoute: typeof UrlscanRoute
   UsernameRoute: typeof UsernameRoute
+  VirustotalRoute: typeof VirustotalRoute
+  WafRoute: typeof WafRoute
   WhoisRoute: typeof WhoisRoute
 }
 
@@ -585,6 +715,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhoisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/waf': {
+      id: '/waf'
+      path: '/waf'
+      fullPath: '/waf'
+      preLoaderRoute: typeof WafRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/virustotal': {
+      id: '/virustotal'
+      path: '/virustotal'
+      fullPath: '/virustotal'
+      preLoaderRoute: typeof VirustotalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/username': {
       id: '/username'
       path: '/username'
@@ -592,11 +736,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsernameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/urlscan': {
+      id: '/urlscan'
+      path: '/urlscan'
+      fullPath: '/urlscan'
+      preLoaderRoute: typeof UrlscanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tor': {
+      id: '/tor'
+      path: '/tor'
+      fullPath: '/tor'
+      preLoaderRoute: typeof TorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/timestamp': {
       id: '/timestamp'
       path: '/timestamp'
       fullPath: '/timestamp'
       preLoaderRoute: typeof TimestampRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/telegram': {
+      id: '/telegram'
+      path: '/telegram'
+      fullPath: '/telegram'
+      preLoaderRoute: typeof TelegramRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/subdomains': {
@@ -611,6 +776,13 @@ declare module '@tanstack/react-router' {
       path: '/speedtest'
       fullPath: '/speedtest'
       preLoaderRoute: typeof SpeedtestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shodan': {
+      id: '/shodan'
+      path: '/shodan'
+      fullPath: '/shodan'
+      preLoaderRoute: typeof ShodanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scam': {
@@ -667,6 +839,20 @@ declare module '@tanstack/react-router' {
       path: '/mosint'
       fullPath: '/mosint'
       preLoaderRoute: typeof MosintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/malwarebazaar': {
+      id: '/malwarebazaar'
+      path: '/malwarebazaar'
+      fullPath: '/malwarebazaar'
+      preLoaderRoute: typeof MalwarebazaarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/linkedin': {
+      id: '/linkedin'
+      path: '/linkedin'
+      fullPath: '/linkedin'
+      preLoaderRoute: typeof LinkedinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaklooker': {
@@ -837,6 +1023,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CnpjRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cloudrange': {
+      id: '/cloudrange'
+      path: '/cloudrange'
+      fullPath: '/cloudrange'
+      preLoaderRoute: typeof CloudrangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/certificates': {
       id: '/certificates'
       path: '/certificates'
@@ -849,6 +1042,13 @@ declare module '@tanstack/react-router' {
       path: '/cep'
       fullPath: '/cep'
       preLoaderRoute: typeof CepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bgp': {
+      id: '/bgp'
+      path: '/bgp'
+      fullPath: '/bgp'
+      preLoaderRoute: typeof BgpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/abuseipdb': {
@@ -879,8 +1079,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AbuseipdbRoute: AbuseipdbRoute,
+  BgpRoute: BgpRoute,
   CepRoute: CepRoute,
   CertificatesRoute: CertificatesRoute,
+  CloudrangeRoute: CloudrangeRoute,
   CnpjRoute: CnpjRoute,
   CpfRoute: CpfRoute,
   CryptoRoute: CryptoRoute,
@@ -905,6 +1107,8 @@ const rootRouteChildren: RootRouteChildren = {
   HibpRoute: HibpRoute,
   IpRoute: IpRoute,
   LeaklookerRoute: LeaklookerRoute,
+  LinkedinRoute: LinkedinRoute,
+  MalwarebazaarRoute: MalwarebazaarRoute,
   MosintRoute: MosintRoute,
   NamintRoute: NamintRoute,
   PasswordRoute: PasswordRoute,
@@ -913,10 +1117,16 @@ const rootRouteChildren: RootRouteChildren = {
   RegexRoute: RegexRoute,
   RegistroRoute: RegistroRoute,
   ScamRoute: ScamRoute,
+  ShodanRoute: ShodanRoute,
   SpeedtestRoute: SpeedtestRoute,
   SubdomainsRoute: SubdomainsRoute,
+  TelegramRoute: TelegramRoute,
   TimestampRoute: TimestampRoute,
+  TorRoute: TorRoute,
+  UrlscanRoute: UrlscanRoute,
   UsernameRoute: UsernameRoute,
+  VirustotalRoute: VirustotalRoute,
+  WafRoute: WafRoute,
   WhoisRoute: WhoisRoute,
 }
 export const routeTree = rootRouteImport

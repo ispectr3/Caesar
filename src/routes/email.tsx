@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import {
   emailValidate,
   gravatarLookup,

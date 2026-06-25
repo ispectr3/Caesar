@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Phone, MapPin, Send, Search, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
 import { phoneLookup, type PhoneInfo } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/phone")({

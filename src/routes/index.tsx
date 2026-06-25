@@ -53,7 +53,18 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const TOOLS = [
+type ToolCategory = "brasil" | "rede" | "web" | "threat" | "social" | "infra" | "análise" | "identidade";
+
+const TOOLS: {
+  code: string;
+  to: string;
+  name: string;
+  desc: string;
+  input: string;
+  icon: any;
+  color: string;
+  category: ToolCategory;
+}[] = [
   // ── Identidade & Pessoas ──
   {
     code: "01",
@@ -63,6 +74,7 @@ const TOOLS = [
     input: "000.000.000-00",
     icon: UserCheck,
     color: "from-primary/25 to-accent/10",
+    category: "brasil",
   },
   {
     code: "02",
@@ -72,6 +84,7 @@ const TOOLS = [
     input: "00.000.000/0000-00",
     icon: Building2,
     color: "from-primary/25 to-accent/10",
+    category: "brasil",
   },
   {
     code: "03",
@@ -81,6 +94,7 @@ const TOOLS = [
     input: "01311-200",
     icon: MapPin,
     color: "from-primary/25 to-accent/10",
+    category: "brasil",
   },
   {
     code: "04",
@@ -90,6 +104,7 @@ const TOOLS = [
     input: "Av. Paulista",
     icon: MapPin,
     color: "from-primary/25 to-accent/10",
+    category: "brasil",
   },
   {
     code: "05",
@@ -99,6 +114,7 @@ const TOOLS = [
     input: "+5511999999999",
     icon: Phone,
     color: "from-primary/25 to-accent/10",
+    category: "identidade",
   },
   {
     code: "06",
@@ -108,6 +124,7 @@ const TOOLS = [
     input: "John Fitzgerald Kennedy",
     icon: Filter,
     color: "from-primary/25 to-accent/10",
+    category: "identidade",
   },
   {
     code: "07",
@@ -117,6 +134,7 @@ const TOOLS = [
     input: "torvalds",
     icon: UserSearch,
     color: "from-primary/25 to-accent/10",
+    category: "social",
   },
   {
     code: "29",
@@ -126,7 +144,112 @@ const TOOLS = [
     input: "0000000-00.0000.0.00.0000",
     icon: Scale,
     color: "from-primary/25 to-accent/10",
+    category: "brasil",
   },
+  // ── Threat Intel (novos) ──
+  {
+    code: "41",
+    to: "/virustotal" as const,
+    name: "VirusTotal Lookup",
+    desc: "Reputação de hash, URL, IP ou domínio via 72+ motores antivírus.",
+    input: "hash / URL / IP / domínio",
+    icon: ShieldCheck,
+    color: "from-primary/25 to-accent/10",
+    category: "threat",
+  },
+  {
+    code: "42",
+    to: "/urlscan" as const,
+    name: "URLScan.io",
+    desc: "Screenshot, DOM, requests e geoloc de URL suspeita via URLScan.",
+    input: "https://site-suspeito.com",
+    icon: Eye,
+    color: "from-primary/25 to-accent/10",
+    category: "threat",
+  },
+  {
+    code: "43",
+    to: "/malwarebazaar" as const,
+    name: "Malware Bazaar",
+    desc: "Pesquise hashes no banco de amostras de malware do Abuse.ch.",
+    input: "d41d8cd98f00b204...",
+    icon: Hash,
+    color: "from-primary/25 to-accent/10",
+    category: "threat",
+  },
+  {
+    code: "44",
+    to: "/tor" as const,
+    name: "Tor Exit Node Check",
+    desc: "Verifica se IP é nó de saída da rede Tor (lista oficial Tor Project).",
+    input: "185.220.101.42",
+    icon: ShieldAlert,
+    color: "from-primary/25 to-accent/10",
+    category: "threat",
+  },
+  // ── Social & Mídia (novos) ──
+  {
+    code: "45",
+    to: "/telegram" as const,
+    name: "Telegram OSINT",
+    desc: "Busca de usuário, canal ou grupo público no Telegram via @username.",
+    input: "@username ou t.me/canal",
+    icon: Globe,
+    color: "from-primary/25 to-accent/10",
+    category: "social",
+  },
+  {
+    code: "46",
+    to: "/linkedin" as const,
+    name: "LinkedIn Recon",
+    desc: "Google Dorks específicos para perfis, empresas e funcionários no LinkedIn.",
+    input: "João Silva / Empresa SA",
+    icon: Search,
+    color: "from-primary/25 to-accent/10",
+    category: "social",
+  },
+  // ── Infraestrutura (novos) ──
+  {
+    code: "47",
+    to: "/shodan" as const,
+    name: "Shodan Lookup",
+    desc: "Portas, serviços, banners e vulnerabilidades (CVEs) de IP/host na Shodan.",
+    input: "8.8.8.8 ou target.com",
+    icon: Server,
+    color: "from-primary/25 to-accent/10",
+    category: "infra",
+  },
+  {
+    code: "48",
+    to: "/bgp" as const,
+    name: "BGP / ASN Map",
+    desc: "Prefixos, peers e roteamento de ASN via BGPView.",
+    input: "AS15169 ou Google",
+    icon: Network,
+    color: "from-primary/25 to-accent/10",
+    category: "infra",
+  },
+  {
+    code: "49",
+    to: "/cloudrange" as const,
+    name: "Cloud Range Detector",
+    desc: "Identifica se IP pertence a AWS, GCP, Azure, Cloudflare ou DigitalOcean.",
+    input: "104.21.23.56",
+    icon: Globe,
+    color: "from-primary/25 to-accent/10",
+    category: "infra",
+  },
+  {
+    code: "50",
+    to: "/waf" as const,
+    name: "WAF Detector",
+    desc: "Fingerprint de WAF: Cloudflare, Akamai, Imperva, Sucuri, F5 e mais.",
+    input: "target.com",
+    icon: ShieldCheck,
+    color: "from-primary/25 to-accent/10",
+    category: "infra",
+  },
+
 
   // ── Rede & Infraestrutura ──
   {
@@ -137,6 +260,7 @@ const TOOLS = [
     input: "8.8.8.8",
     icon: Globe,
     color: "from-primary/25 to-accent/10",
+    category: "rede",
   },
   {
     code: "09",
@@ -146,6 +270,7 @@ const TOOLS = [
     input: "target.com",
     icon: Server,
     color: "from-primary/25 to-accent/10",
+    category: "rede",
   },
   {
     code: "10",
@@ -155,6 +280,7 @@ const TOOLS = [
     input: "target.com",
     icon: Layers,
     color: "from-primary/25 to-accent/10",
+    category: "rede",
   },
   {
     code: "11",
@@ -164,6 +290,7 @@ const TOOLS = [
     input: "target.com",
     icon: Network,
     color: "from-primary/25 to-accent/10",
+    category: "rede",
   },
   {
     code: "12",
@@ -173,6 +300,7 @@ const TOOLS = [
     input: "target.com",
     icon: Database,
     color: "from-primary/25 to-accent/10",
+    category: "infra",
   },
   {
     code: "13",
@@ -182,6 +310,7 @@ const TOOLS = [
     input: "1.2.3.4",
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
+    category: "threat",
   },
   {
     code: "14",
@@ -191,6 +320,7 @@ const TOOLS = [
     input: "target.com",
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
+    category: "rede",
   },
   {
     code: "15",
@@ -200,6 +330,7 @@ const TOOLS = [
     input: "https://target.com",
     icon: ShieldCheck,
     color: "from-primary/25 to-accent/10",
+    category: "web",
   },
   {
     code: "16",
@@ -209,6 +340,7 @@ const TOOLS = [
     input: "apache",
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
+    category: "threat",
   },
   {
     code: "28",
@@ -218,6 +350,7 @@ const TOOLS = [
     input: "domain.com.br",
     icon: Server,
     color: "from-primary/25 to-accent/10",
+    category: "brasil",
   },
   {
     code: "33",
@@ -227,6 +360,7 @@ const TOOLS = [
     input: "target.com",
     icon: Globe,
     color: "from-primary/25 to-accent/10",
+    category: "infra",
   },
   {
     code: "40",
@@ -236,6 +370,7 @@ const TOOLS = [
     input: "example.com",
     icon: Network,
     color: "from-primary/25 to-accent/10",
+    category: "rede",
   },
 
   // ── Web, Contas & Análise ──
@@ -247,6 +382,7 @@ const TOOLS = [
     input: "target.com",
     icon: FileText,
     color: "from-primary/25 to-accent/10",
+    category: "web",
   },
   {
     code: "18",
@@ -256,6 +392,7 @@ const TOOLS = [
     input: "target.com",
     icon: ShieldCheck,
     color: "from-primary/25 to-accent/10",
+    category: "rede",
   },
   {
     code: "19",
@@ -265,6 +402,7 @@ const TOOLS = [
     input: "target.com",
     icon: Search,
     color: "from-primary/25 to-accent/10",
+    category: "web",
   },
   {
     code: "20",
@@ -274,6 +412,7 @@ const TOOLS = [
     input: "git_username",
     icon: Github,
     color: "from-primary/25 to-accent/10",
+    category: "social",
   },
   {
     code: "21",
@@ -283,6 +422,7 @@ const TOOLS = [
     input: "user@gmail.com",
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
+    category: "social",
   },
   {
     code: "22",
@@ -292,6 +432,7 @@ const TOOLS = [
     input: "email@exemplo.com",
     icon: Mail,
     color: "from-primary/25 to-accent/10",
+    category: "identidade",
   },
   {
     code: "23",
@@ -301,6 +442,7 @@ const TOOLS = [
     input: "PARABÉNS! Você ganhou um Pix...",
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "24",
@@ -310,6 +452,7 @@ const TOOLS = [
     input: "user@gmail.com",
     icon: Mail,
     color: "from-primary/25 to-accent/10",
+    category: "identidade",
   },
   {
     code: "25",
@@ -319,6 +462,7 @@ const TOOLS = [
     input: "d41d8cd9...8427e",
     icon: Hash,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "26",
@@ -328,6 +472,7 @@ const TOOLS = [
     input: "foto.jpg",
     icon: Image,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "27",
@@ -337,6 +482,7 @@ const TOOLS = [
     input: "user@gmail.com",
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
+    category: "threat",
   },
   {
     code: "30",
@@ -346,6 +492,7 @@ const TOOLS = [
     input: "texto_raw",
     icon: Filter,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "31",
@@ -355,6 +502,7 @@ const TOOLS = [
     input: "logs_dump.txt",
     icon: Filter,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "32",
@@ -364,6 +512,7 @@ const TOOLS = [
     input: "1718388000",
     icon: Clock,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "34",
@@ -373,6 +522,7 @@ const TOOLS = [
     input: "print.png",
     icon: Image,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "35",
@@ -382,6 +532,7 @@ const TOOLS = [
     input: "bc1qxy2kgdy...",
     icon: Coins,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "36",
@@ -391,6 +542,7 @@ const TOOLS = [
     input: "Comprimento, charset...",
     icon: Lock,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
   {
     code: "37",
@@ -400,6 +552,7 @@ const TOOLS = [
     input: "1.2.3.4 ou domain.com",
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
+    category: "threat",
   },
   {
     code: "38",
@@ -409,6 +562,7 @@ const TOOLS = [
     input: "user@domain.com",
     icon: Mail,
     color: "from-primary/25 to-accent/10",
+    category: "web",
   },
   {
     code: "39",
@@ -418,14 +572,26 @@ const TOOLS = [
     input: "Clique em Iniciar Teste",
     icon: Zap,
     color: "from-primary/25 to-accent/10",
+    category: "análise",
   },
 ];
 
 // Sort tools by their logical codes to maintain index integrity
 const SORTED_TOOLS = [...TOOLS].sort((a, b) => parseInt(a.code) - parseInt(b.code));
 
+const CATEGORY_TAGS: Record<string, { label: string; color: string }> = {
+  brasil:     { label: "BR",       color: "bg-green-950/60 text-green-400 border-green-700/40" },
+  rede:       { label: "REDE",     color: "bg-blue-950/60 text-blue-400 border-blue-700/40" },
+  web:        { label: "WEB",      color: "bg-sky-950/60 text-sky-400 border-sky-700/40" },
+  threat:     { label: "THREAT",   color: "bg-destructive/10 text-destructive border-destructive/30" },
+  social:     { label: "SOCIAL",   color: "bg-violet-950/60 text-violet-400 border-violet-700/40" },
+  infra:      { label: "INFRA",    color: "bg-cyan-950/60 text-cyan-400 border-cyan-700/40" },
+  análise:    { label: "ANÁLISE",  color: "bg-amber-950/60 text-amber-400 border-amber-700/40" },
+  identidade: { label: "PESSOA",   color: "bg-purple-950/60 text-purple-400 border-purple-700/40" },
+};
+
 const STATS = [
-  { icon: Zap, value: "40", label: "Ferramentas" },
+  { icon: Zap, value: "50", label: "Ferramentas" },
   { icon: Database, value: "Ativo", label: "Controle & Logs" },
   { icon: Eye, value: "100%", label: "Gratuito" },
 ];
@@ -575,9 +741,16 @@ function Index() {
                       className="text-muted-foreground group-hover:text-primary transition-colors duration-300"
                     />
                   </div>
-                  <span className="font-mono text-[10px] text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border">
-                    {tool.code}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {tool.category && CATEGORY_TAGS[tool.category] && (
+                      <span className={`font-mono text-[8px] uppercase tracking-wider px-1.5 py-0.5 border ${CATEGORY_TAGS[tool.category].color}`}>
+                        {CATEGORY_TAGS[tool.category].label}
+                      </span>
+                    )}
+                    <span className="font-mono text-[10px] text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border">
+                      {tool.code}
+                    </span>
+                  </div>
                 </div>
                 
                 <h3 className="text-sm font-semibold mb-2 group-hover:text-primary transition-colors duration-300 text-foreground">
