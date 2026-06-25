@@ -60,7 +60,7 @@ const MODULE_CATEGORIES = [
     title: "// Web, Contas & Análise",
     items: [
       { to: "/filephish", label: "File Phish" },
-      { to: "/wayback", label: "Wayback Machine" },
+      { to: "/certificates", label: "Certificados SSL" },
       { to: "/dorks", label: "Google Dorks" },
       { to: "/gitfive", label: "Git Recon" },
       { to: "/ghunt", label: "Google Hunt" },

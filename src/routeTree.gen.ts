@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhoisRouteImport } from './routes/whois'
-import { Route as WaybackRouteImport } from './routes/wayback'
 import { Route as UsernameRouteImport } from './routes/username'
 import { Route as TimestampRouteImport } from './routes/timestamp'
 import { Route as SubdomainsRouteImport } from './routes/subdomains'
@@ -47,6 +46,7 @@ import { Route as CveRouteImport } from './routes/cve'
 import { Route as CryptoRouteImport } from './routes/crypto'
 import { Route as CpfRouteImport } from './routes/cpf'
 import { Route as CnpjRouteImport } from './routes/cnpj'
+import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as CepRouteImport } from './routes/cep'
 import { Route as AbuseipdbRouteImport } from './routes/abuseipdb'
 import { Route as AboutRouteImport } from './routes/about'
@@ -55,11 +55,6 @@ import { Route as IndexRouteImport } from './routes/index'
 const WhoisRoute = WhoisRouteImport.update({
   id: '/whois',
   path: '/whois',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WaybackRoute = WaybackRouteImport.update({
-  id: '/wayback',
-  path: '/wayback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UsernameRoute = UsernameRouteImport.update({
@@ -242,6 +237,11 @@ const CnpjRoute = CnpjRouteImport.update({
   path: '/cnpj',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CertificatesRoute = CertificatesRouteImport.update({
+  id: '/certificates',
+  path: '/certificates',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CepRoute = CepRouteImport.update({
   id: '/cep',
   path: '/cep',
@@ -268,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
   '/cep': typeof CepRoute
+  '/certificates': typeof CertificatesRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
@@ -304,7 +305,6 @@ export interface FileRoutesByFullPath {
   '/subdomains': typeof SubdomainsRoute
   '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
-  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesByTo {
@@ -312,6 +312,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
   '/cep': typeof CepRoute
+  '/certificates': typeof CertificatesRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
@@ -348,7 +349,6 @@ export interface FileRoutesByTo {
   '/subdomains': typeof SubdomainsRoute
   '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
-  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesById {
@@ -357,6 +357,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
   '/cep': typeof CepRoute
+  '/certificates': typeof CertificatesRoute
   '/cnpj': typeof CnpjRoute
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
@@ -393,7 +394,6 @@ export interface FileRoutesById {
   '/subdomains': typeof SubdomainsRoute
   '/timestamp': typeof TimestampRoute
   '/username': typeof UsernameRoute
-  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRouteTypes {
@@ -403,6 +403,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/abuseipdb'
     | '/cep'
+    | '/certificates'
     | '/cnpj'
     | '/cpf'
     | '/crypto'
@@ -439,7 +440,6 @@ export interface FileRouteTypes {
     | '/subdomains'
     | '/timestamp'
     | '/username'
-    | '/wayback'
     | '/whois'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -447,6 +447,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/abuseipdb'
     | '/cep'
+    | '/certificates'
     | '/cnpj'
     | '/cpf'
     | '/crypto'
@@ -483,7 +484,6 @@ export interface FileRouteTypes {
     | '/subdomains'
     | '/timestamp'
     | '/username'
-    | '/wayback'
     | '/whois'
   id:
     | '__root__'
@@ -491,6 +491,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/abuseipdb'
     | '/cep'
+    | '/certificates'
     | '/cnpj'
     | '/cpf'
     | '/crypto'
@@ -527,7 +528,6 @@ export interface FileRouteTypes {
     | '/subdomains'
     | '/timestamp'
     | '/username'
-    | '/wayback'
     | '/whois'
   fileRoutesById: FileRoutesById
 }
@@ -536,6 +536,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AbuseipdbRoute: typeof AbuseipdbRoute
   CepRoute: typeof CepRoute
+  CertificatesRoute: typeof CertificatesRoute
   CnpjRoute: typeof CnpjRoute
   CpfRoute: typeof CpfRoute
   CryptoRoute: typeof CryptoRoute
@@ -572,7 +573,6 @@ export interface RootRouteChildren {
   SubdomainsRoute: typeof SubdomainsRoute
   TimestampRoute: typeof TimestampRoute
   UsernameRoute: typeof UsernameRoute
-  WaybackRoute: typeof WaybackRoute
   WhoisRoute: typeof WhoisRoute
 }
 
@@ -583,13 +583,6 @@ declare module '@tanstack/react-router' {
       path: '/whois'
       fullPath: '/whois'
       preLoaderRoute: typeof WhoisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/wayback': {
-      id: '/wayback'
-      path: '/wayback'
-      fullPath: '/wayback'
-      preLoaderRoute: typeof WaybackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/username': {
@@ -844,6 +837,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CnpjRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/certificates': {
+      id: '/certificates'
+      path: '/certificates'
+      fullPath: '/certificates'
+      preLoaderRoute: typeof CertificatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cep': {
       id: '/cep'
       path: '/cep'
@@ -880,6 +880,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AbuseipdbRoute: AbuseipdbRoute,
   CepRoute: CepRoute,
+  CertificatesRoute: CertificatesRoute,
   CnpjRoute: CnpjRoute,
   CpfRoute: CpfRoute,
   CryptoRoute: CryptoRoute,
@@ -916,7 +917,6 @@ const rootRouteChildren: RootRouteChildren = {
   SubdomainsRoute: SubdomainsRoute,
   TimestampRoute: TimestampRoute,
   UsernameRoute: UsernameRoute,
-  WaybackRoute: WaybackRoute,
   WhoisRoute: WhoisRoute,
 }
 export const routeTree = rootRouteImport

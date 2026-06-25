@@ -3145,181 +3145,134 @@ export const usernameScan = createServerFn({ method: "POST" })
   });
 
 /* ═══════════════════════════════════════════
-   Module 21 — Wayback Machine Lookup
+   Module 18 — Transparência de Certificados (crt.sh)
    ═══════════════════════════════════════════ */
 
-const waybackSchema = z.object({
-  url: z.string().trim().min(3),
+const certificatesSchema = z.object({
+  domain: z.string().trim().min(3),
 });
 
-export type WaybackSnapshot = {
-  timestamp: string;
-  url: string;
-  status: string;
-  original: string;
+export type CertificateItem = {
+  id: number;
+  loggedAt: string;
+  notBefore: string;
+  notAfter: string;
+  issuer: string;
+  commonName: string;
+  matchingNames: string[];
 };
 
-export type WaybackResult = {
-  url: string;
-  isAvailable: boolean;
-  firstSnapshot: WaybackSnapshot | null;
-  lastSnapshot: WaybackSnapshot | null;
-  snapshots: WaybackSnapshot[];
-  totalCaptures: number;
+export type CertificatesResult = {
+  domain: string;
+  certificates: CertificateItem[];
+  subdomains: string[];
+  totalCertificates: number;
 };
 
-export const waybackLookup = createServerFn({ method: "POST" })
-  .validator(waybackSchema)
-  .handler(async ({ data }): Promise<{ error: string | null; data: WaybackResult | null }> => {
+export const certificatesLookup = createServerFn({ method: "POST" })
+  .validator(certificatesSchema)
+  .handler(async ({ data }): Promise<{ error: string | null; data: CertificatesResult | null }> => {
     try {
-      const targetUrl = data.url;
-      let cleanUrl = targetUrl.trim();
-      if (!/^https?:\/\//i.test(cleanUrl)) {
-        cleanUrl = `http://${cleanUrl}`;
+      let domain = data.domain.trim().toLowerCase();
+      // Remover protocolo se presente
+      domain = domain.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "");
+      // Remover caminho ou query strings
+      domain = domain.split("/")[0].split("?")[0];
+
+      if (!domain) {
+        return {
+          error: "Domínio inválido fornecido.",
+          data: null,
+        };
       }
 
       const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
-      // 1. Availability check
-      const availRes = await fetch(
-        `https://archive.org/wayback/available?url=${encodeURIComponent(cleanUrl)}`,
-        {
-          headers: { "User-Agent": userAgent },
-          signal: AbortSignal.timeout(8000),
-        }
-      );
+      const url = `https://crt.sh/?q=${encodeURIComponent(domain)}&output=json`;
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": userAgent,
+        },
+        signal: AbortSignal.timeout(12000), // crt.sh pode ser um pouco lento
+      });
 
-      if (availRes.status === 429) {
+      if (response.status === 429) {
         return {
-          error: "O servidor do Wayback Machine (Archive.org) retornou limite de requisições (Erro 429). Por favor, tente novamente mais tarde.",
+          error: "O servidor do crt.sh retornou limite de requisições (Erro 429). Por favor, tente novamente mais tarde.",
           data: null,
         };
       }
 
-      let isAvailable = false;
-      let closestSnapshot: WaybackSnapshot | null = null;
-
-      if (availRes.ok) {
-        const availJson = await availRes.json();
-        const snapshot = availJson.archived_snapshots?.closest;
-        if (snapshot && snapshot.available) {
-          isAvailable = true;
-          closestSnapshot = {
-            timestamp: snapshot.timestamp,
-            url: snapshot.url,
-            status: snapshot.status,
-            original: snapshot.original,
-          };
-        }
-      }
-
-      // 2. CDX history query
-      let cdxRes: Response | null = null;
-      try {
-        cdxRes = await fetch(
-          `https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(cleanUrl)}&output=json&limit=50&collapse=timestamp:8`,
-          {
-            headers: { "User-Agent": userAgent },
-            signal: AbortSignal.timeout(8000),
-          }
-        );
-      } catch (err) {
-        // Ignore CDX timeout/network errors to allow fallback
-      }
-
-      if (cdxRes && cdxRes.status === 429) {
+      if (!response.ok) {
         return {
-          error: "O servidor do Wayback Machine (Archive.org) retornou limite de requisições (Erro 429). Por favor, tente novamente mais tarde.",
+          error: "O servidor crt.sh retornou um erro ou está temporariamente fora do ar. Tente novamente mais tarde.",
           data: null,
         };
       }
 
-      const snapshots: WaybackSnapshot[] = [];
-      if (cdxRes && cdxRes.ok) {
-        try {
-          const cdxJson = await cdxRes.json();
-          for (let i = 1; i < cdxJson.length; i++) {
-            const row = cdxJson[i];
-            if (row && row.length >= 7) {
-              const timestamp = row[1];
-              const original = row[2];
-              const status = row[4];
-              snapshots.push({
-                timestamp,
-                url: `https://web.archive.org/web/${timestamp}/${original}`,
-                status,
-                original,
-              });
-            }
-          }
-        } catch (err) {
-          // Ignore parse errors
-        }
+      const json = await response.json();
+      if (!Array.isArray(json)) {
+        return {
+          error: "Resposta inválida recebida do servidor crt.sh.",
+          data: null,
+        };
       }
 
-      // Fallback: If CDX query was blocked, empty, or failed, retrieve multi-year snapshots via Availability API
-      if (snapshots.length === 0 && isAvailable) {
-        const years = [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015];
-        const fallbackPromises = years.map(async (year) => {
-          try {
-            const res = await fetch(
-              `https://archive.org/wayback/available?url=${encodeURIComponent(cleanUrl)}&timestamp=${year}0615`,
-              {
-                headers: { "User-Agent": userAgent },
-                signal: AbortSignal.timeout(4000),
-              }
-            );
-            if (res.ok) {
-              const json = await res.json();
-              const snap = json.archived_snapshots?.closest;
-              if (snap && snap.available) {
-                return {
-                  timestamp: snap.timestamp,
-                  url: snap.url,
-                  status: snap.status,
-                  original: snap.original,
-                };
-              }
+      const certificates: CertificateItem[] = [];
+      const subdomainsSet = new Set<string>();
+
+      for (const item of json) {
+        if (!item) continue;
+        const id = item.id;
+        const loggedAt = item.entry_timestamp || item.not_before || "";
+        const notBefore = item.not_before || "";
+        const notAfter = item.not_after || "";
+        const issuer = item.issuer_name || "";
+        const commonName = item.common_name || "";
+        
+        const nameValue = item.name_value || "";
+        const matchingNames = nameValue
+          .split("\n")
+          .map((n: string) => n.trim().toLowerCase())
+          .filter((n: string) => n.length > 0);
+
+        for (const name of matchingNames) {
+          if (name.includes(domain)) {
+            // Limpar wildcards (ex: *.exemplo.com -> exemplo.com)
+            const cleanName = name.replace(/^\*\./, "");
+            // Certificar de que não é apenas o domínio principal ou um inválido
+            if (cleanName.length > 0 && cleanName !== domain) {
+              subdomainsSet.add(cleanName);
             }
-          } catch {}
-          return null;
+          }
+        }
+
+        certificates.push({
+          id,
+          loggedAt,
+          notBefore,
+          notAfter,
+          issuer,
+          commonName,
+          matchingNames,
         });
-
-        const fallbackResults = await Promise.allSettled(fallbackPromises);
-        const uniqueSnapshots = new Map<string, WaybackSnapshot>();
-
-        if (closestSnapshot) {
-          uniqueSnapshots.set(closestSnapshot.timestamp, closestSnapshot);
-        }
-
-        for (const res of fallbackResults) {
-          if (res.status === "fulfilled" && res.value) {
-            uniqueSnapshots.set(res.value.timestamp, res.value);
-          }
-        }
-
-        snapshots.push(...Array.from(uniqueSnapshots.values()));
       }
 
-      snapshots.sort((a, b) => b.timestamp.localeCompare(a.timestamp)); // Newest first
-
-      const firstSnapshot = snapshots[snapshots.length - 1] ?? closestSnapshot;
-      const lastSnapshot = snapshots[0] ?? closestSnapshot;
+      // Ordenar certificados por data de registro decrescente (mais recentes primeiro)
+      certificates.sort((a, b) => b.loggedAt.localeCompare(a.loggedAt));
 
       return {
         error: null,
         data: {
-          url: cleanUrl,
-          isAvailable: isAvailable || snapshots.length > 0,
-          firstSnapshot,
-          lastSnapshot,
-          snapshots,
-          totalCaptures: snapshots.length,
+          domain,
+          certificates,
+          subdomains: Array.from(subdomainsSet).sort(),
+          totalCertificates: certificates.length,
         },
       };
     } catch (e) {
       return {
-        error: e instanceof Error ? e.message : "Erro desconhecido",
+        error: e instanceof Error ? e.message : "Erro desconhecido ao consultar crt.sh",
         data: null,
       };
     }
