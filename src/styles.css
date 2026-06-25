@@ -55,7 +55,7 @@
 
 /* ═══════════════════════════════════════════
    CAESAR INTELLIGENCE — Scarlet Ops × Blood Steel × Deep Crimson
-   Fundo: #08080E (OLED com subtom frio sideral)
+   Fundo: #000000 (Pure Black OLED)
    Cards: #0E1420 (naval dark)
    Primary: #E8253A (crimson preciso — inteligência, não alarme)
    Steel: #455A64 (estrutura e ícones)
@@ -64,8 +64,8 @@
 :root {
   --radius: 0px;
 
-  /* Fundo OLED com subtom frio-sideral */
-  --background: #08080E;
+  /* Fundo OLED Puro Preto */
+  --background: #000000;
   --foreground: #E8EDF2;
 
   --card: #0E1420;
@@ -117,7 +117,7 @@
   --chart-5: #0E1420;
 
   /* Sidebar */
-  --sidebar: #08080E;
+  --sidebar: #000000;
   --sidebar-foreground: #E8EDF2;
   --sidebar-primary: #E8253A;
   --sidebar-primary-foreground: #FFFFFF;
@@ -206,7 +206,7 @@
       radial-gradient(ellipse at 20% 0%, rgba(232, 37, 58, 0.05) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 100%, rgba(194, 24, 91, 0.04) 0%, transparent 45%),
       radial-gradient(ellipse at 50% 50%, rgba(69, 90, 100, 0.03) 0%, transparent 60%),
-      #08080E;
+      #000000;
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -264,7 +264,7 @@
   overflow: hidden;
   background:
     radial-gradient(ellipse at 50% 0%, rgba(229, 57, 53, 0.05) 0%, transparent 50%),
-    #080808;
+    #000000;
   background-image:
     repeating-linear-gradient(35deg, rgba(229, 57, 53, 0.03) 0, rgba(229, 57, 53, 0.03) 1px, transparent 1px, transparent 30px),
     repeating-linear-gradient(-35deg, rgba(229, 57, 53, 0.03) 0, rgba(229, 57, 53, 0.03) 1px, transparent 1px, transparent 30px);
@@ -309,7 +309,7 @@
 }
 
 .glass-strong {
-  background: #080808;
+  background: #000000;
   border: 1px solid var(--border);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.50);
 }
