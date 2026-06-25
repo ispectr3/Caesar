@@ -234,8 +234,8 @@ export function ResultCard({
       className={`card-cyber p-5 fade-in-up ${className}`}
     >
       <div className="mb-4 pb-2 border-b border-border/30 flex items-center justify-between" data-html2canvas-ignore>
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary font-bold">
-          [// {title}]
+        <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-foreground font-bold">
+          <span className="text-primary mr-1.5">//</span>{title}
         </span>
         <div className="flex items-center gap-2.5 no-print">
           {exportData && (
@@ -326,8 +326,8 @@ export function PivotLinks({
   if (!pivots || pivots.length === 0) return null;
   return (
     <div className="mt-5 pt-4 border-t border-border/20">
-      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 block mb-2.5">
-        // Continuar Investigação
+      <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground block mb-2.5">
+        <span className="text-primary mr-1">//</span> Continuar Investigação
       </span>
       <div className="flex flex-wrap gap-2">
         {pivots.map((p, i) => (
@@ -335,7 +335,7 @@ export function PivotLinks({
             key={i}
             to={p.to as any}
             search={{ q: p.query }}
-            className="group flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[10px] border border-border/30 bg-card/50 text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-200"
+            className="group flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[10px] border border-border/40 bg-card/50 text-foreground/80 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-200"
           >
             <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform duration-200" />
             {p.label}

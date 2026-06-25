@@ -11,7 +11,7 @@
 
 ## 🛠️ Módulos Integrados
 
-A plataforma conta com **35 módulos de reconhecimento** ativos e acessíveis diretamente da página inicial:
+A plataforma conta com **50 módulos de reconhecimento** ativos e acessíveis diretamente da página inicial:
 
 1. 👤 **CPF Search** – Validador, análise regional e rastreio de vazamento de CPF na Dark Web.
 2. 🏢 **CNPJ Lookup** – Consultas cadastrais e quadro societário de empresas (BrasilAPI).
@@ -30,7 +30,7 @@ A plataforma conta com **35 módulos de reconhecimento** ativos e acessíveis di
 15. 🛡️ **HTTP Headers** – Analisa headers de segurança com score de proteção.
 16. ⚠️ **CVE Search** – Busca vulnerabilidades no banco de dados NIST NVD.
 17. 📄 **File Phish** – Busca estruturada de documentos sensíveis expostos via Google Dorks.
-18. 🕰️ **Wayback Machine** – Consulta o histórico de capturas e snapshots de websites arquivados.
+18. 🛡️ **Certificados SSL (crt.sh)** – Consulta logs de Certificate Transparency para subdomínios.
 19. 🔎 **Google Dorks** – Gerador de queries avançadas para encontrar arquivos e páginas ocultas.
 20. 🐙 **GitFive** – Rastreia e-mails reais de commits públicos e identidades de desenvolvedores.
 21. 🚨 **GHunt** – Identifica contas Google, GAIA IDs e exposição em serviços públicos.
@@ -48,6 +48,21 @@ A plataforma conta com **35 módulos de reconhecimento** ativos e acessíveis di
 33. 🌐 **Favicon Hash** – Obtenha MurmurHash3 de favicon para buscas de infraestrutura no Shodan.
 34. 🖼️ **Error Level Analysis** – Analise a autenticidade de fotos e prints usando diferença de compressão.
 35. 🪙 **Crypto Tracker** – Monitore saldo, transações e atividades de carteiras (BTC, ETH, DOGE).
+36. 🔑 **Gerador de Senha** – Geração de senhas com análise de entropia e força.
+37. 🛡️ **Email Blacklist** – Varre 12 bancos DNSBL em busca de reputação de IP/domínio.
+38. ✉️ **Email Verify** – Verificação avançada de autenticação DNS (SPF, DKIM, DMARC).
+39. ⚡ **Medidor de Velocidade** – Velocímetro de conexão e ping via Cloudflare CDN.
+40. 🕸️ **Visual OSINT Graph** – Mapeador relacional de infraestrutura web (estilo Maltego).
+41. 🧬 **VirusTotal Lookup** – Consulta reputação de domínios, hashes, URLs e IPs.
+42. 🔎 **URLScan.io** – Analisa comportamento e gera capturas de tela de páginas suspeitas.
+43. 🗃️ **Malware Bazaar** – Consulta hashes de malwares conhecidos na API do Abuse.ch.
+44. 🚨 **Tor Exit Node Check** – Verifica se IP pertence à rede Tor.
+45. 📲 **Telegram OSINT** – Informações e metadados de contas/canais públicos.
+46. 💼 **LinkedIn Recon** – Google Dorks refinados para inteligência corporativa.
+47. 🔍 **Shodan Lookup** – Varreduras ativas de portas e vulnerabilidades (CVEs) em IP/host.
+48. 🗺️ **BGP / ASN Map** – Mapeia peers de ASN e prefixos CIDR via BGPView.
+49. ☁️ **Cloud Range Detector** – Descobre o provedor Cloud de um IP (AWS, GCP, Azure, CF).
+50. 🛡️ **WAF Detector** – Detecção e fingerprint de firewalls de aplicação Web (WAF).
 
 ---
 

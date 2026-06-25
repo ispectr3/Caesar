@@ -19,6 +19,8 @@ import {
   ChevronDown,
   Terminal,
   Scan,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const NAV = [
@@ -186,6 +188,12 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("caesar_sidebar_collapsed") === "true";
+    }
+    return false;
+  });
   const location = useLocation();
 
   useEffect(() => {
@@ -193,6 +201,14 @@ export function SiteLayout({ children }: { children: ReactNode }) {
     setPaletteOpen(false);
     setMobileOpen(false);
   }, [location.pathname]);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem("caesar_sidebar_collapsed", String(next));
+      return next;
+    });
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -257,6 +273,17 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                 Caesar<span className="text-primary font-semibold">OSINT</span>
               </span>
             </Link>
+
+            {/* Sidebar toggle button (desktop only) */}
+            {isModuleActive && (
+              <button
+                onClick={toggleSidebar}
+                className="hidden lg:flex items-center justify-center h-8 w-8 bg-input border border-border/80 hover:border-primary text-muted-foreground hover:text-primary transition-all duration-200 cursor-pointer animate-fadeIn"
+                title={sidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+              >
+                {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+              </button>
+            )}
 
             {/* Global Search Button (Desktop triggers Palette) */}
             <button
@@ -422,8 +449,8 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 
       {/* ── Main with Left Sidebar ── */}
       <main className="flex-1 flex min-h-0">
-        {isModuleActive && (
-          <aside className="hidden lg:block w-64 border-r border-border bg-black/45 flex-shrink-0 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto no-print p-4 space-y-6 scrollbar-thin">
+        {isModuleActive && !sidebarCollapsed && (
+          <aside className="hidden lg:block w-56 border-r border-border bg-black/45 flex-shrink-0 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto no-print p-4 space-y-6 scrollbar-thin animate-fadeIn">
             {MODULE_CATEGORIES.map((cat, idx) => (
               <div key={idx} className="space-y-1.5">
                 <span className="font-mono text-[9px] text-primary/70 uppercase tracking-widest font-bold block pb-1 border-b border-border/20">
