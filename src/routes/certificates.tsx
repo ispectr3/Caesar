@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { certificatesLookup, type CertificatesResult } from "@/lib/osint.functions";
 import { Calendar, ShieldCheck, Lock, Award, Server, AlertTriangle, ExternalLink, Link2 } from "lucide-react";
 
@@ -182,6 +182,16 @@ function CertificatesTool() {
                       Verifique datas de expiração antigas para cruzar dados históricos de quando o site migrou ou mudou de hospedagem.
                     </div>
                   </div>
+                </ResultCard>
+
+                <ResultCard title="Ações de Pivotamento">
+                  <PivotLinks
+                    pivots={[
+                      { label: "Subdomain Scanner", to: "/subdomains", query: result.domain, tag: "rede" },
+                      { label: "Web Port Scanner", to: "/portscan", query: result.domain, tag: "rede" },
+                      { label: "DNS Lookup", to: "/dns", query: result.domain, tag: "dns" },
+                    ]}
+                  />
                 </ResultCard>
               </div>
 

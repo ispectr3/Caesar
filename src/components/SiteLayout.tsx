@@ -1,4 +1,4 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, type ReactNode } from "react";
 import {
   Globe,
@@ -181,20 +181,71 @@ function getSuggestions(query: string): Suggestion[] {
 }
 
 export function SiteLayout({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [paletteQuery, setPaletteQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
   const location = useLocation();
 
   useEffect(() => {
-    setSearchQuery("");
-    setSearchOpen(false);
+    setPaletteQuery("");
+    setPaletteOpen(false);
+    setMobileOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const isModuleActive = MODULES.some((m) => location.pathname === m.to);
 
+  const paletteResults = getSuggestions(paletteQuery);
+  const showResults = paletteQuery ? paletteResults : [
+    { moduleName: "CPF Search", action: "Nacional", label: "Consultar CPF", to: "/cpf" },
+    { moduleName: "CNPJ Lookup", action: "Nacional", label: "Consultar CNPJ", to: "/cnpj" },
+    { moduleName: "IP Geolocation", action: "Rede", label: "Geolocalizar IP", to: "/ip" },
+    { moduleName: "VirusTotal Lookup", action: "Threat Intel", label: "Verificar reputação de Hash/IP/Domínio", to: "/virustotal" },
+    { moduleName: "WhatsMyName", action: "Social", label: "Verificar Username em redes", to: "/username" },
+  ];
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [paletteQuery]);
+
+  const handlePaletteKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => Math.min(prev + 1, showResults.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (showResults[activeIndex]) {
+        const item = showResults[activeIndex];
+        navigate({
+          to: item.to as any,
+          search: item.query ? { q: item.query } : undefined,
+        });
+        setPaletteOpen(false);
+        setPaletteQuery("");
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setPaletteOpen(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col noise-overlay">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* ── Header ── */}
       <header className="glass-strong sticky top-0 z-50 border-b border-border-active no-print">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-14 flex items-center justify-between">
@@ -207,68 +258,19 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               </span>
             </Link>
 
-            {/* Global Search (Desktop) */}
-            <div className="relative hidden md:block w-72">
-              <div className="relative">
+            {/* Global Search Button (Desktop triggers Palette) */}
+            <button
+              onClick={() => setPaletteOpen(true)}
+              className="relative hidden md:flex items-center justify-between w-72 bg-input border border-border/85 rounded-none pl-8 pr-3 py-1.5 font-mono text-[10px] text-muted-foreground/50 hover:border-primary/80 transition-all duration-300 shadow-inner cursor-pointer text-left"
+            >
+              <div className="flex items-center gap-2">
                 <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                <input
-                  type="text"
-                  autoComplete="off"
-                  placeholder="Busca global... (ex: IP, CPF, Domínio)"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setSearchOpen(e.target.value.length > 0);
-                  }}
-                  onFocus={() => {
-                    if (searchQuery.length > 0) setSearchOpen(true);
-                  }}
-                  className="w-full bg-input border border-border/85 rounded-none pl-8 pr-8 py-1.5 font-mono text-[10px] text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSearchOpen(false);
-                    }}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                  >
-                    <X size={12} />
-                  </button>
-                )}
+                <span>Busca global... (ex: IP, CPF)</span>
               </div>
-
-              {/* Suggestions Panel */}
-              {searchOpen && (
-                <div className="absolute left-0 right-0 mt-1 max-h-80 overflow-y-auto bg-popover border border-border-active shadow-[0_10px_30px_rgba(0,0,0,0.9)] z-50 p-1 font-mono text-[11px] rounded-none">
-                  {getSuggestions(searchQuery).map((s, idx) => (
-                    <Link
-                      key={idx}
-                      to={s.to}
-                      search={s.query ? { q: s.query } : undefined}
-                      onClick={() => {
-                        setSearchQuery("");
-                        setSearchOpen(false);
-                      }}
-                      className="flex flex-col p-2 hover:bg-muted text-muted-foreground hover:text-foreground border-b border-border/10 last:border-b-0 cursor-pointer"
-                    >
-                      <div className="flex justify-between items-center mb-0.5">
-                        <span className="text-primary font-bold text-[9px]">{s.moduleName}</span>
-                        <span className="text-[8px] text-muted-foreground/50 uppercase tracking-widest">{s.action}</span>
-                      </div>
-                      <div className="text-[10px] text-foreground truncate">
-                        {s.label}
-                      </div>
-                    </Link>
-                  ))}
-                  {getSuggestions(searchQuery).length === 0 && (
-                    <div className="p-3 text-center text-muted-foreground/45 text-[10px]">
-                      Nenhum módulo correspondente.
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+              <kbd className="bg-muted px-1.5 py-0.5 border border-border/60 text-[9px] text-muted-foreground/80 font-mono rounded">
+                ⌘K
+              </kbd>
+            </button>
           </div>
 
           {/* Desktop nav */}
@@ -350,66 +352,20 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         {mobileOpen && (
           <div className="lg:hidden border-t border-border/50 mobile-nav-open bg-black/95">
             <nav className="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-1 max-h-[70vh] overflow-y-auto">
-              {/* Mobile Search */}
+              {/* Mobile Search (Triggers Palette) */}
               <div className="relative mb-3 no-print">
-                <div className="relative">
-                  <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
-                  <input
-                    type="text"
-                    autoComplete="off"
-                    placeholder="Busca global... (ex: IP, CPF, Domínio)"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setSearchOpen(e.target.value.length > 0);
-                    }}
-                    onFocus={() => {
-                      if (searchQuery.length > 0) setSearchOpen(true);
-                    }}
-                    className="w-full bg-input border border-border/80 rounded-none pl-8 pr-8 py-2 font-mono text-[10px] text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => {
-                        setSearchQuery("");
-                        setSearchOpen(false);
-                      }}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                    >
-                      <X size={12} />
-                    </button>
-                  )}
-                </div>
-                {searchOpen && (
-                  <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-popover border border-border-active shadow-[0_10px_30px_rgba(0,0,0,0.9)] z-50 p-1 font-mono text-[11px] rounded-none">
-                    {getSuggestions(searchQuery).map((s, idx) => (
-                      <Link
-                        key={idx}
-                        to={s.to}
-                        search={s.query ? { q: s.query } : undefined}
-                        onClick={() => {
-                          setSearchQuery("");
-                          setSearchOpen(false);
-                          setMobileOpen(false);
-                        }}
-                        className="flex flex-col p-2 hover:bg-muted text-muted-foreground hover:text-foreground border-b border-border/10 last:border-b-0 cursor-pointer"
-                      >
-                        <div className="flex justify-between items-center mb-0.5">
-                          <span className="text-primary font-bold text-[9px]">{s.moduleName}</span>
-                          <span className="text-[8px] text-muted-foreground/50 uppercase tracking-widest">{s.action}</span>
-                        </div>
-                        <div className="text-[10px] text-foreground truncate">
-                          {s.label}
-                        </div>
-                      </Link>
-                    ))}
-                    {getSuggestions(searchQuery).length === 0 && (
-                      <div className="p-3 text-center text-muted-foreground/45 text-[10px]">
-                        Nenhum módulo correspondente.
-                      </div>
-                    )}
+                <button
+                  onClick={() => {
+                    setPaletteOpen(true);
+                    setMobileOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between bg-input border border-border/80 rounded-none px-3 py-2 font-mono text-[10px] text-muted-foreground/50 hover:border-primary/80 transition-all duration-300 shadow-inner text-left cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Search size={13} className="text-muted-foreground/60" />
+                    <span>Busca global...</span>
                   </div>
-                )}
+                </button>
               </div>
 
               <Link
@@ -464,8 +420,36 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         )}
       </header>
 
-      {/* ── Main ── */}
-      <main className="flex-1">{children}</main>
+      {/* ── Main with Left Sidebar ── */}
+      <main className="flex-1 flex min-h-0">
+        {isModuleActive && (
+          <aside className="hidden lg:block w-64 border-r border-border bg-black/45 flex-shrink-0 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto no-print p-4 space-y-6 scrollbar-thin">
+            {MODULE_CATEGORIES.map((cat, idx) => (
+              <div key={idx} className="space-y-1.5">
+                <span className="font-mono text-[9px] text-primary/70 uppercase tracking-widest font-bold block pb-1 border-b border-border/20">
+                  {cat.title}
+                </span>
+                <div className="flex flex-col gap-0.5">
+                  {cat.items.map((m) => (
+                    <Link
+                      key={m.to}
+                      to={m.to}
+                      className="px-2 py-1 text-[11px] font-mono text-muted-foreground hover:text-primary hover:bg-white/5 transition-all duration-150 flex items-center gap-1.5"
+                      activeProps={{ className: "!text-primary bg-primary/5 font-bold border-l-2 border-primary pl-1.5" }}
+                    >
+                      <Terminal size={10} className="opacity-40" />
+                      <span className="truncate">{m.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </aside>
+        )}
+        <div className="flex-1 min-w-0 flex flex-col">
+          {children}
+        </div>
+      </main>
 
       {/* ── Footer ── */}
       <footer className="border-t border-border-active mt-24 bg-card/10">
@@ -491,6 +475,88 @@ export function SiteLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
       </footer>
+
+      {/* ── Command Palette Overlay (⌘K) ── */}
+      {paletteOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4 bg-black/80 backdrop-blur-xs transition-opacity duration-200"
+          onClick={() => setPaletteOpen(false)}
+        >
+          <div 
+            className="w-full max-w-lg bg-popover border border-border-active shadow-[0_0_50px_rgba(232,37,58,0.3)] flex flex-col font-mono text-[11px] rounded-none animate-fadeIn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Input Header */}
+            <div className="flex items-center border-b border-border/80 px-3 py-3">
+              <Search size={15} className="text-primary mr-2.5 shrink-0" />
+              <input
+                type="text"
+                autoFocus
+                autoComplete="off"
+                placeholder="DIGITE UM DADO OU BUSQUE UMA FERRAMENTA..."
+                value={paletteQuery}
+                onChange={(e) => setPaletteQuery(e.target.value)}
+                onKeyDown={handlePaletteKeyDown}
+                className="w-full bg-transparent border-0 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-0 text-xs tracking-wider"
+              />
+              <button 
+                onClick={() => { setPaletteOpen(false); setPaletteQuery(""); }}
+                className="text-muted-foreground hover:text-foreground cursor-pointer shrink-0 ml-2"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Results Section */}
+            <div className="max-h-72 overflow-y-auto p-1 divide-y divide-border/10">
+              {showResults.map((s, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    navigate({
+                      to: s.to as any,
+                      search: s.query ? { q: s.query } : undefined,
+                    });
+                    setPaletteOpen(false);
+                    setPaletteQuery("");
+                  }}
+                  className={`flex flex-col p-2.5 cursor-pointer border-b border-border/5 last:border-b-0 transition-colors duration-100 ${
+                    idx === activeIndex
+                      ? "bg-primary/10 text-foreground border-l-2 border-primary pl-2"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  }`}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <span className={`text-[9px] font-bold ${idx === activeIndex ? "text-primary glow-text" : "text-primary/70"}`}>
+                      {s.moduleName}
+                    </span>
+                    <span className="text-[8px] text-muted-foreground/40 uppercase tracking-widest">
+                      {s.action || "Abrir"}
+                    </span>
+                  </div>
+                  <div className={`text-[10px] truncate ${idx === activeIndex ? "text-foreground" : "text-foreground/80"}`}>
+                    {s.label}
+                  </div>
+                </div>
+              ))}
+              {showResults.length === 0 && (
+                <div className="p-4 text-center text-muted-foreground/45 text-[10px]">
+                  Nenhum módulo correspondente encontrado.
+                </div>
+              )}
+            </div>
+
+            {/* Footer hints */}
+            <div className="border-t border-border/80 px-3 py-2 bg-black/35 flex items-center justify-between text-[8px] text-muted-foreground/50 select-none">
+              <div className="flex gap-3">
+                <span><kbd className="bg-muted px-1 py-0.5 border border-border/40 rounded text-foreground/70 font-mono">↑↓</kbd> Navegar</span>
+                <span><kbd className="bg-muted px-1 py-0.5 border border-border/40 rounded text-foreground/70 font-mono">ENTER</kbd> Selecionar</span>
+              </div>
+              <span><kbd className="bg-muted px-1 py-0.5 border border-border/40 rounded text-foreground/70 font-mono">ESC</kbd> Fechar</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

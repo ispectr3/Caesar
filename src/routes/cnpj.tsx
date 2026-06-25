@@ -325,6 +325,15 @@ function CnpjTool() {
                 </div>
               </ResultCard>
             )}
+
+            <ResultCard title="Ações de Pivotamento">
+              <PivotLinks
+                pivots={[
+                  { label: "DataJud CNJ", to: "/datajud", query: result.razao_social, tag: "brasil" },
+                  { label: "CPF Search (Investigar Sócios)", to: "/cpf", query: result.qsa && result.qsa[0] ? result.qsa[0].nome_socio : "", tag: "identidade" },
+                ]}
+              />
+            </ResultCard>
           </div>
         )}
       </ToolForm>

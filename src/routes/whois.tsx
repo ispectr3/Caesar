@@ -182,6 +182,13 @@ function WhoisPage() {
                     )
                   }
                 />
+                <PivotLinks
+                  pivots={[
+                    { label: "IP Lookup", to: "/ip", query: result.domain, tag: "geo" },
+                    { label: "DNS Lookup", to: "/dns", query: result.domain, tag: "dns" },
+                    { label: "Registro.br WHOIS", to: "/registro", query: result.domain, tag: "br" },
+                  ]}
+                />
               </ResultCard>
 
               {/* Registry Timeline (Events) */}

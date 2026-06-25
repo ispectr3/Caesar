@@ -648,21 +648,20 @@ function Index() {
     <SiteLayout>
       {/* ── Hero ── */}
       <section className="border-b border-border/50 aurora-bg">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left side */}
-          <div className="lg:col-span-7">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16">
+          <div className="max-w-3xl">
             <p className="font-mono text-xs uppercase tracking-[0.4em] text-primary mb-5 fade-in-up">
               // Caesar OSINT
             </p>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-wider max-w-4xl fade-in-up stagger-1 font-title">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-wider fade-in-up stagger-1 font-title">
               A verdade está <span className="text-primary">nos dados</span>.
             </h1>
-            <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl fade-in-up stagger-2 leading-relaxed">
-              Plataforma avançada de investigação OSINT. Descubra conexões ocultas, rastreie identidades e exponha vulnerabilidades em tempo real.{" "}
+            <p className="mt-6 text-base sm:text-lg text-muted-foreground fade-in-up stagger-2 leading-relaxed">
+              Plataforma avançada de investigação OSINT. Descubra conexões ocultas, rastreie identidades e exponha vulnerabilidades em tempo real.
             </p>
 
             {/* CTAs */}
-            <div className="mt-10 flex flex-wrap gap-4 fade-in-up stagger-3">
+            <div className="mt-8 flex flex-wrap gap-4 fade-in-up stagger-3">
               <Link
                 to={randomPath}
                 className="group inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none hover:shadow-[0_0_20px_var(--primary)] transition-all duration-300"
@@ -678,33 +677,29 @@ function Index() {
               </Link>
             </div>
           </div>
+        </div>
 
-          {/* Right side */}
-          <div className="lg:col-span-5 space-y-4 fade-in-up stagger-2">
-            <div className="card-cyber p-5 hover-lift transition-all duration-300">
-              <div className="flex justify-between items-center mb-3">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold">
-                  // STATUS DO SISTEMA
-                </span>
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-              </div>
-              <div className="font-mono text-xs text-green-400 space-y-1 block">
-                <span>CAESAR CORE SYSTEM // OPERACIONAL</span>
-                <span className="block text-muted-foreground">MODULOS CARREGADOS: {SORTED_TOOLS.length}</span>
-              </div>
-            </div>
-
-            {/* Terminal de Operações (Logs) */}
-            <div className="card-cyber p-5 hover-lift transition-all duration-300 h-full flex flex-col">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold block mb-3.5">
-                // TERMINAL DE OPERAÇÕES (LOGS EM TEMPO REAL)
+        {/* Status bar compacta (ticker único) */}
+        <div className="border-t border-border/50 bg-black/40 py-3 px-4 sm:px-6 font-mono text-[10px] tracking-wider">
+          <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              <div className="space-y-1.5 max-h-[250px] overflow-y-auto pr-1 font-mono text-[9px] text-green-500/80 scrollbar-thin flex-1 text-left">
-                {logs.map((log, idx) => (
-                  <div key={idx} className="truncate">
-                    <span className="text-primary mr-1">&gt;</span> {log}
-                  </div>
-                ))}
+              <span className="text-muted-foreground">// STATUS:</span>
+              <span className="text-green-400 font-bold">SYSTEM OPERACIONAL</span>
+            </div>
+            
+            <div className="flex-1 hidden md:block text-center truncate text-muted-foreground/80 px-4">
+              <span className="text-primary mr-1.5">&gt;</span>
+              {logs[0] || "INITIALIZING OSINT PIPELINE..."}
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div>
+                <span className="text-muted-foreground">// MÓDULOS:</span>{" "}
+                <span className="text-primary font-bold">{SORTED_TOOLS.length} ATIVOS</span>
               </div>
             </div>
           </div>

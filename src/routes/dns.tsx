@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { dnsLookup } from "@/lib/osint.functions";
 
 type DnsResult = Array<{ type: string; records: string[] }>;
@@ -87,6 +87,19 @@ function DnsPage() {
                 )}
               </ResultCard>
             ))}
+            
+            <div className="md:col-span-2">
+              <ResultCard title="Ações de Pivotamento">
+                <PivotLinks
+                  pivots={[
+                    { label: "IP Lookup", to: "/ip", query: q || "", tag: "geo" },
+                    { label: "WHOIS Lookup", to: "/whois", query: q || "", tag: "whois" },
+                    { label: "Subdomain Scanner", to: "/subdomains", query: q || "", tag: "rede" },
+                    { label: "Certificados SSL", to: "/certificates", query: q || "", tag: "ssl" },
+                  ]}
+                />
+              </ResultCard>
+            </div>
           </div>
         )}
       </ToolForm>
