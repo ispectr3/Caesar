@@ -7,7 +7,7 @@ import { Shield, AlertTriangle, CheckCircle, Link2, Globe, Server, FileText, Clo
 export const Route = createFileRoute("/virustotal")({
   head: () => ({
     meta: [
-      { title: "VirusTotal Lookup — Caesar OSINT" },
+      { title: "VirusTotal Lookup" },
       { name: "description", content: "Verifique a reputação de hash, URL, IP ou domínio nos logs do VirusTotal." },
     ],
   }),
@@ -187,6 +187,21 @@ function VirusTotalPage() {
           </div>
         )}
       </ToolForm>
+    
+      {/* Bloco Explicativo Automático */}
+      <div className="mt-8">
+        <ResultCard title="Como funciona & Próximos Passos">
+          <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
+            <p>
+              <strong className="text-primary">Como funciona:</strong> Esta ferramenta executa verificações de inteligência em fontes abertas relacionadas a <em>VirusTotal Lookup</em>, permitindo que você valide a autenticidade e extraia metadados em tempo real.
+            </p>
+            <p>
+              <strong className="text-primary">O que fazer com o resultado:</strong> 
+              Use os dados retornados para cruzar informações com outros módulos (por exemplo, transformar um e-mail descoberto em uma busca de contas sociais, ou um IP em uma varredura de vulnerabilidades). Evidências cruciais devem ser documentadas em seu relatório de inteligência.
+            </p>
+          </div>
+        </ResultCard>
+      </div>
     </SiteLayout>
   );
 }

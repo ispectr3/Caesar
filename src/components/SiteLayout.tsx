@@ -58,8 +58,8 @@ const MODULE_CATEGORIES = [
       { to: "/linkedin", label: "LinkedIn Recon" },
       { to: "/ghunt", label: "Google Hunt" },
       { to: "/gitfive", label: "Git Recon" },
-      { to: "/username", label: "WhatsMyName" },
-      { to: "/namint", label: "NAMINT Combiner" },
+      
+      
     ],
   },
   {

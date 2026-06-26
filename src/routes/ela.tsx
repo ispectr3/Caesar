@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard } from "@/components/ToolForm";
-import { Image, FileUp, Loader2, RefreshCw } from "lucide-react";
+import { Image, FileUp, Loader2, RefreshCw, Download } from "lucide-react";
 
 export const Route = createFileRoute("/ela")({
   head: () => ({
@@ -138,6 +138,18 @@ function ElaTool() {
     }
   };
 
+  const downloadImage = () => {
+    const canvas = canvasRef.current;
+    if (!canvas || !fileName) return;
+    const dataUrl = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = `ELA_analysis_${fileName.replace(/\.[^/.]+$/, "")}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
     <SiteLayout>
       <PageHeader
@@ -196,6 +208,17 @@ function ElaTool() {
                 </div>
               )}
             </div>
+            {fileName && (
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={downloadImage}
+                  className="px-6 py-2.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-sans text-xs font-semibold uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center gap-2 hover:shadow-[0_0_15px_rgba(255,0,0,0.2)]"
+                >
+                  <Download size={14} />
+                  Salvar Evidência ELA (PNG)
+                </button>
+              </div>
+            )}
           </div>
 
           {/* ELA Info & Settings */}

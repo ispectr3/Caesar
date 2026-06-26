@@ -728,6 +728,17 @@ function Index() {
                 className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-md`}
               />
 
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4 relative z-10">
+                <div className={`p-2.5 rounded-md bg-gradient-to-br ${tool.color} bg-opacity-10 backdrop-blur-md border border-white/5`}>
+                  <tool.icon size={20} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <span className="font-mono text-xs opacity-50 group-hover:text-primary transition-colors">[{tool.code}]</span>
+                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-300 transform group-hover:translate-x-1" />
+                </div>
+              </div>
+
               <div className="relative z-10 flex flex-col h-full">
                 <div className="flex items-start justify-between mb-4">
                   <div className="h-9 w-9 rounded-md bg-secondary/80 border border-border grid place-items-center group-hover:border-primary/50 transition-colors duration-300">
