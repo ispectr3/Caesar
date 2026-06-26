@@ -441,31 +441,31 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       {/* ── Main with Left Sidebar ── */}
       <main className="flex-1 flex min-h-0 relative">
         {isModuleActive && (
-          <aside className={`hidden lg:block fixed left-0 top-14 w-56 border-r border-border bg-black/95 backdrop-blur-xl z-40 h-[calc(100vh-3.5rem)] shadow-[20px_0_50px_rgba(0,0,0,0.9)] transition-transform duration-300 ease-in-out ${sidebarCollapsed ? "-translate-x-full" : "translate-x-0"}`}>
-            {/* Toggle button na borda da aba */}
+          <aside className={`hidden lg:flex flex-col fixed left-4 top-20 w-56 bg-black/70 backdrop-blur-3xl border border-white/5 z-40 h-[calc(100vh-6.5rem)] shadow-2xl rounded-2xl transition-all duration-300 ease-in-out ${sidebarCollapsed ? "-translate-x-[150%] opacity-0 pointer-events-none" : "translate-x-0 opacity-100"}`}>
+            {/* Close button inner */}
             <button
               onClick={toggleSidebar}
-              className="absolute -right-8 top-6 h-10 w-8 bg-black/95 border-y border-r border-border rounded-r-md flex items-center justify-center text-muted-foreground hover:text-primary transition-colors cursor-pointer shadow-[5px_0_15px_rgba(0,0,0,0.5)]"
-              title={sidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+              className="absolute -right-3 top-8 h-7 w-7 bg-black/90 border border-white/10 rounded-full flex items-center justify-center text-muted-foreground hover:text-primary transition-all cursor-pointer shadow-lg hover:scale-110"
+              title="Recolher menu lateral"
             >
-              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              <ChevronLeft size={14} />
             </button>
 
-            <div className="w-full h-full overflow-y-auto no-print p-4 space-y-6 scrollbar-thin">
+            <div className="w-full h-full overflow-y-auto no-print p-5 space-y-6 scrollbar-thin">
               {MODULE_CATEGORIES.map((cat, idx) => (
-                <div key={idx} className="space-y-1.5">
-                  <span className="font-mono text-[9px] text-primary/70 uppercase tracking-widest font-bold block pb-1 border-b border-border/20">
-                    {cat.title}
+                <div key={idx} className="space-y-2">
+                  <span className="font-sans text-[10px] text-primary/70 uppercase tracking-[0.2em] font-semibold block pb-1 border-b border-border/10">
+                    {cat.title.replace('// ', '')}
                   </span>
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-1">
                     {cat.items.map((m) => (
                       <Link
                         key={m.to}
                         to={m.to}
-                        className="px-2 py-1 text-[11px] font-mono text-muted-foreground hover:text-primary hover:bg-white/5 transition-all duration-150 flex items-center gap-1.5"
-                        activeProps={{ className: "!text-primary bg-primary/5 font-bold border-l-2 border-primary pl-1.5" }}
+                        className="px-2.5 py-1.5 text-xs font-sans font-medium text-muted-foreground/90 hover:text-primary hover:bg-white/5 transition-all duration-200 rounded-lg flex items-center gap-2"
+                        activeProps={{ className: "!text-primary bg-primary/10 font-semibold shadow-[inset_2px_0_0_var(--primary)]" }}
                       >
-                        <Terminal size={10} className="opacity-40" />
+                        <Terminal size={12} className="opacity-40" />
                         <span className="truncate">{m.label}</span>
                       </Link>
                     ))}
@@ -475,7 +475,18 @@ export function SiteLayout({ children }: { children: ReactNode }) {
             </div>
           </aside>
         )}
-        <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ease-in-out ${isModuleActive && !sidebarCollapsed ? "lg:pl-56" : "pl-0"}`}>
+
+        {/* Floating Open Button when sidebar is closed */}
+        {isModuleActive && sidebarCollapsed && (
+          <button
+            onClick={toggleSidebar}
+            className="hidden lg:flex fixed left-4 top-24 h-10 w-10 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full items-center justify-center text-muted-foreground hover:text-primary transition-all cursor-pointer shadow-lg z-50 animate-fadeIn hover:scale-110 hover:border-primary/40"
+            title="Expandir menu lateral"
+          >
+            <ChevronRight size={18} />
+          </button>
+        )}
+        <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ease-in-out ${isModuleActive && !sidebarCollapsed ? "lg:pl-[270px]" : "pl-0"}`}>
           {children}
         </div>
       </main>

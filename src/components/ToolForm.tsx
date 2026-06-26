@@ -146,21 +146,21 @@ export function ToolForm({
             placeholder={placeholder}
             autoComplete="off"
             spellCheck={false}
-            className="w-full bg-input border border-border/60 border-l-4 border-l-primary rounded-none pl-9 pr-4 py-3.5 font-mono text-sm text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-300 shadow-inner"
+            className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl pl-10 pr-4 py-3.5 font-sans text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-inner"
           />
         </div>
         <button
           type="submit"
           disabled={loading || !value.trim()}
-          className="px-7 py-3.5 border border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_10px_var(--glow-subtle)] hover:shadow-[0_0_15px_var(--primary)]"
+          className="px-8 py-3.5 bg-gradient-to-r from-red-900 to-red-950 border border-red-800 text-white font-sans font-semibold text-xs uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(255,0,0,0.3)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>
               <Loader2 size={14} className="animate-spin" />
-              [ RUN SCAN ]
+              RUN SCAN
             </>
           ) : (
-            `[ ${buttonText.toUpperCase()} ]`
+            buttonText.toUpperCase()
           )}
         </button>
       </form>
