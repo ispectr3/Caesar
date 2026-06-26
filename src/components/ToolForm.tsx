@@ -135,7 +135,7 @@ export function ToolForm({
             onSubmit(value.trim());
           }
         }}
-        className="flex flex-col sm:flex-row gap-3 mb-4 no-print"
+        className="flex flex-col sm:flex-row gap-3 mb-8 no-print max-w-4xl mx-auto w-full"
       >
         <label className="sr-only">{label}</label>
         <div className="flex-1 input-prompt-wrapper">
