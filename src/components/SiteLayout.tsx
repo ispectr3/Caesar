@@ -422,7 +422,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
           <aside className={`hidden lg:flex flex-col fixed left-4 top-20 w-56 bg-black/70 backdrop-blur-3xl border border-white/5 z-40 h-[calc(100vh-6.5rem)] shadow-2xl rounded-2xl transition-all duration-300 ease-in-out ${sidebarCollapsed ? "-translate-x-[150%] opacity-0 pointer-events-none" : "translate-x-0 opacity-100"}`}>
 
 
-            <div className="w-full h-full overflow-y-auto no-print p-5 space-y-6 scrollbar-thin">
+            <div className="w-full h-full overflow-y-auto no-print p-5 space-y-6 custom-scrollbar">
               {MODULE_CATEGORIES.map((cat, idx) => (
                 <div key={idx} className="space-y-2">
                   <span className="font-sans text-[10px] text-primary/70 uppercase tracking-[0.2em] font-semibold block pb-1 border-b border-border/10">

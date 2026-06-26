@@ -191,7 +191,8 @@ function NamintTool() {
         description="Gere dezenas de formatos possíveis de e-mails e usernames corporativos ou pessoais a partir do nome real de um alvo."
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <div className="mx-auto max-w-6xl w-full px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Painel de Entrada */}
         <div className="lg:col-span-1 space-y-4">
           <ResultCard title="Dados do Alvo">
@@ -414,6 +415,7 @@ function NamintTool() {
               </div>
             </ResultCard>
           )}
+        </div>
         </div>
       </div>
     </SiteLayout>
