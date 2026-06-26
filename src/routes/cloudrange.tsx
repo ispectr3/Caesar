@@ -9,7 +9,7 @@ import { Cloud, Server, Shield, MapPin, CheckCircle, XCircle } from "lucide-reac
 export const Route = createFileRoute("/cloudrange")({
   head: () => ({
     meta: [
-      { title: "Cloud Range Detector — Caesar OSINT" },
+      { title: "Cloud Range Detector" },
       { name: "description", content: "Identifique se um IP pertence a AWS, GCP, Azure, Cloudflare ou outros provedores cloud." },
     ],
   }),

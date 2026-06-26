@@ -7,7 +7,7 @@ import { ShieldCheck, ShieldAlert, Loader2, Mail, ShieldAlert as AlertIcon } fro
 export const Route = createFileRoute("/emailverify")({
   head: () => ({
     meta: [
-      { title: "Email Authentication Verify | Caesar OSINT" },
+      { title: "Email Authentication Verify" },
       {
         name: "description",
         content: "Análise profunda de autenticação de email: SPF, DKIM (múltiplos seletores) e DMARC com score de conformidade.",

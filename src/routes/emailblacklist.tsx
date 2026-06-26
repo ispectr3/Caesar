@@ -7,7 +7,7 @@ import { ShieldCheck, ShieldAlert, Loader2, Server, Globe } from "lucide-react";
 export const Route = createFileRoute("/emailblacklist")({
   head: () => ({
     meta: [
-      { title: "Email & IP Blacklist Check | Caesar OSINT" },
+      { title: "Email & IP Blacklist Check" },
       {
         name: "description",
         content: "Verifique se o seu endereço IP ou domínio de e-mail está listado em DNSBLs de spam e ameaças globais.",

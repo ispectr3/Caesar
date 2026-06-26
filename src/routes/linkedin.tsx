@@ -7,7 +7,7 @@ import { Search, Linkedin, Copy, ExternalLink, User, Building2 } from "lucide-re
 export const Route = createFileRoute("/linkedin")({
   head: () => ({
     meta: [
-      { title: "LinkedIn Recon — Caesar OSINT" },
+      { title: "LinkedIn Recon" },
       { name: "description", content: "Google Dorks específicos para pesquisa de perfis e empresas no LinkedIn." },
     ],
   }),

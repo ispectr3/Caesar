@@ -274,16 +274,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               </span>
             </Link>
 
-            {/* Sidebar toggle button (desktop only) */}
-            {isModuleActive && (
-              <button
-                onClick={toggleSidebar}
-                className="hidden lg:flex items-center justify-center h-8 w-8 bg-input border border-border/80 hover:border-primary text-muted-foreground hover:text-primary transition-all duration-200 cursor-pointer animate-fadeIn"
-                title={sidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
-              >
-                {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-              </button>
-            )}
+
 
             {/* Global Search Button (Desktop triggers Palette) */}
             <button
@@ -448,29 +439,40 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       </header>
 
       {/* ── Main with Left Sidebar ── */}
-      <main className="flex-1 flex min-h-0">
-        {isModuleActive && !sidebarCollapsed && (
-          <aside className="hidden lg:block w-56 border-r border-border bg-black/45 flex-shrink-0 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto no-print p-4 space-y-6 scrollbar-thin animate-fadeIn">
-            {MODULE_CATEGORIES.map((cat, idx) => (
-              <div key={idx} className="space-y-1.5">
-                <span className="font-mono text-[9px] text-primary/70 uppercase tracking-widest font-bold block pb-1 border-b border-border/20">
-                  {cat.title}
-                </span>
-                <div className="flex flex-col gap-0.5">
-                  {cat.items.map((m) => (
-                    <Link
-                      key={m.to}
-                      to={m.to}
-                      className="px-2 py-1 text-[11px] font-mono text-muted-foreground hover:text-primary hover:bg-white/5 transition-all duration-150 flex items-center gap-1.5"
-                      activeProps={{ className: "!text-primary bg-primary/5 font-bold border-l-2 border-primary pl-1.5" }}
-                    >
-                      <Terminal size={10} className="opacity-40" />
-                      <span className="truncate">{m.label}</span>
-                    </Link>
-                  ))}
+      <main className="flex-1 flex min-h-0 relative">
+        {isModuleActive && (
+          <aside className={`hidden lg:block fixed left-0 top-14 w-56 border-r border-border bg-black/95 backdrop-blur-xl z-40 h-[calc(100vh-3.5rem)] shadow-[20px_0_50px_rgba(0,0,0,0.9)] transition-transform duration-300 ease-in-out ${sidebarCollapsed ? "-translate-x-full" : "translate-x-0"}`}>
+            {/* Toggle button na borda da aba */}
+            <button
+              onClick={toggleSidebar}
+              className="absolute -right-8 top-6 h-10 w-8 bg-black/95 border-y border-r border-border rounded-r-md flex items-center justify-center text-muted-foreground hover:text-primary transition-colors cursor-pointer shadow-[5px_0_15px_rgba(0,0,0,0.5)]"
+              title={sidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+            >
+              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </button>
+
+            <div className="w-full h-full overflow-y-auto no-print p-4 space-y-6 scrollbar-thin">
+              {MODULE_CATEGORIES.map((cat, idx) => (
+                <div key={idx} className="space-y-1.5">
+                  <span className="font-mono text-[9px] text-primary/70 uppercase tracking-widest font-bold block pb-1 border-b border-border/20">
+                    {cat.title}
+                  </span>
+                  <div className="flex flex-col gap-0.5">
+                    {cat.items.map((m) => (
+                      <Link
+                        key={m.to}
+                        to={m.to}
+                        className="px-2 py-1 text-[11px] font-mono text-muted-foreground hover:text-primary hover:bg-white/5 transition-all duration-150 flex items-center gap-1.5"
+                        activeProps={{ className: "!text-primary bg-primary/5 font-bold border-l-2 border-primary pl-1.5" }}
+                      >
+                        <Terminal size={10} className="opacity-40" />
+                        <span className="truncate">{m.label}</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </aside>
         )}
         <div className="flex-1 min-w-0 flex flex-col">
@@ -599,7 +601,7 @@ export function PageHeader({
 }) {
   return (
     <div className="border-b border-border-active bg-card/20 accent-bar">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-12">
+      <div className="mx-auto max-w-[1600px] w-full px-4 sm:px-8 py-10 sm:py-12">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-3 fade-in-up">
           {eyebrow}
         </p>

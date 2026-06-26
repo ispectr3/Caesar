@@ -76,14 +76,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Caesar OSINT" },
+      { title: "OSINT Tools" },
       {
         name: "description",
         content:
           "Plataforma OSINT para investigação digital, análise de ameaças e inteligência de fontes abertas.",
       },
-      { name: "author", content: "Caesar OSINT" },
-      { property: "og:title", content: "Caesar OSINT | OSINT Tools" },
+      { name: "author", content: "OSINT" },
+      { property: "og:title", content: "OSINT Tools" },
       {
         property: "og:description",
         content:

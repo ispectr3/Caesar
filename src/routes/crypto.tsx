@@ -39,7 +39,7 @@ import "@xyflow/react/dist/style.css";
 export const Route = createFileRoute("/crypto")({
   head: () => ({
     meta: [
-      { title: "Crypto Forensics | Caesar OSINT" },
+      { title: "Crypto Forensics" },
       {
         name: "description",
         content: "Investigação forense e rastreamento de carteiras criptografadas de forma profissional.",

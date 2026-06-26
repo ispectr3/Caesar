@@ -9,8 +9,8 @@ import { Network, Server, Globe, MapPin, ExternalLink, Share2 } from "lucide-rea
 export const Route = createFileRoute("/bgp")({
   head: () => ({
     meta: [
-      { title: "BGP / ASN Map — Caesar OSINT" },
-      { name: "description", content: "Consulte prefixos, peers e roteamento de um ASN via BGPView." },
+      { title: "BGP / ASN Intelligence" },
+      { name: "description", content: "Informações sobre roteamento BGP, anúncios de blocos IP e histórico de ASN." },
     ],
   }),
   component: BgpPage,

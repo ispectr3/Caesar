@@ -126,7 +126,7 @@ export function ToolForm({
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-10">
+    <div className="mx-auto max-w-[1600px] w-full px-4 sm:px-8 py-8 sm:py-10">
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault();
