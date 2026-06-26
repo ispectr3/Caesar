@@ -475,7 +475,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
             </div>
           </aside>
         )}
-        <div className="flex-1 min-w-0 flex flex-col">
+        <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ease-in-out ${isModuleActive && !sidebarCollapsed ? "lg:pl-56" : "pl-0"}`}>
           {children}
         </div>
       </main>
