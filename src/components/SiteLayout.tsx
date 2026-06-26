@@ -312,36 +312,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               </Link>
             ))}
 
-            {/* Módulos Dropdown */}
-            <div className="relative group">
-              <button className={`flex items-center px-2.5 py-1.5 text-[11px] font-mono uppercase tracking-wider transition-colors duration-200 rounded-none hover:bg-white/5 ${isModuleActive ? "text-primary font-bold glow-text" : "text-muted-foreground hover:text-foreground"}`}>
-                Módulos <ChevronDown size={14} className="ml-1 opacity-60" />
-              </button>
-              
-              {/* Dropdown Box - Mega Menu */}
-              <div className="absolute right-0 top-full mt-0 hidden group-hover:grid grid-cols-3 gap-5 p-5 w-[680px] bg-popover backdrop-blur-md border border-border-active shadow-[0_10px_40px_rgba(0,0,0,0.85)] z-50">
-                {MODULE_CATEGORIES.map((cat, idx) => (
-                  <div key={idx} className="flex flex-col">
-                    <span className="font-mono text-[10px] text-primary/80 uppercase tracking-widest font-bold border-b border-border/20 pb-1.5 mb-2.5">
-                      {cat.title}
-                    </span>
-                    <div className="flex flex-col gap-1">
-                      {cat.items.map((m) => (
-                        <Link
-                          key={m.to}
-                          to={m.to}
-                          className="px-2 py-1 text-[11px] font-mono hover:bg-white/5 text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
-                          activeProps={{ className: "!text-primary bg-white/5 font-bold glow-text" }}
-                        >
-                          <Terminal size={10} className="opacity-40" />
-                          {m.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+
 
             <Link
               to="/about"
