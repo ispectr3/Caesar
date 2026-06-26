@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { fetchCisaFeed, type CisaAlert } from "../lib/osint.functions";
 import {
   Globe,
@@ -602,6 +602,17 @@ function Index() {
     "WAITING FOR TARGET INPUT...",
   ]);
   const [randomPath, setRandomPath] = useState<string>("/ip");
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>("all");
+
+  const filteredTools = useMemo(() => {
+    return SORTED_TOOLS.filter((tool) => {
+      const matchesCategory = activeCategory === "all" || tool.category === activeCategory;
+      const q = search.toLowerCase();
+      const matchesSearch = !q || tool.name.toLowerCase().includes(q) || tool.desc.toLowerCase().includes(q) || tool.code.includes(q);
+      return matchesCategory && matchesSearch;
+    });
+  }, [search, activeCategory]);
 
   useEffect(() => {
     const paths = TOOLS.map((t) => t.to);
@@ -708,75 +719,91 @@ function Index() {
 
       {/* ── Tools Grid ── */}
       <section className="mx-auto max-w-[1600px] w-full px-4 sm:px-8 py-16">
-        <div className="flex items-baseline justify-between mb-10">
-          <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            // MÓDULOS DE RECONHECIMENTO OSINT
-          </h2>
-          <span className="font-mono text-xs text-primary glow-text">{SORTED_TOOLS.length} ativos</span>
+        {/* Search + Filter Bar */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+          <div className="relative flex-1 max-w-md">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar ferramenta..."
+              className="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 font-mono text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-all duration-200"
+            />
+            {search && (
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                <X size={12} />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {(["all", ...Object.keys(CATEGORY_TAGS)] as string[]).map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`font-mono text-[9px] uppercase tracking-wider px-2.5 py-1.5 border transition-all duration-200 ${
+                  activeCategory === cat
+                    ? "border-primary text-primary bg-primary/10"
+                    : "border-border/30 text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                }`}
+              >
+                {cat === "all" ? "Todos" : CATEGORY_TAGS[cat as keyof typeof CATEGORY_TAGS]?.label ?? cat}
+              </button>
+            ))}
+          </div>
+          <span className="font-mono text-xs text-primary/70 ml-auto whitespace-nowrap">
+            {filteredTools.length} / {SORTED_TOOLS.length} módulos
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {SORTED_TOOLS.map((tool, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+          {filteredTools.map((tool, i) => (
             <Link
               key={tool.to}
               to={tool.to}
-              style={{ animationDelay: `${i * 12}ms` }}
-              className={`group relative card-cyber p-6 flex flex-col hover-lift transition-all duration-300 fade-in-up`}
+              style={{ animationDelay: `${i * 10}ms` }}
+              className="group relative card-cyber p-4 flex flex-col gap-3 hover-lift transition-all duration-200 fade-in-up border-b-2 border-b-transparent hover:border-b-primary/60"
             >
-              {/* Gradient background */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-md`}
-              />
+              {/* Subtle gradient on hover */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-[0.07] transition-opacity duration-300 pointer-events-none`} />
 
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4 relative z-10">
-                <div className={`p-2.5 rounded-md bg-gradient-to-br ${tool.color} bg-opacity-10 backdrop-blur-md border border-white/5`}>
-                  <tool.icon size={20} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+              {/* Row 1: icon + code + arrow */}
+              <div className="flex items-center justify-between relative z-10">
+                <div className={`p-1.5 rounded bg-white/5 border border-white/5 group-hover:border-primary/30 transition-colors duration-200`}>
+                  <tool.icon size={14} className="text-muted-foreground group-hover:text-primary transition-colors duration-200" />
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <span className="font-mono text-xs opacity-50 group-hover:text-primary transition-colors">[{tool.code}]</span>
-                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-300 transform group-hover:translate-x-1" />
+                <div className="flex items-center gap-1.5">
+                  {tool.category && CATEGORY_TAGS[tool.category] && (
+                    <span className={`font-mono text-[7px] uppercase tracking-wider px-1 py-0.5 border ${CATEGORY_TAGS[tool.category].color}`}>
+                      {CATEGORY_TAGS[tool.category].label}
+                    </span>
+                  )}
+                  <span className="font-mono text-[9px] text-muted-foreground/50 group-hover:text-primary/70 transition-colors">
+                    {tool.code}
+                  </span>
+                  <ArrowRight size={11} className="opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-200 group-hover:translate-x-0.5" />
                 </div>
               </div>
 
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="h-9 w-9 rounded-md bg-secondary/80 border border-border grid place-items-center group-hover:border-primary/50 transition-colors duration-300">
-                    <tool.icon
-                      size={16}
-                      className="text-muted-foreground group-hover:text-primary transition-colors duration-300"
-                    />
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    {tool.category && CATEGORY_TAGS[tool.category] && (
-                      <span className={`font-mono text-[8px] uppercase tracking-wider px-1.5 py-0.5 border ${CATEGORY_TAGS[tool.category].color}`}>
-                        {CATEGORY_TAGS[tool.category].label}
-                      </span>
-                    )}
-                    <span className="font-mono text-[10px] text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border">
-                      {tool.code}
-                    </span>
-                  </div>
-                </div>
-                
-                <h3 className="text-sm font-semibold mb-2 group-hover:text-primary transition-colors duration-300 text-foreground">
+              {/* Row 2: name + desc */}
+              <div className="relative z-10 flex-1">
+                <h3 className="text-[12px] font-semibold text-foreground group-hover:text-primary transition-colors duration-200 mb-1 leading-tight">
                   {tool.name}
                 </h3>
-                
-                <p className="text-xs text-muted-foreground mb-4 flex-1 leading-relaxed">
+                <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
                   {tool.desc}
                 </p>
-                
-                <div className="mt-auto">
-                  <code className="font-mono text-[10px] text-muted-foreground/80 bg-background px-2 py-1.5 rounded border border-border block truncate">
-                    <span className="text-primary/70 mr-1.5">$</span>{tool.input}
-                  </code>
-                </div>
               </div>
+
+              {/* Row 3: input example */}
+              <code className="relative z-10 font-mono text-[9px] text-muted-foreground/60 bg-black/30 px-2 py-1 rounded border border-border/20 truncate block">
+                <span className="text-primary/50 mr-1">$</span>{tool.input}
+              </code>
             </Link>
           ))}
         </div>
       </section>
+
     </SiteLayout>
   );
 }

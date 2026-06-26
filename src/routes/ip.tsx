@@ -4,6 +4,43 @@ import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { ipLookup, type IpInfo } from "@/lib/osint.functions";
+import { ShieldAlert, ShieldCheck, AlertTriangle, Wifi } from "lucide-react";
+
+const HOSTING_ASNS = [
+  "amazon", "aws", "digitalocean", "linode", "vultr", "hetzner", "ovh", "scaleway",
+  "cloudflare", "fastly", "akamai", "azure", "microsoft", "google cloud", "gcp",
+  "leaseweb", "contabo", "host1plus", "hostinger",
+];
+
+const VPN_ASNS = [
+  "nordvpn", "expressvpn", "surfshark", "protonvpn", "mullvad", "torguard",
+  "ipvanish", "cyberghost", "pia", "private internet access", "hidemyass",
+];
+
+function detectIpRisk(result: IpInfo): { type: "vpn" | "hosting" | "clean"; label: string; color: string; detail: string } {
+  const ispLower = (result.isp + " " + result.org + " " + result.as).toLowerCase();
+  const isVpn = VPN_ASNS.some((v) => ispLower.includes(v));
+  const isHosting = HOSTING_ASNS.some((h) => ispLower.includes(h));
+
+  if (isVpn) return {
+    type: "vpn",
+    label: "VPN / PROXY DETECTADO",
+    color: "border-red-500/40 bg-red-500/10 text-red-400",
+    detail: "O IP pertence a um provedor de VPN. A localização real do alvo está mascarada.",
+  };
+  if (isHosting) return {
+    type: "hosting",
+    label: "SERVIDOR / HOSTING DETECTADO",
+    color: "border-orange-500/40 bg-orange-500/10 text-orange-400",
+    detail: "IP pertence a infraestrutura de nuvem/hosting. Pode ser um servidor de C2, proxy ou serviço legítimo.",
+  };
+  return {
+    type: "clean",
+    label: "ISP RESIDENCIAL / COMERCIAL",
+    color: "border-green-500/40 bg-green-500/10 text-green-400",
+    detail: "IP alocado a um provedor de acesso residencial ou comercial — localização geográfica provavelmente fiel.",
+  };
+}
 
 export const Route = createFileRoute("/ip")({
     head: () => ({
@@ -66,6 +103,20 @@ function IpPage() {
       >
         {result ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-3">
+              {(() => {
+                const risk = detectIpRisk(result);
+                return (
+                  <div className={`flex items-start gap-3 p-4 border font-mono text-xs ${risk.color} mb-2`}>
+                    {risk.type === "clean" ? <ShieldCheck size={16} className="shrink-0 mt-0.5" /> : <ShieldAlert size={16} className="shrink-0 mt-0.5" />}
+                    <div>
+                      <span className="font-bold uppercase tracking-wider block mb-1">{risk.label}</span>
+                      <span className="opacity-80">{risk.detail}</span>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
             <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
               <ResultCard title="Localização" exportData={result} exportName={`ip_loc_${result.query}`}>
                 <KeyValue k="IP" v={result.query} />
@@ -183,20 +234,6 @@ function IpPage() {
         )}
       </ToolForm>
     
-      {/* Bloco Explicativo Automático */}
-      <div className="mt-8">
-        <ResultCard title="Como funciona & Próximos Passos">
-          <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-            <p>
-              <strong className="text-primary">Como funciona:</strong> Esta ferramenta executa verificações de inteligência em fontes abertas relacionadas a <em>IP Lookup</em>, permitindo que você valide a autenticidade e extraia metadados em tempo real.
-            </p>
-            <p>
-              <strong className="text-primary">O que fazer com o resultado:</strong> 
-              Use os dados retornados para cruzar informações com outros módulos (por exemplo, transformar um e-mail descoberto em uma busca de contas sociais, ou um IP em uma varredura de vulnerabilidades). Evidências cruciais devem ser documentadas em seu relatório de inteligência.
-            </p>
-          </div>
-        </ResultCard>
-      </div>
     </SiteLayout>
   );
 }

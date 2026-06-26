@@ -418,6 +418,7 @@ function NamintTool() {
         </div>
         </div>
       </div>
+    
     </SiteLayout>
   );
 }

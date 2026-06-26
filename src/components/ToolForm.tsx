@@ -231,7 +231,7 @@ export function ResultCard({
   return (
     <div
       id={cardId}
-      className={`card-cyber p-5 fade-in-up ${className}`}
+      className={`card-cyber p-5 animate-fadeSlideIn ${className}`}
     >
       <div className="mb-4 pb-2 border-b border-border/30 flex items-center justify-between" data-html2canvas-ignore>
         <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-foreground font-bold">
