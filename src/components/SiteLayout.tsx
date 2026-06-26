@@ -273,9 +273,16 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                 Caesar<span className="text-primary font-semibold">OSINT</span>
               </span>
             </Link>
-
-
-
+            {/* Sidebar toggle button (desktop only) */}
+            {isModuleActive && (
+              <button
+                onClick={toggleSidebar}
+                className="hidden lg:flex items-center justify-center h-8 w-8 rounded-md bg-transparent border border-transparent hover:bg-white/5 hover:border-white/10 text-muted-foreground hover:text-primary transition-all duration-200 cursor-pointer"
+                title={sidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+              >
+                <Menu size={18} />
+              </button>
+            )}
             {/* Global Search Button (Desktop triggers Palette) */}
             <button
               onClick={() => setPaletteOpen(true)}
@@ -442,14 +449,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <main className="flex-1 flex min-h-0 relative">
         {isModuleActive && (
           <aside className={`hidden lg:flex flex-col fixed left-4 top-20 w-56 bg-black/70 backdrop-blur-3xl border border-white/5 z-40 h-[calc(100vh-6.5rem)] shadow-2xl rounded-2xl transition-all duration-300 ease-in-out ${sidebarCollapsed ? "-translate-x-[150%] opacity-0 pointer-events-none" : "translate-x-0 opacity-100"}`}>
-            {/* Close button inner */}
-            <button
-              onClick={toggleSidebar}
-              className="absolute -right-3 top-8 h-7 w-7 bg-black/90 border border-white/10 rounded-full flex items-center justify-center text-muted-foreground hover:text-primary transition-all cursor-pointer shadow-lg hover:scale-110"
-              title="Recolher menu lateral"
-            >
-              <ChevronLeft size={14} />
-            </button>
+
 
             <div className="w-full h-full overflow-y-auto no-print p-5 space-y-6 scrollbar-thin">
               {MODULE_CATEGORIES.map((cat, idx) => (
@@ -476,16 +476,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
           </aside>
         )}
 
-        {/* Floating Open Button when sidebar is closed */}
-        {isModuleActive && sidebarCollapsed && (
-          <button
-            onClick={toggleSidebar}
-            className="hidden lg:flex fixed left-4 top-24 h-10 w-10 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full items-center justify-center text-muted-foreground hover:text-primary transition-all cursor-pointer shadow-lg z-50 animate-fadeIn hover:scale-110 hover:border-primary/40"
-            title="Expandir menu lateral"
-          >
-            <ChevronRight size={18} />
-          </button>
-        )}
+
         <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ease-in-out ${isModuleActive && !sidebarCollapsed ? "lg:pl-[270px]" : "pl-0"}`}>
           {children}
         </div>
