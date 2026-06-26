@@ -648,7 +648,7 @@ function Index() {
     <SiteLayout>
       {/* ── Hero ── */}
       <section className="border-b border-border/50 aurora-bg">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16">
+        <div className="mx-auto max-w-[1600px] w-full px-4 sm:px-8 py-12 sm:py-16">
           <div className="max-w-3xl">
             <p className="font-mono text-xs uppercase tracking-[0.4em] text-primary mb-5 fade-in-up">
               // Caesar OSINT
@@ -681,7 +681,7 @@ function Index() {
 
         {/* Status bar compacta (ticker único) */}
         <div className="border-t border-border/50 bg-black/40 py-3 px-4 sm:px-6 font-mono text-[10px] tracking-wider">
-          <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-4">
+          <div className="mx-auto max-w-[1600px] w-full px-4 sm:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -691,7 +691,7 @@ function Index() {
               <span className="text-green-400 font-bold">SYSTEM OPERACIONAL</span>
             </div>
             
-            <div className="flex-1 hidden md:block text-center truncate text-muted-foreground/80 px-4">
+            <div className="flex-1 w-full md:w-auto text-left md:text-center truncate text-muted-foreground/80 md:px-4 text-[9px] md:text-[10px]">
               <span className="text-primary mr-1.5">&gt;</span>
               {logs[0] || "INITIALIZING OSINT PIPELINE..."}
             </div>
@@ -707,7 +707,7 @@ function Index() {
       </section>
 
       {/* ── Tools Grid ── */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16">
+      <section className="mx-auto max-w-[1600px] w-full px-4 sm:px-8 py-16">
         <div className="flex items-baseline justify-between mb-10">
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
             // MÓDULOS DE RECONHECIMENTO OSINT
