@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm } from "@/components/ToolForm";
+import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { headersAnalyze, type HeadersAnalysis } from "@/lib/osint.functions";
 import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 
@@ -122,7 +122,7 @@ function HeadersPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6">
             {/* Score + summary */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row items-center gap-6 fade-in-up">
@@ -309,6 +309,12 @@ add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
               </div>
             </ResultCard>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Realiza uma requisição HTTP GET ao servidor e analisa os cabeçalhos de resposta. Avalia HSTS, CSP, X-Frame-Options, X-Content-Type-Options e outros headers de segurança."}
+            interpret={"Um score baixo significa exposição a XSS, clickjacking e MITM. O cabeçalho 'Server' pode revelar versão de software vulnerável. Um header 'X-Powered-By' expõe a stack tecnológica."}
+            isPassive={false}
+          />
         )}
       </ToolForm>
     

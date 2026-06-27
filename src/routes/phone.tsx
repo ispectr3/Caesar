@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Phone, MapPin, Send, Search, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 import { phoneLookup, type PhoneInfo } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/phone")({
@@ -104,7 +104,7 @@ function PhoneTool() {
         error={status === "error" ? error : null}
         inputType="phone"
       >
-        {status === "success" && result && (
+        {status === "success" && result ? (
           <div className="space-y-6">
             {/* Header info */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover-lift transition-all duration-300">
@@ -246,6 +246,12 @@ function PhoneTool() {
               </ResultCard>
             )}
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Usa a biblioteca libphonenumber do Google para parsear e validar o número de telefone, identificando país, operadora, tipo de linha (fixo/móvel/VOIP) e formato internacional."}
+            interpret={"Linhas VOIP são frequentemente usadas em golpes pois são anônimas e baratas. A operadora pode revelar a região de origem. Um número com DDI incompatível com o país alegado é um red flag."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

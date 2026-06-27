@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 import { cpfLookup, type CpfResult } from "../lib/osint.functions";
 import { ShieldCheck, ShieldAlert, ShieldX, Copy, Check } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -252,29 +252,13 @@ function CpfTool() {
               </ResultCard>
             </div>
           </div>
+        
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-             <div className="lg:col-span-2">
-               <ResultCard title="O que é o CPF Search & Analyzer?">
-                 <div className="space-y-4 font-mono text-xs text-muted-foreground leading-relaxed">
-                   <div className="p-3 bg-primary/5 border border-primary/20 text-foreground">
-                     <span className="text-primary font-bold block mb-1.5 uppercase tracking-wider">
-                       Validação e Reconhecimento
-                     </span>
-                     Esta ferramenta cruza algoritmos matemáticos com bases de dados de inteligência para validar a estrutura de um CPF e descobrir a região de emissão (UF) a partir do seu dígito verificador.
-                   </div>
-                 </div>
-               </ResultCard>
-             </div>
-             <div>
-               <ResultCard title="Como Funciona?">
-                 <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-                   <p>Insira os 11 dígitos do CPF (com ou sem pontuação).</p>
-                   <p>O Caesar fará verificações locais de integridade matemática e determinará o estado original de registro fiscal.</p>
-                 </div>
-               </ResultCard>
-             </div>
-           </div>
+          <ModuleInfoTabs
+            how={"Valida o CPF usando o algoritmo de dígitos verificadores da Receita Federal. Extrai a região de origem (os três primeiros dígitos indicam o estado de emissão)."}
+            interpret={"Um CPF válido não significa que pertence à pessoa alegada. A região de emissão pode revelar inconsistências geográficas. Módulos avançados de Dark Web requerem conexões de API."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

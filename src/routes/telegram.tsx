@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Search, Globe, Hash, Link2, User, ExternalLink } from "lucide-react";
@@ -129,7 +129,7 @@ function TelegramPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6 mt-6 fade-in-up">
             {!result.found ? (
               <ResultCard title="Resultado da Busca">
@@ -223,6 +223,12 @@ function TelegramPage() {
               </div>
             )}
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Gera links diretos para perfis, canais e grupos públicos no Telegram. Pesquisa passiva via @username ou t.me/canal sem necessidade de conta."}
+            interpret={"Canais públicos do Telegram são indexados e acessíveis. Use para investigar grupos de interesse investigativo, mapear administradores e identificar outros alvos mencionados nas conversas públicas."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

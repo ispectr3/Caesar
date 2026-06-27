@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { abuseIpdbLookup, type AbuseIpdbInfo } from "@/lib/osint.functions";
 
 export const Route = createFileRoute("/abuseipdb")({
@@ -101,7 +101,7 @@ function AbuseIpdbPage() {
         error={error}
         inputType="ip"
       >
-        {result && (
+        {result ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ResultCard
                 exportData={result}
@@ -163,6 +163,12 @@ function AbuseIpdbPage() {
               </div>
             )}
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta o banco de dados AbuseIPDB, alimentado por relatórios manuais e honeypots ao redor do mundo. Retorna histórico de denúncias, categorias de abuso e score de confiança."}
+            interpret={"Um score acima de 50% indica um IP comprometido ou malicioso. Categorias comuns: SSH brute force, spam, web scraping, DDoS. Use para verificar se o IP de um suspeito já tem histórico criminal."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

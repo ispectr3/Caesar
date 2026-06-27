@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm } from "@/components/ToolForm";
+import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { usernameScan, redditAnalyze, type UsernameScanResult, type RedditAnalytics } from "@/lib/osint.functions";
 import { Search, ExternalLink, CheckCircle2, XCircle, HelpCircle, Activity, Loader2 } from "lucide-react";
 
@@ -275,40 +275,13 @@ function UsernameTool() {
               </div>
             </div>
           </div>
+        
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            <div className="lg:col-span-2">
-              <ResultCard title="O que é o WhatsMyName?">
-                <div className="space-y-4 font-mono text-xs text-muted-foreground leading-relaxed">
-                  <div className="p-3 bg-primary/5 border border-primary/20 text-foreground">
-                    <span className="text-primary font-bold block mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
-                      <HelpCircle size={14} />
-                      Mecanismo de Busca Passiva de Identidade
-                    </span>
-                    Esta ferramenta verifica a existência de um nome de usuário (username) em múltiplos sites, fóruns e repositórios de código de forma 100% passiva, sem alertar o usuário alvo.
-                  </div>
-                  <div>
-                    <span className="text-foreground font-bold block mb-2 uppercase tracking-wide text-[10px]">
-                      Como isso ajuda a investigação?
-                    </span>
-                    Geralmente, pessoas usam os mesmos apelidos/usernames por anos em diferentes plataformas. Ao descobrir um único username ativo, você pode pivotar a investigação para encontrar e-mails, fotos e dados pessoais vinculados a outros cadastros do investigado.
-                  </div>
-                </div>
-              </ResultCard>
-            </div>
-            <div>
-              <ResultCard title="Instruções de Varredura">
-                <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-                  <p>
-                    Insira o apelido ou username exato do investigado no campo de entrada acima.
-                  </p>
-                  <p>
-                    O Caesar fará checagens paralelas e rápidas nos servidores das plataformas cadastradas para validar quais perfis estão registrados e fornecer os links diretos para auditoria manual.
-                  </p>
-                </div>
-              </ResultCard>
-            </div>
-          </div>
+          <ModuleInfoTabs
+            how={"Realiza requisições HEAD/GET a 25+ plataformas sociais verificando se o username existe. Usa técnicas de detecção por status HTTP (200/404) para determinar presença."}
+            interpret={"Um username encontrado em múltiplas plataformas cria um perfil digital consistente do alvo. Plataformas inesperadas (ex: encontrar o alvo no Letterboxd ou Chess.com) revelam interesses e comportamentos."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

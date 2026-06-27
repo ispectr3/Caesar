@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { whoisLookup, type WhoisInfo } from "@/lib/osint.functions";
 import { Server, Calendar, Shield, Network, User } from "lucide-react";
 
@@ -121,7 +121,7 @@ function WhoisPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6">
             {/* Header domain identifier */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover-lift transition-all duration-300">
@@ -269,6 +269,12 @@ function WhoisPage() {
               </ResultCard>
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta o protocolo RDAP (Registration Data Access Protocol), o sucessor moderno do WHOIS. Retorna registrador, datas de criação, expiração e nameservers autoritativos."}
+            interpret={"Uma data de criação recente (<90 dias) é um forte indicador de domínio criado para fraude. Verifique o registrador e cruze os nameservers com outros domínios do mesmo operador."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

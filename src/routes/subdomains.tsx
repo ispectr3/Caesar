@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm } from "@/components/ToolForm";
+import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { subdomainScan, type SubdomainResult } from "@/lib/osint.functions";
 import { Search } from "lucide-react";
 
@@ -69,7 +69,7 @@ function SubdomainsPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-4">
             {/* Summary */}
             <div className="card-cyber p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 fade-in-up">
@@ -180,6 +180,12 @@ function SubdomainsPage() {
               </p>
             )}
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta logs de Certificate Transparency (crt.sh) para listar todos os subdomínios para os quais o domínio emitiu certificados SSL. Operação passiva e histórica."}
+            interpret={"Subdomínios como dev., staging., admin., api. e vpn. revelam infraestrutura interna. Passe cada IP encontrado no Port Scanner e IP Lookup para mapear a superfície de ataque completa."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

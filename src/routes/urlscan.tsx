@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Globe, Shield, Clock, AlertTriangle, ExternalLink, Server, FileText } from "lucide-react";
@@ -108,7 +108,7 @@ function URLScanPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6 mt-6 fade-in-up">
             {/* Header */}
             <div className="card-cyber p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -203,6 +203,12 @@ function URLScanPage() {
               ]}
             />
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Submete a URL ao serviço URLScan.io, que a executa em um navegador instrumentado, captura screenshot, analisa o DOM, requisições de rede e geolocalização do servidor."}
+            interpret={"Verifique redirecionamentos suspeitos, presença de JavaScript ofuscado e domínios de terceiros carregados. O screenshot é crucial para documentar pages de phishing antes que sejam derrubadas."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

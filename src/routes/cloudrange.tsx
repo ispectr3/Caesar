@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Cloud, Server, Shield, MapPin, CheckCircle, XCircle } from "lucide-react";
@@ -175,7 +175,7 @@ function CloudRangePage() {
         error={error}
         inputType="ip"
       >
-        {result && (
+        {result ? (
           <div className="space-y-6 mt-6 fade-in-up">
             {result.provider ? (
               <>
@@ -259,6 +259,12 @@ function CloudRangePage() {
               </ResultCard>
             )}
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Verifica se o IP está contido nos ranges de IP públicos de AWS, GCP, Azure, Cloudflare e DigitalOcean, consumindo as listas oficiais de cada provedor."}
+            interpret={"Um IP in range de cloud confirma que é infraestrutura, não residencial. O provedor identificado pode revelar qual serviço o alvo está usando (ex: Cloudflare Pages, AWS Lambda). Útil para mapear a stack de uma organização."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

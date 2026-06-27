@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { MapPin } from "lucide-react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 
 export const Route = createFileRoute("/cep")({
   head: () => ({
@@ -98,7 +98,7 @@ function CepTool() {
         error={status === "error" ? error : null}
         inputType="text"
       >
-        {status === "success" && result && (
+        {status === "success" && result ? (
           <div className="space-y-6">
             <div className="card-cyber p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover-lift transition-all duration-300">
               <div>
@@ -155,6 +155,12 @@ function CepTool() {
               )}
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta a BrasilAPI para resolver o CEP em endereço completo com coordenadas geográficas. Dados provenientes dos Correios e OpenStreetMap."}
+            interpret={"Use as coordenadas retornadas para plotar no mapa via GEOINT. Um CEP inexistente ou que não corresponde à cidade alegada é um indicador de fraude de cadastro."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

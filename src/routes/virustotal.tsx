@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { Shield, AlertTriangle, CheckCircle, Link2, Globe, Server, FileText, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/virustotal")({
@@ -93,7 +93,7 @@ function VirusTotalPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6 mt-6 fade-in-up">
             {/* Header */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -206,6 +206,12 @@ function VirusTotalPage() {
               </div>
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta a API pública do VirusTotal para verificar a reputação de um hash, URL, IP ou domínio contra 70+ motores antivírus e serviços de análise de ameaças."}
+            interpret={"Detecções acima de 3/70 são suspeitas. Para hashes de malware, verifique o nome da família detectada e cruze com o Malware Bazaar. Para URLs, cheque se houve phishing ou distribuição de malware."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

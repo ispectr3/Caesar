@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm } from "@/components/ToolForm";
+import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { leaklookerScan, type LeakLookerResult } from "@/lib/osint.functions";
 import { ShieldCheck, ShieldAlert, Terminal, Activity } from "lucide-react";
 
@@ -88,7 +88,7 @@ function LeakLookerTool() {
         loading={status === "loading"}
         error={status === "error" ? error : null}
       >
-        {status === "success" && result && (
+        {status === "success" && result ? (
           <div className="space-y-6 animate-fade-in">
             {/* Scan Summary Banner */}
             <div
@@ -165,6 +165,12 @@ function LeakLookerTool() {
               ))}
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta o Shodan InternetDB para identificar portas abertas e vulnerabilidades associadas ao alvo."}
+            interpret={"Um banco de dados exposto é um vazamento crítico. Analise as portas de banco encontradas e cruze com vulnerabilidades CVE conhecidas."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

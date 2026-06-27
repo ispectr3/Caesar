@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { ipLookup, type IpInfo } from "@/lib/osint.functions";
 import { ShieldAlert, ShieldCheck, AlertTriangle, Wifi } from "lucide-react";
 
@@ -208,29 +208,13 @@ function IpPage() {
               </ResultCard>
             </div>
           </div>
+        
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-             <div className="lg:col-span-2">
-               <ResultCard title="O que é o IP Lookup?">
-                 <div className="space-y-4 font-mono text-xs text-muted-foreground leading-relaxed">
-                   <div className="p-3 bg-primary/5 border border-primary/20 text-foreground">
-                     <span className="text-primary font-bold block mb-1.5 uppercase tracking-wider">
-                       Geolocalização e Mapeamento de Rede
-                     </span>
-                     Esta ferramenta traduz um endereço IP público em informações geográficas e dados sobre o provedor de internet (ISP). Essencial para iniciar o rastreio da origem de conexões, e-mails ou tentativas de invasão.
-                   </div>
-                 </div>
-               </ResultCard>
-             </div>
-             <div>
-               <ResultCard title="Como Funciona?">
-                 <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-                   <p>Insira um endereço IPv4 (ex: 8.8.8.8) ou IPv6 no campo acima.</p>
-                   <p>O Caesar fará uma varredura em bancos de dados de roteamento BGP e registros de alocação da IANA/Registros Regionais (como o Registro.br) para traçar o ponto de acesso na internet.</p>
-                 </div>
-               </ResultCard>
-             </div>
-           </div>
+          <ModuleInfoTabs
+            how={"Realiza uma consulta GeoIP via ip-api.com, cruzando o endereço com bancos de dados de registro de ASN e geolocalização. Totalmente passiva — o servidor-alvo não recebe nenhuma requisição."}
+            interpret={"Se o ISP for AWS, DigitalOcean ou Cloudflare, a localização exibida é do datacenter, não do alvo real. Um banner de 'HOSTING/VPN DETECTADO' aparecerá automaticamente nesses casos. Coordenadas geográficas precisas são mais confiáveis em ISPs residenciais."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

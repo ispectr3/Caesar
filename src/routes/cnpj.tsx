@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Building2, MapPin, Phone, Users, ShieldCheck, Landmark } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 import { cnpjLookup, type CnpjInfo } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/cnpj")({
@@ -114,7 +114,7 @@ function CnpjTool() {
         error={status === "error" ? error : null}
         inputType="cnpj"
       >
-        {status === "success" && result && (
+        {status === "success" && result ? (
           <div className="space-y-6">
             {/* Header info */}
             <div className="card-cyber p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover-lift transition-all duration-300">
@@ -335,6 +335,12 @@ function CnpjTool() {
               />
             </ResultCard>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta a API BrasilAPI que espelha os dados abertos da Receita Federal. Retorna razão social, situação cadastral, endereço, atividade econômica (CNAE) e quadro societário."}
+            interpret={"Uma empresa 'INAPTA' ou 'BAIXADA' é um red flag para fraude empresarial. Compare o endereço registrado com o endereço real. O quadro societário pode revelar vínculos com outros CNPJs suspeitos."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

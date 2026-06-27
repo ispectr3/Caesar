@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Shield, AlertTriangle, Network, Globe, Clock } from "lucide-react";
@@ -86,7 +86,7 @@ function TorCheckPage() {
         error={error}
         inputType="ip"
       >
-        {result && (
+        {result ? (
           <div className="space-y-6 mt-6 fade-in-up">
             {/* Verdict */}
             <div className={`card-cyber p-6 border-l-4 ${result.isTorExit ? "border-destructive" : "border-emerald-500"} flex flex-col sm:flex-row items-center justify-between gap-6`}>
@@ -162,6 +162,12 @@ function TorCheckPage() {
               </ResultCard>
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Compara o IP contra a lista oficial de nós de saída da rede Tor, publicada pelo Tor Project e atualizada a cada hora."}
+            interpret={"Um nó de saída Tor não significa necessariamente atividade maliciosa, mas torna a rastreabilidade impossível. Essencial para investigações de fraude onde o IP suspeito foi capturado."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

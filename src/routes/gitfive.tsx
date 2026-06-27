@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { gitfiveLookup, type GitFiveResult } from "@/lib/osint.functions";
 import { Github, Mail, Database, Terminal } from "lucide-react";
 
@@ -69,7 +69,7 @@ function GitFiveTool() {
         loading={status === "loading"}
         error={status === "error" ? error : null}
       >
-        {status === "success" && result && (
+        {status === "success" && result ? (
           <div className="space-y-6 animate-fade-in">
             {/* Profile Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -388,6 +388,12 @@ function GitFiveTool() {
               </ResultCard>
             )}
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Rastreia commits públicos em repositórios do GitHub para identificar e-mails reais de desenvolvedores — o Git registra o e-mail do autor em cada commit por padrão."}
+            interpret={"O e-mail encontrado pode ser diferente do e-mail de cadastro do GitHub. Use o e-mail no HIBP e GHunt. Repositórios contribuídos revelam stack tecnológica e interesses profissionais."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

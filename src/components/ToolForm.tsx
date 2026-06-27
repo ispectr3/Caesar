@@ -61,6 +61,7 @@ export function ToolForm({
   defaultValue = "",
   storageKey,
   children,
+  extraInputs,
 }: {
   label: string;
   placeholder: string;
@@ -72,6 +73,7 @@ export function ToolForm({
   defaultValue?: string;
   storageKey?: string;
   children?: ReactNode;
+  extraInputs?: ReactNode;
 }) {
   const [value, setValue] = useState(defaultValue);
   const [history, setHistory] = useState<string[]>([]);
@@ -166,7 +168,11 @@ export function ToolForm({
         </button>
       </form>
 
-
+      {extraInputs && (
+        <div className="max-w-4xl mx-auto mb-8 flex justify-start no-print px-1">
+          {extraInputs}
+        </div>
+      )}
 
       {error && (
         <div className="mb-8 border border-destructive/40 bg-destructive/5 text-destructive px-5 py-4 rounded-none font-mono text-xs flex items-start gap-3 fade-in-up">
@@ -345,6 +351,73 @@ export function PivotLinks({
             )}
           </Link>
         ))}
+      </div>
+    </div>
+  );
+}
+
+export function ModuleInfoTabs({
+  how,
+  interpret,
+  isPassive = true,
+}: {
+  how: string;
+  interpret: string;
+  isPassive?: boolean;
+}) {
+  const [activeTab, setActiveTab] = useState<"how" | "interpret">("how");
+
+  return (
+    <div className="border border-white/5 bg-black/20 p-5 mt-8 hover:border-primary/20 transition-all duration-300">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 border-b border-border/10 pb-3 mb-4">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab("how")}
+            className={`px-4 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-all duration-300 border ${
+              activeTab === "how"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-white/5 text-muted-foreground border-border/20 hover:bg-white/10"
+            }`}
+          >
+            ⚙️ Operação
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("interpret")}
+            className={`px-4 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-all duration-300 border ${
+              activeTab === "interpret"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-white/5 text-muted-foreground border-border/20 hover:bg-white/10"
+            }`}
+          >
+            🔬 Playbook & Análise
+          </button>
+        </div>
+        <div className="sm:ml-auto flex items-center gap-1.5">
+          <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">Consulta:</span>
+          <span className={`px-2 py-0.5 font-mono text-[9px] uppercase font-bold border ${
+            isPassive
+              ? "bg-green-500/10 border-green-500/20 text-green-400"
+              : "bg-red-500/10 border-red-500/20 text-red-400"
+          }`}>
+            {isPassive ? "PASSIVA (100% SIGILOSA)" : "ATIVA (REQUISIÇÃO DIRETA)"}
+          </span>
+        </div>
+      </div>
+
+      <div className="font-sans text-xs text-foreground/80 leading-relaxed min-h-[60px]">
+        {activeTab === "how" ? (
+          <div>
+            <p className="font-semibold text-primary font-mono uppercase tracking-wider text-[9px] mb-1">// Como funciona a varredura:</p>
+            <p className="text-muted-foreground">{how}</p>
+          </div>
+        ) : (
+          <div>
+            <p className="font-semibold text-primary font-mono uppercase tracking-wider text-[9px] mb-1">// Dica de inteligência forense:</p>
+            <p className="text-muted-foreground">{interpret}</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Network, Server, Globe, MapPin, ExternalLink, Share2 } from "lucide-react";
@@ -116,7 +116,7 @@ function BgpPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6 mt-6 fade-in-up">
             {/* Header */}
             <div className="card-cyber p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -206,6 +206,12 @@ function BgpPage() {
               </ResultCard>
             )}
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta a API BGPView para mapear o sistema autônomo (ASN): prefixos de IP anunciados, peers (conexões com outros ASNs) e informações da organização registrante."}
+            interpret={"Um ASN com muitos prefixos e peers é de uma grande empresa ou ISP. ASNs com poucos prefixos podem ser de hosting providers obscuros usados para infraestrutura criminosa. Cruze os prefixos com o IP Lookup."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

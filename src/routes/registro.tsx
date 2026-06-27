@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { ShieldCheck, Calendar, ShieldAlert } from "lucide-react";
 
 export const Route = createFileRoute("/registro")({
@@ -106,7 +106,7 @@ function RegistroBrTool() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6">
             {/* Header Card */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover-lift transition-all duration-300">
@@ -154,6 +154,12 @@ function RegistroBrTool() {
               </ResultCard>
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta o WHOIS do Registro.br via API para domínios .br. Retorna proprietário (CPF ou CNPJ mascarado), organização, contato e servidores DNS."}
+            interpret={"Domínios .br registrados em CPF em vez de CNPJ são de pessoa física. Cruce o responsável técnico com o CPF/CNPJ Search. Datas de criação recentes associadas a nomes de marcas conhecidas indicam cybersquatting."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

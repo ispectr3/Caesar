@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Shield, AlertTriangle, Globe, CheckCircle } from "lucide-react";
@@ -132,7 +132,7 @@ function WafDetectorPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6 mt-6 fade-in-up">
             {/* Header */}
             <div className="card-cyber p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -201,6 +201,12 @@ function WafDetectorPage() {
               </ResultCard>
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Realiza requisições HTTP com payloads de fingerprint para detectar a presença de Web Application Firewalls (WAF) como Cloudflare, Akamai, Imperva e F5 com base nas respostas e headers."}
+            interpret={"A presença de um WAF indica maturidade de segurança. Cloudflare especificamente mascara o IP real do servidor. Para encontrar o IP real atrás de um WAF, cruze com DNS histórico e Certificate Transparency."}
+            isPassive={false}
+          />
         )}
       </ToolForm>
     

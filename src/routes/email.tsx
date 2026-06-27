@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import {
   emailValidate,
   gravatarLookup,
@@ -102,7 +102,7 @@ function EmailPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-4">
             {/* Status badges */}
             <div className="flex flex-wrap gap-2 mb-6 fade-in-up">
@@ -188,6 +188,12 @@ function EmailPage() {
               )}
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Valida o formato do e-mail, verifica se o domínio possui registros MX válidos via Google DNS e detecta provedores de e-mail descartável conhecidos."}
+            interpret={"Domínio sem MX significa que o domínio não pode receber e-mails — um e-mail desse domínio é falso. Provedores descartáveis (Mailinator, temp-mail) indicam cadastro fraudulento ou teste."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

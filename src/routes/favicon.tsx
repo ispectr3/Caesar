@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { Search, Copy, Check, Terminal, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/favicon")({
@@ -94,7 +94,7 @@ function FaviconTool() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6">
             {/* Header info */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-primary/20">
@@ -183,6 +183,12 @@ function FaviconTool() {
               </ResultCard>
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Baixa o favicon do site, calcula seu MurmurHash3 e exibe o valor pronto para buscas no Shodan (query: http.favicon.hash:XXXXXXXX). Permite encontrar outros servidores usando o mesmo favicon."}
+            interpret={"O mesmo hash de favicon em múltiplos IPs indica a mesma aplicação/empresa. Útil para descobrir infraestrutura oculta de um alvo que usa o mesmo template ou painel de controle em vários servidores."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

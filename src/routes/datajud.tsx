@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { ShieldAlert, ShieldCheck, Scale, FileText, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/datajud")({
@@ -122,7 +122,7 @@ function DataJudTool() {
         error={error}
         inputType="default"
       >
-        {result && (
+        {result ? (
           <div className="space-y-6">
             {/* Header info */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-primary/30">
@@ -178,6 +178,12 @@ function DataJudTool() {
               </ResultCard>
             </div>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta a API CNJ DataJud com o número único processual para recuperar metadados do processo: classe, assunto, tribunal, vara e movimentações processuais."}
+            interpret={"Processos criminais, falências e execuções fiscais revelam o histórico jurídico do alvo. Cruze o número do processo com o nome do advogado para identificar conexões entre investigados."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

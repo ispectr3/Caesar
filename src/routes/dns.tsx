@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { dnsLookup } from "@/lib/osint.functions";
 import { ShieldCheck, ShieldAlert, AlertTriangle, Info, Mail, Server, Globe } from "lucide-react";
 
@@ -131,7 +131,7 @@ function DnsPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6">
             {/* Email Security Score */}
             {emailSec && (
@@ -219,6 +219,12 @@ function DnsPage() {
               </div>
             </ResultCard>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta todos os tipos de registro DNS via Google DNS-over-HTTPS (DoH). A operação é 100% passiva — nenhum dado é enviado ao servidor-alvo."}
+            interpret={"Registro A: IP real do servidor. MX: revela provedor de e-mail (Google, Microsoft, Proofpoint). TXT: contém SPF, DKIM e DMARC — o Score de Segurança de E-mail indica o risco de spoofing do domínio."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

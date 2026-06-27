@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Globe, Server, Shield, MapPin, Clock, ExternalLink, AlertTriangle } from "lucide-react";
@@ -99,7 +99,7 @@ function ShodanPage() {
         loading={loading}
         error={error}
       >
-        {result && (
+        {result ? (
           <div className="space-y-6 mt-6 fade-in-up">
             {result.noKey ? (
               // No API key — link mode
@@ -220,6 +220,12 @@ function ShodanPage() {
               </div>
             )}
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Consulta a API pública do Shodan, o motor de busca de dispositivos conectados à internet. Retorna portas abertas, banners de serviço, CVEs conhecidos e metadados de sistema."}
+            interpret={"CVEs listados indicam vulnerabilidades não corrigidas. Banners revelam versões exatas de software. Combine com o Port Scanner para confirmar portas ativas e o VirusTotal para verificar reputação."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     

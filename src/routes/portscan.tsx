@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { ResultCard, ToolForm } from "@/components/ToolForm";
+import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { portScan, type PortScanResult } from "@/lib/osint.functions";
 import { Lock, Unlock, AlertTriangle, ShieldCheck } from "lucide-react";
 
@@ -177,30 +177,13 @@ function PortScanTool() {
               </ResultCard>
             </div>
           </div>
+        
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            <div className="lg:col-span-2">
-              <ResultCard title="O que é o Web Port Scanner?">
-                <div className="space-y-4 font-mono text-xs text-muted-foreground leading-relaxed">
-                  <div className="p-3 bg-primary/5 border border-primary/20 text-foreground">
-                    <span className="text-primary font-bold block mb-1.5 uppercase tracking-wider">
-                      Mapeamento de Superfície de Ataque
-                    </span>
-                    Esta ferramenta simula o comportamento inicial de um teste de intrusão (estilo Nmap). Ela realiza tentativas ativas de conexão (TCP Connect) nas portas mais comumente visadas por atacantes.
-                  </div>
-                </div>
-              </ResultCard>
-            </div>
-            <div>
-              <ResultCard title="Como Funciona?">
-                <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-                  <p>O Caesar envia pacotes TCP SYN para o alvo.</p>
-                  <p>Se o alvo responder com SYN/ACK, a porta é considerada <strong className="text-red-400">OPEN</strong> (Aberta) e vulnerável a conexões.</p>
-                  <p>Respostas de RST ou timeout indicam que a porta está fechada ou protegida por um Firewall (Filtered).</p>
-                </div>
-              </ResultCard>
-            </div>
-          </div>
+          <ModuleInfoTabs
+            how={"Executa varredura ativa em portas HTTP comuns (80, 443, 8080, 8443, 3000, etc.) via requisições HTTP. Limitado à superfície web, sem uso de sockets raw."}
+            interpret={"Portas abertas incomuns (ex: 8888, 9200, 27017) podem indicar Elasticsearch, MongoDB ou painéis admin expostos. Cruze os resultados com o CVE Search para verificar vulnerabilidades."}
+            isPassive={false}
+          />
         )}
       </ToolForm>
     

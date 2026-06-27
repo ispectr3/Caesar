@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { hashIdentify, type HashIdentification } from "@/lib/osint.functions";
 import { Search, Copy, Check, Hash } from "lucide-react";
 import md5 from "md5";
@@ -255,31 +255,15 @@ function HashPage() {
                 </ResultCard>
               </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-              <div className="lg:col-span-2">
-                <ResultCard title="O que é o Hash Identifier?">
-                  <div className="space-y-4 font-mono text-xs text-muted-foreground leading-relaxed">
-                    <div className="p-3 bg-primary/5 border border-primary/20 text-foreground">
-                      <span className="text-primary font-bold block mb-1.5 uppercase tracking-wider">
-                        Identificação e Quebra Rápida
-                      </span>
-                      Esta ferramenta analisa o comprimento e o formato de um hash criptográfico para determinar quais algoritmos (ex: MD5, SHA-256, bcrypt, Argon2, PBKDF2) podem tê-lo gerado. Em paralelo, executa um ataque de dicionário ultrarrápido contra hashes comuns.
-                    </div>
-                  </div>
-                </ResultCard>
-              </div>
-              <div>
-                <ResultCard title="Como Funciona?">
-                  <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-                    <p>Insira o Hash extraído de um banco de dados, dump de memória ou interceptação de tráfego no campo acima.</p>
-                    <p>Hashes não são "descriptografados" matematicamente. Nossa ferramenta tenta quebrar por colisão (força-bruta/dicionário) testando senhas muito comuns no backend localmente.</p>
-                  </div>
-                </ResultCard>
-              </div>
-            </div>
-          )}
-        </ToolForm>
+          
+        ) : (
+          <ModuleInfoTabs
+            how={"Identifica o algoritmo de hash por tamanho e charset (hexadecimal, base64, crypt format). Tenta crackear hashes MD5, SHA-1 e SHA-256 via dicionário offline e consultas a bancos de hash online."}
+            interpret={"Um hash crackeado revela a senha original — documente antes de usar. Um hash MD5 ou SHA-1 é considerado INSEGURO para armazenamento de senhas. Hashes bcrypt/Argon2 são resistentes a força bruta."}
+            isPassive={true}
+          />
+        )}
+      </ToolForm>
       ) : (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-6">
           <div className="bg-card/40 border border-border/60 p-6">

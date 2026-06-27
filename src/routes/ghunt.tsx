@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
+import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { ghuntLookup, type GhuntResult } from "@/lib/osint.functions";
 import { ShieldCheck, Mail, Globe, Database, HelpCircle } from "lucide-react";
 
@@ -69,7 +69,7 @@ function GhuntTool() {
         loading={status === "loading"}
         error={status === "error" ? error : null}
       >
-        {status === "success" && result && (
+        {status === "success" && result ? (
           <div className="space-y-6 animate-fade-in">
             {/* Main Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -145,6 +145,12 @@ function GhuntTool() {
               </div>
             </ResultCard>
           </div>
+        ) : (
+          <ModuleInfoTabs
+            how={"Gera consultas para identificar contas Google associadas a um endereço Gmail. Técnica baseada em GAIA ID lookup via APIs públicas do Google."}
+            interpret={"Um GAIA ID válido confirma que a conta existe. A presença em serviços públicos do Google (Google Maps reviews, YouTube, etc.) expande o perfil do alvo. Cruze com o NAMINT para validar outros e-mails do alvo."}
+            isPassive={true}
+          />
         )}
       </ToolForm>
     
