@@ -138,7 +138,8 @@ export function ToolForm({
         className="flex flex-col sm:flex-row gap-3 mb-8 no-print max-w-4xl mx-auto w-full"
       >
         <label className="sr-only">{label}</label>
-        <div className="flex-1 input-prompt-wrapper">
+        <div className="flex-1 relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm font-bold text-primary/70 pointer-events-none z-10 select-none">$</span>
           <input
             type="text"
             value={value}
@@ -146,13 +147,13 @@ export function ToolForm({
             placeholder={placeholder}
             autoComplete="off"
             spellCheck={false}
-            className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl pl-10 pr-4 py-3.5 font-sans text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-inner"
+            className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl pl-8 pr-4 py-3.5 font-sans text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-inner"
           />
         </div>
         <button
           type="submit"
           disabled={loading || !value.trim()}
-          className="px-8 py-3.5 bg-gradient-to-r from-red-900 to-red-950 border border-red-800 text-white font-sans font-semibold text-xs uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(255,0,0,0.3)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-8 py-3.5 bg-primary text-primary-foreground font-sans font-semibold text-xs uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-subtle)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>

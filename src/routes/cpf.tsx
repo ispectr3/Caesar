@@ -152,7 +152,7 @@ function CpfTool() {
                 </button>
               </div>
 
-              {/* Resumo Cadastral */}
+               {/* Resumo Cadastral */}
               <div className="card-cyber p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover-lift transition-all duration-300">
                 <div>
                   <span className="font-mono text-xs text-primary glow-text uppercase tracking-wider block mb-1">
@@ -166,15 +166,19 @@ function CpfTool() {
                   <span className="font-mono text-sm text-foreground bg-white/5 border border-border px-3 py-1.5 rounded-none">
                     {result.formatted}
                   </span>
-                  {getStatusBadge(result.leakStatus)}
+                  <span className="font-mono text-xs uppercase tracking-wider px-2.5 py-1 border rounded-none status-secure font-bold">
+                    VÁLIDO
+                  </span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Validação Matemática */}
                 <ResultCard
-                exportData={result}
-                exportName="cpf_export" title="Estrutura e Validação">
+                  exportData={result}
+                  exportName="cpf_export" 
+                  title="Estrutura e Validação"
+                >
                   <KeyValue
                     k="Legitimidade Matemática"
                     v={
@@ -198,123 +202,28 @@ function CpfTool() {
                   <KeyValue k="Código da Região" v={String(result.region.code)} />
                   <KeyValue k="Estados Originais" v={result.region.states} />
                   <p className="text-[10px] text-muted-foreground font-mono mt-3 leading-relaxed">
-                    *Nota: O 9º dígito indica a Região Fiscal emissora.
+                    *Nota: O 9º dígito indica a Região Fiscal emissora do documento.
                   </p>
-                </ResultCard>
-
-                {/* Auditoria de Riscos Globais */}
-                <ResultCard title="Auditoria Global de Riscos">
-                  <KeyValue
-                    k="Status PEP"
-                    v={
-                      <span className={result.pepStatus.includes("ALERTA") ? "text-yellow-400 font-semibold" : "text-muted-foreground"}>
-                        {result.pepStatus}
-                      </span>
-                    }
-                  />
-                  <KeyValue
-                    k="Sanções Internacionais"
-                    v={
-                      <span className={result.sanctionsList.includes("AVISO") ? "text-yellow-400 font-semibold" : "text-muted-foreground"}>
-                        {result.sanctionsList}
-                      </span>
-                    }
-                  />
-                  <KeyValue
-                    k="Interpol Red Notice"
-                    v={
-                      <span className={result.interpolAlert.includes("ATENÇÃO") ? "text-red-500 font-semibold" : "text-muted-foreground"}>
-                        {result.interpolAlert}
-                      </span>
-                    }
-                  />
-                </ResultCard>
-
-                {/* Contas Vinculadas & Footprint */}
-                <ResultCard title="Rastros Digitais">
-                  {result.virtualFootprint.length === 0 ? (
-                    <p className="text-xs text-muted-foreground font-mono">Nenhum rastro digital identificado.</p>
-                  ) : (
-                    <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-1 scrollbar-thin">
-                      {result.virtualFootprint.map((site, i) => (
-                        <div key={i} className="bg-primary/5 border border-border/10 p-2 text-xs font-mono flex items-center justify-between">
-                          <span className="text-foreground/90">{site}</span>
-                          <span className="text-[9px] uppercase tracking-wide text-primary font-bold">VINCULADO</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </ResultCard>
               </div>
 
-              {/* Dossiê Detalhado de Vazamentos na Dark Web */}
-              <ResultCard title="Dossiê de Vazamentos na Dark Web & Credenciais Expostas">
-                {result.darkWebLeaks.length === 0 ? (
-                  <div className="p-4 border border-green-500/20 bg-green-500/5 text-green-400 rounded-none text-xs flex items-center gap-2">
-                    <ShieldCheck size={16} />
-                    <span>Nenhum vazamento indexado.</span>
-                  </div>
-                ) : (
-                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1 scrollbar-thin">
-                    <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold font-mono">
-                      [!] ALERTA: Foram detectados {result.darkWebLeaks.length} vazamentos.
+              {/* Informações sobre Integrações Reais */}
+              <ResultCard title="Mapeamento de Riscos & Dark Web">
+                <div className="space-y-4 text-xs font-mono text-muted-foreground leading-relaxed">
+                  <div className="p-4 border border-border/30 bg-background/50">
+                    <span className="text-primary font-bold block mb-2 uppercase tracking-widest text-[10px]">
+                      [!] Integração de APIs Necessária
+                    </span>
+                    <p className="mb-3 text-[11px] text-foreground/80 leading-relaxed">
+                      A verificação avançada de vazamento de credenciais na Dark Web, monitoramento de listas de sanções internacionais, alertas da Interpol e rastros de Pessoas Politicamente Expostas (PEP) requerem acesso a serviços de enriquecimento de dados corporativos ou chaves de API de terceiros (como HaveIBeenPwned, IntelX, ou bases de dados governamentais homologadas).
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-1.5">
+                      <span className="bg-primary/5 border border-border/40 text-[9px] px-2 py-0.5 font-sans font-semibold">HIBP API</span>
+                      <span className="bg-primary/5 border border-border/40 text-[9px] px-2 py-0.5 font-sans font-semibold">IntelX (OSINT)</span>
+                      <span className="bg-primary/5 border border-border/40 text-[9px] px-2 py-0.5 font-sans font-semibold">OFAC Sanctions List</span>
                     </div>
-                    {result.darkWebLeaks.map((leak, idx) => (
-                      <div key={idx} className="border border-border/30 p-4 bg-background/40 hover:border-primary/30 transition-colors">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/10 pb-2 mb-3">
-                          <span className="font-bold text-sm text-foreground/90">{leak.database}</span>
-                          <div className="flex gap-2 items-center text-[10px]">
-                            <span className="text-muted-foreground">{leak.date}</span>
-                            <span className={`px-2 py-0.5 font-bold uppercase tracking-wider ${
-                              leak.severity === "high"
-                                ? "bg-red-500/10 border border-red-500/30 text-red-500"
-                                : "bg-yellow-500/10 border border-yellow-500/30 text-yellow-400"
-                            }`}>
-                              Risco {leak.severity === "high" ? "Alto" : "Médio"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          <div>
-                            <span className="text-[10px] text-muted-foreground uppercase block font-semibold text-left">Campos Comprometidos:</span>
-                            <div className="flex flex-wrap gap-1 pt-1">
-                              {leak.leakedFields.map((field, fIdx) => (
-                                <span key={fIdx} className="bg-primary/5 border border-border/20 text-foreground/80 px-2 py-0.5 text-[10px] rounded-none">
-                                  {field}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="pt-2 border-t border-border/10 flex items-center justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <span className="text-[10px] text-muted-foreground uppercase block font-semibold text-left">Fonte na Dark Web (.onion):</span>
-                              <span className="font-mono text-[10px] text-primary/80 select-all break-all block mt-1">
-                                {leak.sourceOnion}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(leak.sourceOnion)}
-                              className="flex-shrink-0 px-2.5 py-1 text-[10px] font-mono uppercase border border-border/40 hover:border-primary/50 text-muted-foreground hover:text-primary bg-background/50 hover:bg-background transition-all duration-200 flex items-center gap-1.5 rounded-none"
-                            >
-                              {copiedId === leak.sourceOnion ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-green-500" />
-                                  <span>Copiado</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3.5 h-3.5" />
-                                  <span>Copiar</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
                   </div>
-                )}
+                </div>
               </ResultCard>
             </div>
             
@@ -329,15 +238,15 @@ function CpfTool() {
                   </div>
                   <div className="border-l-2 border-primary/45 pl-3">
                     <span className="text-primary font-bold block mb-1 uppercase tracking-wider">
-                      2. Exploitação de Vazamentos
+                      2. Registro no Receita Federal
                     </span>
-                    Se senhas ou e-mails foram expostos junto ao CPF, utilize os e-mails na ferramenta NAMINT ou Username Search para encontrar as redes sociais do indivíduo.
+                    Para conferir a situação cadastral do documento em tempo real, acesse o canal oficial de consulta pública do CPF no portal do Ministério da Fazenda.
                   </div>
                   <div className="border-l-2 border-primary/45 pl-3">
                     <span className="text-primary font-bold block mb-1 uppercase tracking-wider">
                       3. Dossiê Físico
                     </span>
-                    Gere o relatório PDF e anexe aos autos de auditoria ou background check, com as informações carimbadas temporalmente.
+                    Gere o relatório PDF e anexe aos autos de auditoria ou background check, com as informações de conformidade estrutural.
                   </div>
                 </div>
               </ResultCard>
@@ -352,7 +261,7 @@ function CpfTool() {
                      <span className="text-primary font-bold block mb-1.5 uppercase tracking-wider">
                        Validação e Reconhecimento
                      </span>
-                     Esta ferramenta cruza algoritmos matemáticos com bases de dados de inteligência para validar a estrutura de um CPF, descobrir a região de emissão (UF) e varrer repositórios da Dark Web em busca de vazamentos atrelados ao documento.
+                     Esta ferramenta cruza algoritmos matemáticos com bases de dados de inteligência para validar a estrutura de um CPF e descobrir a região de emissão (UF) a partir do seu dígito verificador.
                    </div>
                  </div>
                </ResultCard>
@@ -361,7 +270,7 @@ function CpfTool() {
                <ResultCard title="Como Funciona?">
                  <div className="space-y-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
                    <p>Insira os 11 dígitos do CPF (com ou sem pontuação).</p>
-                   <p>O Caesar fará verificações locais de integridade e consultará remotamente bases OSINT de infrações e dumps de credenciais atreladas a este identificador.</p>
+                   <p>O Caesar fará verificações locais de integridade matemática e determinará o estado original de registro fiscal.</p>
                  </div>
                </ResultCard>
              </div>

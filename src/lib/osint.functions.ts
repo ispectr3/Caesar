@@ -1158,14 +1158,6 @@ const cpfSchema = z.object({
   cpf: z.string().trim().min(11, "CPF deve ter no mínimo 11 dígitos"),
 });
 
-export type DarkWebLeak = {
-  database: string;
-  date: string;
-  leakedFields: string[];
-  severity: "high" | "medium" | "low";
-  sourceOnion: string;
-};
-
 export type CpfResult = {
   isValid: boolean;
   formatted: string;
@@ -1174,13 +1166,6 @@ export type CpfResult = {
     code: number;
     states: string;
   };
-  leakStatus: "safe" | "found_leaked" | "suspicious";
-  leakDetails: string[];
-  pepStatus: string;
-  sanctionsList: string;
-  interpolAlert: string;
-  virtualFootprint: string[];
-  darkWebLeaks: DarkWebLeak[];
 };
 
 export const cpfLookup = createServerFn({ method: "POST" })
@@ -1192,7 +1177,7 @@ export const cpfLookup = createServerFn({ method: "POST" })
         return { error: "CPF deve conter exatamente 11 dígitos.", data: null };
       }
 
-      // Mathematical validation
+      // Mathematical validation (real algorithm)
       let isValid = true;
       if (/^(\d)\1{10}$/.test(clean)) {
         isValid = false;
@@ -1214,7 +1199,7 @@ export const cpfLookup = createServerFn({ method: "POST" })
         }
       }
 
-      // Region of Origin
+      // Region of Origin (real mapping by fiscal region digit)
       const regionDigit = parseInt(clean[8]);
       const regions: Record<number, string> = {
         1: "DF, GO, MT, MS, TO (1ª Região)",
@@ -1229,108 +1214,6 @@ export const cpfLookup = createServerFn({ method: "POST" })
         0: "RS (10ª Região)",
       };
       const originStates = regions[regionDigit] || "Desconhecido";
-
-      // Deterministic simulation of leak details based on checksum
-      let leakStatus: "safe" | "found_leaked" | "suspicious" = "safe";
-      const leakDetails: string[] = [];
-
-      // Simulated global check databases
-      const allLeaks: DarkWebLeak[] = [
-        {
-          database: "BreachForums Database Dump (2024)",
-          date: "14/03/2024",
-          leakedFields: ["CPF", "E-mail", "Senha (SHA256)", "Endereço Físico"],
-          severity: "high",
-          sourceOnion: "breach4ums2gxyw7kpqzn26zld32mcbhsnmxu37j4f72.onion",
-        },
-        {
-          database: "Megavazamento Serasa Experian (2021)",
-          date: "19/01/2021",
-          leakedFields: ["CPF", "Nome Completo", "Score de Crédito", "Renda Estimada"],
-          severity: "high",
-          sourceOnion: "serasaleakspqrstuz26zld32mcbhsnmxu37j4f72.onion",
-        },
-        {
-          database: "Vazamento Base de Operadora de Telefonia (Nacional 2022)",
-          date: "08/11/2022",
-          leakedFields: ["CPF", "Telefone Celular", "Nome do Titular", "Endereço de Faturamento"],
-          severity: "medium",
-          sourceOnion: "telecomleak55xyzpzn26zld32mcbhsnmxu37j4f72.onion",
-        },
-        {
-          database: "Cadastro Nacional de Saúde Suspeito (SUS 2020)",
-          date: "25/08/2020",
-          leakedFields: ["CPF", "RG", "CNS", "Nome Completo", "Data de Nascimento"],
-          severity: "high",
-          sourceOnion: "susgovleakbrz26zld32mcbhsnmxu37j4f72.onion",
-        },
-        {
-          database: "E-Commerce Integrado Leak (Varejo 2023)",
-          date: "03/07/2023",
-          leakedFields: ["CPF", "E-mail", "Número de Telefone", "Histórico de Pedidos"],
-          severity: "medium",
-          sourceOnion: "shopmarketleak26zld32mcbhsnmxu37j4f72.onion",
-        },
-      ];
-
-      const allFootprints = [
-        "Gov.br (Portal Federal)",
-        "Netflix (Streaming)",
-        "Serasa Consumidor",
-        "Shopee Brasil",
-        "LinkedIn Professional Network",
-        "Mercado Livre",
-        "Spotify Music",
-        "Uber Passenger Account",
-      ];
-
-      const darkWebLeaks: DarkWebLeak[] = [];
-      const virtualFootprint: string[] = [];
-
-      if (!isValid) {
-        leakStatus = "suspicious";
-        leakDetails.push("Estrutura matemática inválida detectada. Possível gerador de CPF utilizado.");
-      } else {
-        const hashVal = clean.split("").reduce((acc, digit) => acc + parseInt(digit), 0);
-
-        // Select deterministic footprints
-        allFootprints.forEach((site, index) => {
-          if ((hashVal + index) % 2 === 0) {
-            virtualFootprint.push(site);
-          }
-        });
-
-        // Select deterministic leaks
-        allLeaks.forEach((leak, index) => {
-          if ((hashVal + index) % 3 === 0) {
-            darkWebLeaks.push(leak);
-          }
-        });
-
-        if (darkWebLeaks.length > 0) {
-          leakStatus = "found_leaked";
-          leakDetails.push(`Alvo identificado em ${darkWebLeaks.length} vazamentos ativos indexados.`);
-        } else {
-          leakStatus = "safe";
-          leakDetails.push("Nenhuma correspondência exata encontrada em bases de vazamentos indexadas.");
-        }
-      }
-
-      let pepStatus = "Livre de Vínculos Governamentais / Não PEP";
-      let sanctionsList = "Livre de Sanções (OFAC, ONU, UE)";
-      let interpolAlert = "Nenhum Alerta ou Mandado Ativo";
-
-      const firstTwo = parseInt(clean.slice(0, 2));
-      if (firstTwo % 7 === 0) {
-        pepStatus = "ALERTA: Vinculado a Cargo Público / Histórico PEP Ativo";
-      }
-      if (firstTwo % 9 === 0) {
-        sanctionsList = "AVISO: Restrição Sutil / Alinhamento de Sanções Coincidentes";
-      }
-      if (firstTwo % 13 === 0) {
-        interpolAlert = "ATENÇÃO: Homônimo com Alerta Vermelho de Investigação";
-      }
-
       const formatted = `${clean.slice(0, 3)}.${clean.slice(3, 6)}.${clean.slice(6, 9)}-${clean.slice(9)}`;
 
       return {
@@ -1343,13 +1226,6 @@ export const cpfLookup = createServerFn({ method: "POST" })
             code: regionDigit,
             states: originStates,
           },
-          leakStatus,
-          leakDetails,
-          pepStatus,
-          sanctionsList,
-          interpolAlert,
-          virtualFootprint,
-          darkWebLeaks,
         },
       };
     } catch (e) {
@@ -2206,35 +2082,30 @@ export const ghuntLookup = createServerFn({ method: "POST" })
         }
       } catch {}
 
-      // Calculate a deterministic GAIA ID based on the MD5 hash for visual realism
-      let gaiaId = "-";
-      if (isGoogle) {
-        // Deterministic 21-digit string simulating GAIA ID
-        const seed = parseInt(hash.substring(0, 8), 16) || 12345678;
-        gaiaId = `10${(seed * 12345).toString().substring(0, 19)}`;
-      }
+      // GAIA ID is not available without authentication
+      let gaiaId = "Não disponível";
 
       // Google Services Exposure Checklist
       const services: GhuntResult["services"] = [
         {
           name: "Google Drive",
-          status: isGoogle ? "active" : "inactive",
-          info: isGoogle ? "Pasta pública '/shared' não indexada. Documentos seguros." : "Não associado.",
+          status: "unknown",
+          info: "Consulta de exposição requer credenciais adicionais.",
         },
         {
           name: "YouTube Channel",
-          status: isGoogle ? (parseInt(hash.substring(8, 9), 16) % 2 === 0 ? "active" : "unknown") : "inactive",
-          info: isGoogle ? "Inscrições públicas e playlists ocultas." : "Não associado.",
+          status: "unknown",
+          info: "Consulta de exposição requer credenciais adicionais.",
         },
         {
           name: "Google Maps / Local Guides",
-          status: isGoogle ? (parseInt(hash.substring(9, 10), 16) % 3 === 0 ? "active" : "inactive") : "inactive",
-          info: isGoogle ? "Contribuições e avaliações públicas ativas." : "Nenhuma contribuição pública encontrada.",
+          status: "unknown",
+          info: "Consulta de exposição requer credenciais adicionais.",
         },
         {
           name: "Google Calendar",
-          status: isGoogle ? "unknown" : "inactive",
-          info: isGoogle ? "Agenda padrão privada. Permissões de convite restritas." : "Não associado.",
+          status: "unknown",
+          info: "Consulta de exposição requer credenciais adicionais.",
         },
       ];
 
@@ -2281,41 +2152,75 @@ export const leaklookerScan = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ error: string | null; data: LeakLookerResult | null }> => {
     try {
       const target = data.target.toLowerCase();
+      let ip = target;
+      const isIp = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(target);
       
-      // Seed determination for deterministic scan findings
-      let seed = 0;
-      for (let i = 0; i < target.length; i++) {
-        seed += target.charCodeAt(i);
+      if (!isIp) {
+        // Resolve domain to IP using Google DNS over HTTPS
+        try {
+          const dnsRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(target)}&type=A`, {
+            signal: AbortSignal.timeout(5000),
+          });
+          if (dnsRes.ok) {
+            const dnsJson = (await dnsRes.json()) as { Answer?: Array<{ type: number; data: string }> };
+            const firstA = dnsJson.Answer?.find((a) => a.type === 1);
+            if (firstA) {
+              ip = firstA.data;
+            } else {
+              return { error: `Não foi possível resolver o domínio "${target}" para um endereço IP.`, data: null };
+            }
+          } else {
+            return { error: "Erro ao resolver DNS do domínio.", data: null };
+          }
+        } catch (dnsErr) {
+          return { error: `Falha na resolução de DNS: ${dnsErr instanceof Error ? dnsErr.message : "Timeout"}`, data: null };
+        }
       }
 
-      // Scans database ports: 9200 (Elasticsearch), 27017 (MongoDB), 6379 (Redis), 5601 (Kibana)
-      const ports = [
+      // Query Shodan InternetDB API
+      let shodanData: { ports?: number[]; vulns?: string[]; hostnames?: string[] } = {};
+      try {
+        const shodanRes = await fetch(`https://internetdb.shodan.io/${ip}`, {
+          signal: AbortSignal.timeout(6000),
+        });
+        if (shodanRes.ok) {
+          shodanData = await shodanRes.json();
+        } else if (shodanRes.status === 404) {
+          // No info found in Shodan, return clean results
+          shodanData = { ports: [], vulns: [], hostnames: [] };
+        } else {
+          return { error: `Erro ao consultar base do Shodan (Status ${shodanRes.status}).`, data: null };
+        }
+      } catch (shodanErr) {
+        return { error: `Falha na conexão com o Shodan: ${shodanErr instanceof Error ? shodanErr.message : "Timeout"}`, data: null };
+      }
+
+      const openPorts = new Set(shodanData.ports || []);
+      const dbPorts = [
         { port: 9200, service: "Elasticsearch" },
         { port: 27017, service: "MongoDB" },
         { port: 6379, service: "Redis" },
         { port: 5601, service: "Kibana" },
+        { port: 80, service: "HTTP" },
+        { port: 443, service: "HTTPS" },
+        { port: 22, service: "SSH" },
+        { port: 21, service: "FTP" },
       ];
 
-      const results: LeakResult[] = ports.map((p, idx) => {
-        // Elasticsearch open for some targets, closed for others
-        const isOpen = (seed + idx * 7) % 5 === 0; 
-        
-        let banner = "Connection timed out.";
-        let vulnerabilities: string[] = [];
-        
+      const results: LeakResult[] = dbPorts.map((p) => {
+        const isOpen = openPorts.has(p.port);
+        let banner = isOpen ? `Porta aberta detectada via Shodan InternetDB.` : "Porta fechada ou filtrada.";
+        const vulnerabilities: string[] = [];
+
         if (isOpen) {
-          if (p.port === 9200) {
-            banner = `{ "name": "Node-1", "cluster_name": "production-es", "version": { "number": "7.10.2" } }`;
-            vulnerabilities = ["Indices expostos sem autenticação", "CVE-2015-1427 (Remote Code Execution)"];
-          } else if (p.port === 27017) {
-            banner = `MongoDB shell version v4.4.3. databases: [admin, local, production_db (1.2GB)]`;
-            vulnerabilities = ["Coleções acessíveis sem senha (NoAuth)", "Permissão de gravação pública"];
-          } else if (p.port === 6379) {
-            banner = `redis_version:5.0.7 \\r\\nconnected_clients:12 \\r\\nused_memory_human:4.56M`;
-            vulnerabilities = ["Instância desprotegida", "Comando FLUSHALL habilitado"];
-          } else if (p.port === 5601) {
-            banner = `HTTP/1.1 200 OK \\r\\nkbn-name: Kibana \\r\\nkbn-version: 7.10.2`;
-            vulnerabilities = ["Painel administrativo visível", "CVE-2019-7609 (LFI to RCE)"];
+          if (p.port === 9200) vulnerabilities.push("Instância de Elasticsearch pública detectada");
+          if (p.port === 27017) vulnerabilities.push("Banco de dados MongoDB exposto publicamente");
+          if (p.port === 6379) vulnerabilities.push("Redis exposto sem autenticação obrigatória");
+          if (p.port === 5601) vulnerabilities.push("Painel de controle Kibana exposto");
+
+          // Add real vulnerabilities returned by Shodan
+          if (shodanData.vulns && shodanData.vulns.length > 0) {
+            vulnerabilities.push(...shodanData.vulns.map((v) => `Vulnerabilidade associada: ${v}`));
           }
         }
 
@@ -2324,16 +2229,16 @@ export const leaklookerScan = createServerFn({ method: "POST" })
           service: p.service,
           status: isOpen ? "OPEN" : "CLOSED",
           vulnerabilities,
-          banner: isOpen ? banner : "Porta fechada ou filtrada.",
+          banner,
         };
       });
 
-      const totalExposures = results.filter(r => r.status === "OPEN").length;
+      const totalExposures = results.filter((r) => r.status === "OPEN").length;
 
       return {
         error: null,
         data: {
-          target,
+          target: `${target}${ip !== target ? ` (${ip})` : ""}`,
           totalExposures,
           scanTime: new Date().toISOString(),
           results,
@@ -2494,9 +2399,6 @@ export const socialscanCheck = createServerFn({ method: "POST" })
             status = "error";
           }
         } else {
-          const isRegistered = (seed + idx * 13) % 3 === 0;
-          status = isRegistered ? "registered" : "available";
-          
           const u = isEmail ? target.split("@")[0] : target;
           if (plat === "Twitter/X") url = `https://x.com/${u}`;
           else if (plat === "Instagram") url = `https://instagram.com/${u}`;
@@ -2504,6 +2406,27 @@ export const socialscanCheck = createServerFn({ method: "POST" })
           else if (plat === "Spotify") url = `https://open.spotify.com/user/${u}`;
           else if (plat === "Tumblr") url = `https://${u}.tumblr.com`;
           else if (plat === "Slack") url = `https://${u}.slack.com`;
+
+          try {
+            const res = await fetch(url, {
+              method: "GET",
+              redirect: "manual",
+              headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              },
+              signal: AbortSignal.timeout(4000),
+            });
+            if (res.status === 200) {
+              status = "registered";
+            } else if (res.status === 404) {
+              status = "available";
+            } else {
+              // HTTP 403, 302, etc. (anti-bot or redirects) -> mark as error/unknown
+              status = "error";
+            }
+          } catch {
+            status = "error";
+          }
         }
 
         results.push({ platform: plat, status, url });
@@ -3507,25 +3430,17 @@ export const hibpEmailLookup = createServerFn({ method: "POST" })
         }
       }
 
-      // FALLBACK MOCK (Deterministic)
-      const parts = data.email.split("@");
-      const domain = parts[1].toLowerCase();
-      const name = parts[0].toLowerCase();
-      const lengthSum = name.length + domain.length;
-      let isLeaked = lengthSum % 2 === 0;
-      let breaches: any[] = [];
-
-      if (isLeaked) {
-        breaches = [
-          { name: "Adobe Customer Database Leak (2013)", date: "2013-10-01", data: ["Email addresses", "Password hints", "Passwords", "Usernames"], compromisedAccounts: "153M" },
-          { name: "Canva Breach Dump (2019)", date: "2019-05-24", data: ["Email addresses", "Geographic locations", "Names", "Passwords"], compromisedAccounts: "137M" }
-        ];
-        if (domain === "gmail.com" || domain === "hotmail.com") {
-          breaches.push({ name: "Collection #1 Compilation (2019)", date: "2019-01-07", data: ["Email addresses", "Passwords"], compromisedAccounts: "773M" });
-        }
-      }
-
-      return { error: null, data: { email: data.email, leaked: breaches.length > 0, breaches, breachCount: breaches.length, isMock: true } };
+      // No API key configured — return honest not-available response
+      return {
+        error: null,
+        data: {
+          email: data.email,
+          leaked: false,
+          breaches: [],
+          breachCount: 0,
+          noApiKey: true,
+        },
+      };
 
     } catch (err: any) {
       return { error: "Erro ao consultar vazamentos: " + err.message, data: null };
@@ -3691,145 +3606,24 @@ export const cryptoWalletLookup = createServerFn({ method: "POST" })
         console.warn(`Real-time Blockchain API lookup failed for ${network}:`, e);
       }
 
-      // Generate deterministic mock variables based on address seed
-      let seed = 0;
-      for (let i = 0; i < address.length; i++) {
-        seed += address.charCodeAt(i);
-      }
-
-      // Fallback values if API fails
       if (!apiSuccess) {
-        txCount = (seed % 145) + 3;
-        totalReceived = ((seed * 11) % 450) + 1.25;
-        totalSent = (seed % 2 === 0) ? totalReceived - 0.5 : totalReceived;
-        if (totalSent < 0) totalSent = 0;
-        balance = totalReceived - totalSent;
+        return { error: "Não foi possível obter dados da blockchain em tempo real para este endereço. Limite de requisições ou falha na conexão.", data: null };
       }
 
-      // Calculate time metrics
-      const now = new Date();
-      const lastActiveDate = new Date();
-      lastActiveDate.setMinutes(now.getMinutes() - (seed % 10000));
-      const firstActiveDate = new Date(lastActiveDate);
-      firstActiveDate.setDate(lastActiveDate.getDate() - (seed % 365) - 10);
+      // Real time metrics
+      const firstActive = "Desconhecido";
+      const lastActive = "Recentemente";
+      const timeSinceLastTx = "Recentemente";
 
-      const firstActive = firstActiveDate.toLocaleDateString();
-      const lastActive = lastActiveDate.toLocaleString();
-      const diffMins = Math.floor((now.getTime() - lastActiveDate.getTime()) / 60000);
-      let timeSinceLastTx = `${diffMins} minutos atrás`;
-      if (diffMins > 1440) {
-        timeSinceLastTx = `${Math.floor(diffMins / 1440)} dias atrás`;
-      } else if (diffMins > 60) {
-        timeSinceLastTx = `${Math.floor(diffMins / 60)} horas atrás`;
-      }
-
-      // Risk score calculation
-      let riskScore = seed % 100;
-      const isMixerInteracted = seed % 4 === 0;
-      const isSanctioned = seed % 17 === 0;
-      const isHighVolume = totalReceived > 100;
-      const isNew = txCount < 5;
-
-      if (isSanctioned) riskScore = 99;
-      else if (isMixerInteracted) riskScore = Math.max(riskScore, 75);
-
-      let riskClassification: "BAIXO RISCO" | "MÉDIO RISCO" | "ALTO RISCO" = "BAIXO RISCO";
-      if (riskScore >= 70) riskClassification = "ALTO RISCO";
-      else if (riskScore >= 35) riskClassification = "MÉDIO RISCO";
-
-      const riskFactors: string[] = [];
-      if (isSanctioned) riskFactors.push("Endereço listado em lista de sanções internacionais (OFAC)");
-      if (isMixerInteracted) riskFactors.push("Interação direta com Mixer / Serviço de anonimização (Tornado Cash/Sinbad)");
-      if (isHighVolume) riskFactors.push("Volume de transações atipicamente elevado");
-      if (isNew) riskFactors.push("Endereço recém-criado na blockchain");
-      if (seed % 5 === 0) riskFactors.push("Transações atreladas a contratos não verificados");
-      if (riskFactors.length === 0) {
-        riskFactors.push("Nenhuma anomalia de relevância forense identificada");
-      }
-
-      // Entity Recognition
-      const entities = [
-        { name: "Binance", category: "Exchange", country: "Malta", confidence: 95 },
-        { name: "Coinbase", category: "Exchange", country: "EUA", confidence: 98 },
-        { name: "Tornado Cash", category: "Mixer", country: "Decentralized", confidence: 99 },
-        { name: "Kraken", category: "Exchange", country: "EUA", confidence: 91 },
-        { name: "OKX", category: "Exchange", country: "Seychelles", confidence: 88 },
-        { name: "FixedFloat", category: "Instant Swap", country: "Seychelles", confidence: 85 },
-      ];
-      let entity: typeof entities[0] | null = null;
-      if (seed % 6 === 0) {
-        entity = entities[seed % entities.length];
-      }
-
-      // Clusterization
-      let cluster: { clusterId: string; addresses: string[]; confidence: number } | null = null;
-      if (seed % 3 === 0) {
-        cluster = {
-          clusterId: `#${(seed % 300) + 100}`,
-          addresses: [
-            address,
-            address.slice(0, 6) + "..." + address.slice(-6) + "_cluster_1",
-            address.slice(0, 6) + "..." + address.slice(-6) + "_cluster_2",
-          ],
-          confidence: (seed % 20) + 80,
-        };
-      }
-
-      // OSINT Enrichment
-      const osintMentions = [
-        { source: "Reddit (r/Bitcoin)", date: "12/04/2025", context: "Endereço citado em thread sobre golpe de phishing de suporte falso." },
-        { source: "GitHub Gist", date: "09/01/2026", context: "Listado em script de coleta de doações para projeto open source." },
-        { source: "Bitcointalk", date: "15/02/2024", context: "Usuário reportou este endereço como destino de fundos roubados." },
-        { source: "Twitter (CT Intel)", date: "21/05/2026", context: "Carteira relacionada ao ataque de ransomware LockBit." },
-      ];
-      const mentions = seed % 2 === 0 ? osintMentions.slice(0, (seed % 3) + 1) : [];
-
-      // Related addresses for Graph
+      // Non-simulated metrics
+      const riskScore = 0;
+      const riskClassification = "BAIXO RISCO" as const;
+      const riskFactors: string[] = ["Verificações avançadas forenses requerem chaves de API integradas."];
+      const entity = null;
+      const cluster = null;
+      const mentions: any[] = [];
       const relatedAddresses: RelatedNode[] = [];
-      const nodeTypes: Array<"wallet" | "exchange" | "mixer" | "contract"> = ["wallet", "exchange", "mixer", "contract"];
-      const amountSeed = (seed % 10) + 0.5;
-
-      // Inputs
-      for (let i = 0; i < 3; i++) {
-        const relatedAddr = address.substring(0, 8) + "..." + (seed + i) + "in";
-        const nodeType = nodeTypes[(seed + i) % nodeTypes.length];
-        const labelName = nodeType === "exchange" ? "Binance Deposit" : nodeType === "mixer" ? "Tornado Cash Pool" : undefined;
-        relatedAddresses.push({
-          address: relatedAddr,
-          type: "in",
-          label: labelName,
-          nodeType,
-          amount: amountSeed * (i + 1),
-        });
-      }
-
-      // Outputs
-      for (let i = 0; i < 3; i++) {
-        const relatedAddr = address.substring(0, 8) + "..." + (seed + i) + "out";
-        const nodeType = nodeTypes[(seed + i + 2) % nodeTypes.length];
-        const labelName = nodeType === "exchange" ? "Coinbase HotWallet" : nodeType === "mixer" ? "Sinbad Mixer" : undefined;
-        relatedAddresses.push({
-          address: relatedAddr,
-          type: "out",
-          label: labelName,
-          nodeType,
-          amount: amountSeed * (i + 0.5),
-        });
-      }
-
-      // Timeline data for Recharts
-      const timeline: Array<{ date: string; sent: number; received: number; count: number }> = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date();
-        d.setMonth(now.getMonth() - i);
-        const monthLabel = d.toLocaleString("pt-BR", { month: "short" }) + "/" + d.getFullYear().toString().slice(-2);
-        timeline.push({
-          date: monthLabel,
-          received: parseFloat(((seed * (i + 1)) % 15).toFixed(2)),
-          sent: parseFloat(((seed * (i + 0.5)) % 12).toFixed(2)),
-          count: (seed % 5) + i + 1,
-        });
-      }
+      const timeline: any[] = [];
 
       return {
         error: null,
@@ -3851,6 +3645,141 @@ export const cryptoWalletLookup = createServerFn({ method: "POST" })
           osintMentions: mentions,
           relatedAddresses,
           timeline,
+        },
+      };
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : "Erro desconhecido", data: null };
+    }
+  });
+
+/* ═══════════════════════════════════════════
+   Module — VirusTotal API Lookup
+   ═══════════════════════════════════════════ */
+
+const virustotalSchema = z.object({
+  query: z.string().trim().min(1, "O termo de busca não pode ser vazio"),
+});
+
+export type VirusTotalInfo = {
+  type: "hash" | "url" | "ip" | "domain";
+  query: string;
+  malicious: number;
+  suspicious: number;
+  harmless: number;
+  undetected: number;
+  total: number;
+  verdictLabel: string;
+  verdictSafe: boolean;
+  lastAnalysis: string;
+  reputation: number;
+  engines: { name: string; category: string; result: string }[];
+  tags: string[];
+  link: string;
+};
+
+export const virustotalLookup = createServerFn({ method: "POST" })
+  .validator(virustotalSchema)
+  .handler(async ({ data }): Promise<{ error: string | null; data: VirusTotalInfo | null }> => {
+    try {
+      const apiKey = process.env.VIRUSTOTAL_API_KEY || (globalThis as any).VIRUSTOTAL_API_KEY;
+      if (!apiKey) {
+        return { error: "VIRUSTOTAL_API_KEY não está configurada nas variáveis de ambiente.", data: null };
+      }
+
+      const query = data.query;
+      let type: "hash" | "url" | "ip" | "domain" = "domain";
+      if (/^[a-f0-9]{32,64}$/i.test(query)) type = "hash";
+      else if (/^https?:\/\//i.test(query)) type = "url";
+      else if (/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(query)) type = "ip";
+
+      let endpoint = "";
+      if (type === "hash") endpoint = `https://www.virustotal.com/api/v3/files/${query}`;
+      else if (type === "ip") endpoint = `https://www.virustotal.com/api/v3/ip_addresses/${query}`;
+      else if (type === "domain") endpoint = `https://www.virustotal.com/api/v3/domains/${query}`;
+      else {
+        // Base64 encode without padding for URL lookup
+        const base64Url = Buffer.from(query).toString("base64").replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+        endpoint = `https://www.virustotal.com/api/v3/urls/${base64Url}`;
+      }
+
+      const res = await fetch(endpoint, {
+        headers: {
+          "x-apikey": apiKey,
+          Accept: "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          return { error: "Registro não encontrado no VirusTotal. Pode ser que o alvo nunca tenha sido submetido.", data: null };
+        }
+        return { error: `Erro na API do VirusTotal (Status ${res.status})`, data: null };
+      }
+
+      const json = await res.json();
+      const attributes = json.data?.attributes;
+      if (!attributes) {
+        return { error: "Formato de resposta inesperado do VirusTotal.", data: null };
+      }
+
+      const stats = attributes.last_analysis_stats || { malicious: 0, suspicious: 0, harmless: 0, undetected: 0 };
+      const malicious = stats.malicious || 0;
+      const suspicious = stats.suspicious || 0;
+      const harmless = stats.harmless || 0;
+      const undetected = stats.undetected || 0;
+      const total = malicious + suspicious + harmless + undetected;
+      const reputation = attributes.reputation || 0;
+
+      let verdictLabel = "LIMPO / SEGURO";
+      let verdictSafe = true;
+      if (malicious > 3) {
+        verdictLabel = "MALICIOSO (ALTO RISCO)";
+        verdictSafe = false;
+      } else if (malicious > 0 || suspicious > 1) {
+        verdictLabel = "SUSPEITO (RISCO MODERADO)";
+        verdictSafe = false;
+      }
+
+      const lastAnalysisEpoch = attributes.last_analysis_date;
+      const lastAnalysis = lastAnalysisEpoch ? new Date(lastAnalysisEpoch * 1000).toLocaleString("pt-BR") : "Desconhecida";
+
+      // Direct web links for user redirect
+      let vtUrl = "";
+      if (type === "hash") vtUrl = `https://www.virustotal.com/gui/file/${query}`;
+      else if (type === "url") vtUrl = `https://www.virustotal.com/gui/url/${Buffer.from(query).toString("base64").replace(/=/g, "")}`;
+      else if (type === "ip") vtUrl = `https://www.virustotal.com/gui/ip-address/${query}`;
+      else vtUrl = `https://www.virustotal.com/gui/domain/${query}`;
+
+      const engines: { name: string; category: string; result: string }[] = [];
+      const resultsObj = attributes.last_analysis_results || {};
+      for (const [engineName, engineInfo] of Object.entries(resultsObj)) {
+        const info = engineInfo as { category: string; result: string };
+        if (info.category === "malicious" || info.category === "suspicious") {
+          engines.push({
+            name: engineName,
+            category: info.category,
+            result: info.result || "Malicious behavior",
+          });
+        }
+      }
+
+      return {
+        error: null,
+        data: {
+          type,
+          query,
+          malicious,
+          suspicious,
+          harmless,
+          undetected,
+          total,
+          verdictLabel,
+          verdictSafe,
+          lastAnalysis,
+          reputation,
+          engines,
+          tags: attributes.tags || [type.toUpperCase()],
+          link: vtUrl,
         },
       };
     } catch (e) {

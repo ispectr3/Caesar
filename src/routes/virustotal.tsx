@@ -31,6 +31,9 @@ type VTResult = {
   link: string;
 };
 
+import { virustotalLookup, type VirusTotalInfo } from "../lib/osint.functions";
+import { useServerFn } from "@tanstack/react-start";
+
 function detectType(query: string): "hash" | "url" | "ip" | "domain" {
   if (/^[a-f0-9]{32,64}$/i.test(query.trim())) return "hash";
   if (/^https?:\/\//i.test(query.trim())) return "url";
@@ -47,9 +50,10 @@ const VT_ICON_MAP: Record<string, JSX.Element> = {
 
 function VirusTotalPage() {
   const { q } = Route.useSearch() as { q?: string };
+  const fn = useServerFn(virustotalLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<VTResult | null>(null);
+  const [result, setResult] = useState<VirusTotalInfo | null>(null);
 
   const handleSubmit = async (value: string) => {
     setLoading(true);
@@ -57,37 +61,14 @@ function VirusTotalPage() {
     setResult(null);
 
     const query = value.trim();
-    const type = detectType(query);
 
     try {
-      // API key from Cloudflare environment (server-side)
-      // This is a client-side demo that links to VirusTotal directly
-      // For real API integration, a server function would be needed
-
-      // Build direct VirusTotal link
-      let vtUrl = "";
-      if (type === "hash") vtUrl = `https://www.virustotal.com/gui/file/${query}`;
-      else if (type === "url") vtUrl = `https://www.virustotal.com/gui/url/${btoa(query).replace(/=/g, "")}`;
-      else if (type === "ip") vtUrl = `https://www.virustotal.com/gui/ip-address/${query}`;
-      else vtUrl = `https://www.virustotal.com/gui/domain/${query}`;
-
-      // Mock result with direct link (production would use API key from env)
-      setResult({
-        type,
-        query,
-        malicious: 0,
-        suspicious: 0,
-        harmless: 0,
-        undetected: 0,
-        total: 0,
-        verdictLabel: "CONSULTAR VIRUSTOTAL",
-        verdictSafe: true,
-        lastAnalysis: new Date().toLocaleString("pt-BR"),
-        reputation: 0,
-        engines: [],
-        tags: [type.toUpperCase()],
-        link: vtUrl,
-      });
+      const res = await fn({ data: { query } });
+      if (res.error) {
+        setError(res.error);
+      } else {
+        setResult(res.data);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro ao consultar VirusTotal");
     } finally {
@@ -139,51 +120,91 @@ function VirusTotalPage() {
             </div>
 
             {/* Info */}
-            <ResultCard title="Como Analisar">
-              <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-                <p className="text-foreground/90">
-                  Clique em <strong className="text-primary">Ver no VirusTotal</strong> para acessar o relatório completo com resultados de{" "}
-                  <strong>72+ motores de antivírus</strong> e a reputação atualizada da comunidade.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                  {[
-                    { icon: <AlertTriangle size={14} />, label: "Malicioso", desc: "Detecções confirmadas por motores de AV" },
-                    { icon: <Shield size={14} />, label: "Suspeito", desc: "Comportamento anômalo mas não confirmado" },
-                    { icon: <CheckCircle size={14} />, label: "Inofensivo", desc: "Nenhum motor detectou ameaça" },
-                    { icon: <Clock size={14} />, label: "Reputação", desc: "Score baseado em votos da comunidade" },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-start gap-3 p-3 border border-border/15 bg-background/30">
-                      <span className="text-primary mt-0.5">{item.icon}</span>
-                      <div>
-                        <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold block">{item.label}</span>
-                        <span className="text-[11px] text-muted-foreground">{item.desc}</span>
-                      </div>
+            {/* Info */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <ResultCard title="Resultados da Análise">
+                  <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+                    <div className="p-4 border border-border/20 bg-background/50 flex items-center justify-between font-mono">
+                      <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold">Veredicto Global:</span>
+                      <span className={`text-xs uppercase tracking-wider px-3 py-1 border font-bold ${result.verdictSafe ? "bg-green-500/10 border-green-500/30 text-green-400" : "bg-red-500/10 border-red-500/30 text-red-500"}`}>
+                        {result.verdictLabel}
+                      </span>
                     </div>
-                  ))}
-                </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                      {[
+                        { icon: <AlertTriangle size={14} />, label: "Malicioso", value: `${result.malicious} / ${result.total}`, desc: "Motores de AV que confirmaram ameaça" },
+                        { icon: <Shield size={14} />, label: "Suspeito", value: `${result.suspicious} / ${result.total}`, desc: "Comportamento anômalo detectado" },
+                        { icon: <CheckCircle size={14} />, label: "Inofensivo", value: `${result.harmless} / ${result.total}`, desc: "Motores que classificaram como seguro" },
+                        { icon: <Clock size={14} />, label: "Reputação", value: `${result.reputation > 0 ? "+" : ""}${result.reputation}`, desc: "Score de votos da comunidade" },
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-start gap-3 p-3 border border-border/15 bg-background/30">
+                          <span className="text-primary mt-0.5">{item.icon}</span>
+                          <div>
+                            <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold block">{item.label}</span>
+                            <span className="font-mono text-sm text-foreground font-semibold block my-0.5">{item.value}</span>
+                            <span className="text-[11px] text-muted-foreground">{item.desc}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {result.engines.length > 0 && (
+                      <div className="mt-6 border border-border/20 p-4 bg-background/20">
+                        <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-bold block mb-3">// Detecções por Motor</span>
+                        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+                          {result.engines.map((eng, idx) => (
+                            <div key={idx} className="flex items-center justify-between text-xs font-mono py-1.5 border-b border-border/10 last:border-b-0">
+                              <span className="text-foreground/95">{eng.name}</span>
+                              <span className="text-red-500 font-bold uppercase text-[10px]">{eng.result}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <PivotLinks
+                    pivots={[
+                      ...(result.type === "ip" ? [
+                        { label: "IP Lookup", to: "/ip", query: result.query, tag: "geo" },
+                        { label: "AbuseIPDB", to: "/abuseipdb", query: result.query, tag: "threat" },
+                        { label: "Port Scanner", to: "/portscan", query: result.query, tag: "rede" },
+                      ] : []),
+                      ...(result.type === "domain" ? [
+                        { label: "WHOIS", to: "/whois", query: result.query, tag: "domínio" },
+                        { label: "DNS Lookup", to: "/dns", query: result.query, tag: "rede" },
+                        { label: "Certificados SSL", to: "/certificates", query: result.query, tag: "ssl" },
+                      ] : []),
+                      ...(result.type === "url" ? [
+                        { label: "URLScan.io", to: "/urlscan", query: result.query, tag: "web" },
+                        { label: "File Phish", to: "/filephish", query: result.query, tag: "dork" },
+                      ] : []),
+                      ...(result.type === "hash" ? [
+                        { label: "Malware Bazaar", to: "/malwarebazaar", query: result.query, tag: "malware" },
+                      ] : []),
+                    ]}
+                  />
+                </ResultCard>
               </div>
-              <PivotLinks
-                pivots={[
-                  ...(result.type === "ip" ? [
-                    { label: "IP Lookup", to: "/ip", query: result.query, tag: "geo" },
-                    { label: "AbuseIPDB", to: "/abuseipdb", query: result.query, tag: "threat" },
-                    { label: "Port Scanner", to: "/portscan", query: result.query, tag: "rede" },
-                  ] : []),
-                  ...(result.type === "domain" ? [
-                    { label: "WHOIS", to: "/whois", query: result.query, tag: "domínio" },
-                    { label: "DNS Lookup", to: "/dns", query: result.query, tag: "rede" },
-                    { label: "Certificados SSL", to: "/certificates", query: result.query, tag: "ssl" },
-                  ] : []),
-                  ...(result.type === "url" ? [
-                    { label: "URLScan.io", to: "/urlscan", query: result.query, tag: "web" },
-                    { label: "File Phish", to: "/filephish", query: result.query, tag: "dork" },
-                  ] : []),
-                  ...(result.type === "hash" ? [
-                    { label: "Malware Bazaar", to: "/malwarebazaar", query: result.query, tag: "malware" },
-                  ] : []),
-                ]}
-              />
-            </ResultCard>
+
+              <div className="lg:col-span-1">
+                <ResultCard title="Informações Gerais">
+                  <div className="space-y-3 font-mono text-xs text-muted-foreground leading-relaxed">
+                    <p><strong className="text-foreground">Última Análise:</strong> <span className="text-primary">{result.lastAnalysis}</span></p>
+                    <p><strong className="text-foreground">Etiquetas (Tags):</strong></p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {result.tags.map((t, idx) => (
+                        <span key={idx} className="bg-primary/10 border border-primary/20 text-primary px-1.5 py-0.5 text-[9px] uppercase tracking-wider font-bold">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </ResultCard>
+              </div>
+            </div>
           </div>
         )}
       </ToolForm>
