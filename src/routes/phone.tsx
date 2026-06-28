@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Phone, MapPin, Send, Search, ExternalLink } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 import { phoneLookup, type PhoneInfo } from "../lib/osint.functions";
@@ -21,16 +21,18 @@ export const Route = createFileRoute("/phone")({
 
 function PhoneTool() {
   const { q } = Route.useSearch();
-
-  useEffect(() => {
-    if (q && !result) {
-      handleSubmit(q);
-    }
-  }, [q]);
-      const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PhoneInfo | null>(null);
+  const didAutoRun = useRef(false);
+
+  useEffect(() => {
+    if (q && !didAutoRun.current) {
+      didAutoRun.current = true;
+      handleSubmit(q);
+    }
+  }, [q]);
 
   const handleSubmit = async (value: string) => {
     const q = value.trim();

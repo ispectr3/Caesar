@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { Shield, AlertTriangle, CheckCircle, Link2, Globe, Server, FileText, Clock } from "lucide-react";
@@ -54,6 +54,14 @@ function VirusTotalPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<VirusTotalInfo | null>(null);
+  const didAutoRun = useRef(false);
+
+  useEffect(() => {
+    if (q && !didAutoRun.current) {
+      didAutoRun.current = true;
+      handleSubmit(q);
+    }
+  }, [q]);
 
   const handleSubmit = async (value: string) => {
     setLoading(true);

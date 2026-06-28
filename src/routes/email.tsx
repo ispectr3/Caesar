@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import {
@@ -48,18 +48,20 @@ function StatusBadge({ ok, label, warn = false }: { ok: boolean; label: string; 
 
 function EmailPage() {
   const { q } = Route.useSearch();
-
-  useEffect(() => {
-    if (q && !result) {
-      submit(q);
-    }
-  }, [q]);
-      const fn = useServerFn(emailValidate);
+  const fn = useServerFn(emailValidate);
   const gravatarFn = useServerFn(gravatarLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EmailValidation | null>(null);
   const [gravatarResult, setGravatarResult] = useState<GravatarProfile | null>(null);
+  const didAutoRun = useRef(false);
+
+  useEffect(() => {
+    if (q && !didAutoRun.current) {
+      didAutoRun.current = true;
+      submit(q);
+    }
+  }, [q]);
 
   async function submit(value: string) {
     setLoading(true);

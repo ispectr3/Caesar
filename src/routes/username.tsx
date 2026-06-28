@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { usernameScan, redditAnalyze, type UsernameScanResult, type RedditAnalytics } from "@/lib/osint.functions";
@@ -19,26 +18,26 @@ export const Route = createFileRoute("/username")({
   component: UsernameTool,
 });
 
-import { useEffect } from "react";
 
 function UsernameTool() {
   const { q } = Route.useSearch();
-
-  useEffect(() => {
-    if (q && !result) {
-      handleSubmit(q);
-    }
-  }, [q]);
-    const scanFn = useServerFn(usernameScan);
+  const scanFn = useServerFn(usernameScan);
   const analyzeRedditFn = useServerFn(redditAnalyze);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<UsernameScanResult | null>(null);
   const [filter, setFilter] = useState("");
-  
   const [redditData, setRedditData] = useState<RedditAnalytics | null>(null);
   const [loadingReddit, setLoadingReddit] = useState(false);
   const [redditError, setRedditError] = useState<string | null>(null);
+  const didAutoRun = useRef(false);
+
+  useEffect(() => {
+    if (q && !didAutoRun.current) {
+      didAutoRun.current = true;
+      handleSubmit(q);
+    }
+  }, [q]);
 
   const handleRedditDeepScan = async () => {
     if (!result?.username) return;

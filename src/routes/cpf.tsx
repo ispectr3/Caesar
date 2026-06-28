@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 import { cpfLookup, type CpfResult } from "../lib/osint.functions";
@@ -21,17 +21,19 @@ export const Route = createFileRoute("/cpf")({
 
 function CpfTool() {
   const { q } = Route.useSearch();
-
-  useEffect(() => {
-    if (q && !result) {
-      handleSubmit(q);
-    }
-  }, [q]);
-      const fn = useServerFn(cpfLookup);
+  const fn = useServerFn(cpfLookup);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CpfResult | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const didAutoRun = useRef(false);
+
+  useEffect(() => {
+    if (q && !didAutoRun.current) {
+      didAutoRun.current = true;
+      handleSubmit(q);
+    }
+  }, [q]);
 
   const handleCopy = (onion: string) => {
     navigator.clipboard.writeText(onion);

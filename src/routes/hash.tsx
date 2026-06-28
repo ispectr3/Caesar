@@ -69,6 +69,12 @@ function HashPage() {
         setInputText(q);
         handleGenerate(q);
       }
+    } else if (activeTab === "generate") {
+      const saved = localStorage.getItem("hash_generator_text");
+      if (saved) {
+        setInputText(saved);
+        handleGenerate(saved);
+      }
     }
   }, [q, activeTab]);
 
@@ -276,6 +282,7 @@ function HashPage() {
               value={inputText}
               onChange={(e) => {
                 setInputText(e.target.value);
+                localStorage.setItem("hash_generator_text", e.target.value);
                 handleGenerate(e.target.value);
               }}
               className="w-full bg-input border border-border/80 rounded-none px-3 py-2 font-mono text-sm text-foreground focus:outline-none focus:border-primary/50"

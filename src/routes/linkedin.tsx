@@ -147,7 +147,7 @@ function LinkedInPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo — Social e Mídia"
+        eyebrow="// Módulo 41 — Social e Mídia"
         title="LinkedIn Recon"
         description="Gera Google Dorks otimizados para pesquisa de perfis, funcionários e empresas no LinkedIn. Investigue sem precisar de conta ou login — via indexação do Google."
       />
@@ -190,6 +190,60 @@ function LinkedInPage() {
       >
         {dorks && (
           <div className="space-y-6 mt-6 fade-in-up">
+              {/* Bloco de Estilo para Impressão PDF */}
+              <style>{`
+                @media print {
+                  header, footer, .print\\:hidden, form, button {
+                    display: none !important;
+                  }
+                  body, main {
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                  }
+                  .card-cyber, .border, [class*="border-"] {
+                    border-color: #6b7280 !important;
+                    background: #ffffff !important;
+                    color: #000000 !important;
+                  }
+                  .text-muted-foreground, .text-primary, h1, h2, h3, p, span, div {
+                    color: #000000 !important;
+                    text-shadow: none !important;
+                  }
+                  .status-secure, .status-warning, .status-danger {
+                    background: none !important;
+                    border: 1px solid #000000 !important;
+                    color: #000000 !important;
+                  }
+                }
+              `}</style>
+
+              {/* Ações de Relatório */}
+              <div className="flex justify-end gap-3 print:hidden">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-5 py-2.5 border border-primary bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 flex items-center gap-2 shadow-[0_0_10px_var(--glow-subtle)] hover:shadow-[0_0_15px_var(--primary)]"
+                >
+                  <span>[ Exportar Dossiê PDF ]</span>
+                </button>
+              </div>
+
+              <div className="card-cyber p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover-lift transition-all duration-300">
+                <div>
+                  <span className="font-mono text-xs text-primary glow-text uppercase tracking-wider block mb-1">
+                    Status de Segurança
+                  </span>
+                  <h2 className="text-xl font-bold tracking-tight text-foreground font-mono">
+                    Dossiê de Inteligência OSINT
+                  </h2>
+                </div>
+                <div className="flex flex-col items-start md:items-end gap-2">
+                  <span className="font-mono text-sm text-foreground bg-white/5 border border-border px-3 py-1.5 rounded-none status-secure font-bold uppercase tracking-wider">
+                    MODULE_SECURE // ON
+                  </span>
+                </div>
+              </div>
+
             <ResultCard title={`Dorks LinkedIn — ${DORK_TEMPLATES[activeType].label}`} exportData={dorks} exportName={`linkedin_dorks_${query}`}>
               <div className="space-y-3">
                 {dorks.map((dork, idx) => (

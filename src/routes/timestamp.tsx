@@ -199,7 +199,7 @@ function TimestampTool() {
               </label>
               <div className="flex gap-2">
                 <input
-                  type="text"
+                  type="datetime-local"
                   placeholder="AAAA-MM-DDTHH:MM:SS"
                   value={customDate}
                   onChange={(e) => setCustomDate(e.target.value)}

@@ -33,11 +33,29 @@ async function setCacheValue(key: string, value: any, ttlSecs: number = 86400) {
   }
 }
 
-function checkRateLimit(): void {
+async function checkRateLimit(): Promise<void> {
   const now = Date.now();
   const windowMs = 60000; // 1 min
   const maxRequests = 50; // max 50 reqs per minute globally to prevent DDoS
   
+  // Cloudflare KV integration
+  const kv = (globalThis as any).RATE_LIMIT_KV || (process && process.env && process.env.RATE_LIMIT_KV);
+  if (kv && typeof kv.get === "function") {
+    const recordStr = await kv.get("global_limit");
+    let record = recordStr ? JSON.parse(recordStr) : null;
+    if (!record || now - record.lastReset > windowMs) {
+      record = { count: 1, lastReset: now };
+    } else {
+      record.count++;
+    }
+    await kv.put("global_limit", JSON.stringify(record));
+    if (record.count > maxRequests) {
+      throw new Error("Rate limit excedido (KV). Defesa Anti-Bot ativada.");
+    }
+    return;
+  }
+
+  // Local memory fallback
   let record = rateLimitMap.get("global");
   if (!record || now - record.lastReset > windowMs) {
     record = { count: 1, lastReset: now };
@@ -50,13 +68,13 @@ function checkRateLimit(): void {
   }
 }
 
-function sanitizeInput(val: string): string {
-  checkRateLimit();
+async function sanitizeInput(val: string): Promise<string> {
+  await checkRateLimit();
   // Remove script tags, eval, common injection chars to prevent Prompt Injection / XSS
   return val
     .replace(/<[^>]*>?/gm, "")
     .replace(/eval\s*\(/gi, "")
-    .replace(/[\$\{\}\<\>\;]/g, "")
+    .replace(/[\<\>\;]/g, "")
     .trim();
 }
 
@@ -283,6 +301,12 @@ const DNS_TYPES = ["A", "AAAA", "MX", "NS", "TXT", "CNAME", "SOA"] as const;
 export const dnsLookup = createServerFn({ method: "POST" })
   .validator(domainSchema)
   .handler(async ({ data }) => {
+    const cacheKey = `dns_${data.domain}`;
+    const cached = await getCacheValue(cacheKey);
+    if (cached) {
+      return { data: cached, error: null };
+    }
+
     const results = await Promise.all(
       DNS_TYPES.map(async (type) => {
         try {
@@ -302,6 +326,7 @@ export const dnsLookup = createServerFn({ method: "POST" })
         }
       }),
     );
+    await setCacheValue(cacheKey, results, 86400);
     return { error: null, data: results };
   });
 
@@ -2575,6 +2600,7 @@ export type PortStatus = {
   port: number;
   service: string;
   status: "open" | "closed" | "timeout";
+  banner?: string;
 };
 
 export type PortScanResult = {
@@ -2597,25 +2623,44 @@ const COMMON_PORTS = [
   { port: 8080, service: "HTTP-Proxy" },
 ];
 
-async function checkPort(host: string, port: number, timeoutMs = 2000): Promise<"open" | "closed" | "timeout"> {
+async function checkPort(host: string, port: number, timeoutMs = 2000): Promise<{ status: "open" | "closed" | "timeout", banner?: string }> {
   return new Promise((resolve) => {
     const socket = new net.Socket();
+    let banner = "";
+    let isResolved = false;
     
     const timeout = setTimeout(() => {
-      socket.destroy();
-      resolve("timeout");
+      if (!isResolved) {
+        isResolved = true;
+        socket.destroy();
+        resolve({ status: banner ? "open" : "timeout", banner: banner ? banner.slice(0, 100).trim() : undefined });
+      }
     }, timeoutMs);
 
     socket.on("connect", () => {
-      clearTimeout(timeout);
-      socket.destroy();
-      resolve("open");
+      if ([80, 443, 8080, 8443].includes(port)) {
+        socket.write("HEAD / HTTP/1.0\\r\\n\\r\\n");
+      }
+      setTimeout(() => {
+        if (!isResolved) {
+          isResolved = true;
+          socket.destroy();
+          resolve({ status: "open", banner: banner ? banner.slice(0, 100).replace(/\\r?\\n/g, " ").trim() : undefined });
+        }
+      }, 800);
+    });
+
+    socket.on("data", (data) => {
+      banner += data.toString();
     });
 
     socket.on("error", () => {
-      clearTimeout(timeout);
-      socket.destroy();
-      resolve("closed");
+      if (!isResolved) {
+        isResolved = true;
+        clearTimeout(timeout);
+        socket.destroy();
+        resolve({ status: "closed" });
+      }
     });
 
     socket.connect(port, host);
@@ -2625,14 +2670,14 @@ async function checkPort(host: string, port: number, timeoutMs = 2000): Promise<
 export const portScan = createServerFn({ method: "POST" })
   .validator(z.object({ target: z.string().trim() }))
   .handler(async ({ data }): Promise<{ error: string | null; data: PortScanResult | null }> => {
-    checkRateLimit();
+    await checkRateLimit();
     try {
-      const hostname = data.target.replace(/^https?:\/\//, "").split("/")[0];
+      const hostname = data.target.replace(/^https?:\\/\\//, "").split("/")[0];
       if (!hostname) throw new Error("Alvo inválido");
 
       const promises = COMMON_PORTS.map(async (p) => {
-        const status = await checkPort(hostname, p.port);
-        return { port: p.port, service: p.service, status };
+        const { status, banner } = await checkPort(hostname, p.port);
+        return { port: p.port, service: p.service, status, banner };
       });
 
       const results = await Promise.all(promises);

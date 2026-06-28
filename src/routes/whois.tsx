@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { whoisLookup, type WhoisInfo } from "@/lib/osint.functions";
@@ -22,16 +22,18 @@ export const Route = createFileRoute("/whois")({
 
 function WhoisPage() {
   const { q } = Route.useSearch();
-
-  useEffect(() => {
-    if (q && !result) {
-      submit(q);
-    }
-  }, [q]);
-      const fn = useServerFn(whoisLookup);
+  const fn = useServerFn(whoisLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<WhoisInfo | null>(null);
+  const didAutoRun = useRef(false);
+
+  useEffect(() => {
+    if (q && !didAutoRun.current) {
+      didAutoRun.current = true;
+      submit(q);
+    }
+  }, [q]);
 
   async function submit(value: string) {
     setLoading(true);
@@ -97,20 +99,7 @@ function WhoisPage() {
         title="WHOIS & Registry Data"
         description="Informações de registro de domínio via protocolo RDAP. Consulte provedores oficiais, datas críticas e nameservers ativos."
       />
-      {/* Painel Explicativo: Como Usar */}
-      <div className="mx-auto max-w-2xl px-4 sm:px-6 mb-8 fade-in-up">
-        <div className="bg-primary/5 border border-primary/20 p-4 font-mono text-xs text-muted-foreground leading-relaxed">
-          <h4 className="text-primary font-bold mb-2">METODOLOGIA DE INVESTIGAÇÃO (WHOIS/RDAP)</h4>
-          <p className="mb-2">
-            A consulta WHOIS/RDAP expõe a identidade, datas de registro e infraestrutura (DNS) por trás de um domínio.
-          </p>
-          <ul className="list-disc list-inside space-y-1 opacity-80">
-            <li><strong>Datas Críticas:</strong> Domínios registrados recentemente (ex: ontem) são fortes indicadores de phishing.</li>
-            <li><strong>Nameservers:</strong> Mostram onde o site está hospedado (ex: Cloudflare, AWS). Útil para descobrir o IP real posteriormente.</li>
-            <li><strong>Entities:</strong> Revelam os "handles" de administradores ou empresas conectadas.</li>
-          </ul>
-        </div>
-      </div>
+
       <ToolForm
         defaultValue={q}
         storageKey="whois"
@@ -133,8 +122,21 @@ function WhoisPage() {
                   <span className="font-mono text-xs text-primary glow-text uppercase tracking-wider block">
                     Domain RDAP Lookup
                   </span>
-                  <h2 className="text-xl font-bold tracking-tight text-foreground uppercase">
+                  <h2 className="text-xl font-bold tracking-tight text-foreground uppercase flex items-center gap-2">
                     {result.domain}
+                    {(() => {
+                      if (!result.creationDate) return null;
+                      const ageDays = (new Date().getTime() - new Date(result.creationDate).getTime()) / (1000 * 3600 * 24);
+                      const isOld = ageDays > 730; // 2 years
+                      const isRecent = ageDays <= 730 && ageDays > 90;
+                      const color = isOld ? "bg-green-500/10 text-green-500 border-green-500/30" : isRecent ? "bg-orange-500/10 text-orange-500 border-orange-500/30" : "bg-red-500/10 text-red-500 border-red-500/30 font-bold animate-pulse";
+                      const label = isOld ? "✓ Antigo" : isRecent ? "⚠ Recente" : "⚠ CRÍTICO: NOVO";
+                      return (
+                        <span className={`text-[10px] uppercase tracking-wider border px-2 py-0.5 font-mono ${color}`}>
+                          {label}
+                        </span>
+                      );
+                    })()}
                   </h2>
                 </div>
               </div>

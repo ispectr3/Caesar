@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { portScan, type PortScanResult } from "@/lib/osint.functions";
@@ -21,16 +21,18 @@ export const Route = createFileRoute("/portscan")({
 
 function PortScanTool() {
   const { q } = Route.useSearch();
-
-  useEffect(() => {
-    if (q && !result) {
-      handleSubmit(q);
-    }
-  }, [q]);
   const scanFn = useServerFn(portScan);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PortScanResult | null>(null);
+  const didAutoRun = useRef(false);
+
+  useEffect(() => {
+    if (q && !didAutoRun.current) {
+      didAutoRun.current = true;
+      handleSubmit(q);
+    }
+  }, [q]);
 
   const handleSubmit = async (value: string) => {
     setLoading(true);
@@ -72,7 +74,12 @@ function PortScanTool() {
         onSubmit={handleSubmit}
         loading={loading}
         error={error}
+        error={error}
       >
+        <div className="mb-6 p-4 border border-red-500/30 bg-red-500/10 text-red-500 font-mono text-xs flex items-center gap-3 animate-pulse">
+          <AlertTriangle size={18} className="shrink-0" />
+          <span><strong>ALERTA DE SCAN ATIVO:</strong> Esta ferramenta se conecta diretamente ao servidor alvo. Pode deixar rastros em firewalls e logs.</span>
+        </div>
         {result ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2 space-y-4">
@@ -125,21 +132,33 @@ function PortScanTool() {
                           </div>
                         </div>
 
-                        <div>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex justify-end gap-2">
+                            {isOpen && (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-red-500/30 bg-red-500/10 text-red-500 text-[10px] font-mono font-bold uppercase tracking-wide">
+                                <Unlock size={11} /> Open
+                              </span>
+                            )}
+                            {isClosed && (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-border/10 bg-background/40 text-muted-foreground/60 text-[10px] font-mono uppercase tracking-wide">
+                                <Lock size={11} className="opacity-40" /> Closed
+                              </span>
+                            )}
+                            {isTimeout && (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-orange-500/20 bg-orange-500/5 text-orange-400/80 text-[10px] font-mono uppercase tracking-wide">
+                                <ShieldCheck size={11} /> Filtered
+                              </span>
+                            )}
+                          </div>
+                          {isOpen && p.banner && (
+                            <div className="text-[9px] font-mono text-muted-foreground bg-black/40 px-2 py-1 border border-border/30 max-w-[200px] truncate" title={p.banner}>
+                              {p.banner}
+                            </div>
+                          )}
                           {isOpen && (
-                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-red-500/30 bg-red-500/10 text-red-500 text-[10px] font-mono font-bold uppercase tracking-wide">
-                              <Unlock size={11} /> Open
-                            </span>
-                          )}
-                          {isClosed && (
-                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-border/10 bg-background/40 text-muted-foreground/60 text-[10px] font-mono uppercase tracking-wide">
-                              <Lock size={11} className="opacity-40" /> Closed
-                            </span>
-                          )}
-                          {isTimeout && (
-                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-orange-500/20 bg-orange-500/5 text-orange-400/80 text-[10px] font-mono uppercase tracking-wide">
-                              <ShieldCheck size={11} /> Filtered
-                            </span>
+                            <a href={`/cve?q=${p.service}`} target="_blank" rel="noreferrer" className="text-[9px] font-mono text-primary hover:underline text-right uppercase tracking-wider">
+                              Verificar CVEs ↗
+                            </a>
                           )}
                         </div>
                       </div>

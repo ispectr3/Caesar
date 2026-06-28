@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { subdomainScan, type SubdomainResult } from "@/lib/osint.functions";
@@ -22,17 +22,19 @@ export const Route = createFileRoute("/subdomains")({
 
 function SubdomainsPage() {
   const { q } = Route.useSearch();
-
-  useEffect(() => {
-    if (q && !result) {
-      submit(q);
-    }
-  }, [q]);
-      const fn = useServerFn(subdomainScan);
+  const fn = useServerFn(subdomainScan);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SubdomainResult | null>(null);
   const [filter, setFilter] = useState("");
+  const didAutoRun = useRef(false);
+
+  useEffect(() => {
+    if (q && !didAutoRun.current) {
+      didAutoRun.current = true;
+      submit(q);
+    }
+  }, [q]);
 
   async function submit(value: string) {
     setLoading(true);
@@ -114,7 +116,26 @@ function SubdomainsPage() {
                   className="w-full bg-input/60 border border-border/50 rounded-none pl-9 pr-4 py-2.5 font-mono text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-colors"
                 />
               </div>
-            )}
+              <button
+                type="button"
+                onClick={() => {
+                  const content = filtered?.map(r => r.name_value).join("\\n");
+                  if (!content) return;
+                  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `subdomains_${query}_${new Date().getTime()}.txt`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                }}
+                className="px-4 py-2 border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors font-mono text-[10px] uppercase tracking-wider shrink-0"
+              >
+                [ Exportar .txt ]
+              </button>
+            </div>
 
             {/* Results table */}
             <ResultCard
