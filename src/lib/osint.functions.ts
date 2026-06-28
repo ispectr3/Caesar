@@ -2738,7 +2738,7 @@ export const portScan = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ error: string | null; data: PortScanResult | null }> => {
     await checkRateLimit();
     try {
-      const hostname = data.target.replace(/^https?:\\/\\//, "").split("/")[0];
+      const hostname = data.target.replace(/^https?:\/\//, "").split("/")[0];
       if (!hostname) throw new Error("Alvo inválido");
 
       const promises = COMMON_PORTS.map(async (p) => {

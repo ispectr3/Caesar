@@ -74,7 +74,6 @@ function PortScanTool() {
         onSubmit={handleSubmit}
         loading={loading}
         error={error}
-        error={error}
       >
         <div className="mb-6 p-4 border border-red-500/30 bg-red-500/10 text-red-500 font-mono text-xs flex items-center gap-3 animate-pulse">
           <AlertTriangle size={18} className="shrink-0" />
