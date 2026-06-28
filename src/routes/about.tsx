@@ -52,7 +52,7 @@ function AboutPage() {
             // Desenvolvimento & Mantenedores
           </h2>
           <p className="text-foreground leading-relaxed text-sm">
-            O Caesar OSINT é um ecossistema independente, desenvolvido por <a href="https://github.com/ispectr3" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-bold">ispectr3</a> e alimentado por contribuições voluntárias da comunidade global de InfoSec. A ferramenta é baseada em padrões brutais de transparência de código.
+            O Caesar OSINT é um ecossistema independente, desenvolvido por <a href="https://github.com/ispectr3" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-bold">ispectr3</a>. A ferramenta é baseada em padrões brutais de transparência de código.
           </p>
         </section>
 
