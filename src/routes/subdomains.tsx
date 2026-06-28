@@ -103,39 +103,41 @@ function SubdomainsPage() {
 
             {/* Filter */}
             {result.subdomains.length > 5 && (
-              <div className="relative fade-in-up stagger-1">
-                <Search
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-                />
-                <input
-                  type="text"
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  placeholder="Filtrar subdomínios..."
-                  className="w-full bg-input/60 border border-border/50 rounded-none pl-9 pr-4 py-2.5 font-mono text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-colors"
-                />
+              <div className="flex flex-col md:flex-row gap-4 items-center fade-in-up stagger-1">
+                <div className="relative w-full">
+                  <Search
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                  />
+                  <input
+                    type="text"
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    placeholder="Filtrar subdomínios..."
+                    className="w-full bg-input/60 border border-border/50 rounded-none pl-9 pr-4 py-2.5 font-mono text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-colors"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const content = filtered?.map(r => r.name).join("\n");
+                    if (!content) return;
+                    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `subdomains_${result.domain}_${new Date().getTime()}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="whitespace-nowrap inline-flex items-center gap-2 px-4 py-2.5 border border-primary text-primary hover:bg-primary hover:text-white transition-colors font-mono text-xs uppercase tracking-wider h-[38px]"
+                >
+                  [ EXPORTAR .txt ]
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  const content = filtered?.map(r => r.name_value).join("\\n");
-                  if (!content) return;
-                  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = `subdomains_${query}_${new Date().getTime()}.txt`;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                  URL.revokeObjectURL(url);
-                }}
-                className="px-4 py-2 border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors font-mono text-[10px] uppercase tracking-wider shrink-0"
-              >
-                [ Exportar .txt ]
-              </button>
-            </div>
+            )}
 
             {/* Results table */}
             <ResultCard
