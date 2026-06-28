@@ -821,10 +821,10 @@ function Index() {
             <ShieldAlert size={20} />
           </div>
           <div>
-            <strong className="text-destructive font-mono uppercase tracking-wider block mb-1">
+            <strong className="text-destructive font-mono text-sm uppercase tracking-wider block mb-1">
               AVISO DE RESPONSABILIDADE & USO ÉTICO
             </strong>
-            <p className="font-mono text-[10px] text-muted-foreground/80 leading-normal">
+            <p className="font-sans text-xs text-muted-foreground leading-relaxed">
               O Caesar OSINT é uma plataforma tática de código aberto destinada exclusivamente a fins de pesquisa legítima, auditorias de segurança de TI, atividades educacionais e inteligência de fontes abertas sob conformidade legal. A coleta de dados baseia-se em APIs públicas. O mau uso destas ferramentas para stalking, doxxing, assédio ou infrações regulatórias de privacidade é de inteira responsabilidade do operador. O Caesar não retém, armazena ou rastreia históricos de consultas.
             </p>
           </div>
