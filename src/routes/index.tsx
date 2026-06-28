@@ -761,7 +761,7 @@ function Index() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
           {filteredTools.map((tool, i) => (
             <Link
               key={tool.to}
@@ -788,25 +788,25 @@ function Index() {
                       {CATEGORY_TAGS[tool.category].label}
                     </span>
                   )}
-                  <span className="font-mono text-[9px] text-muted-foreground/50 group-hover:text-primary/70 transition-colors">
+                  <span className="font-mono text-[10px] text-muted-foreground/50 group-hover:text-primary/70 transition-colors">
                     {tool.code}
                   </span>
-                  <ArrowRight size={11} className="opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-200 group-hover:translate-x-0.5" />
+                  <ArrowRight size={13} className="opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-200 group-hover:translate-x-0.5" />
                 </div>
               </div>
 
               {/* Row 2: name + desc */}
-              <div className="relative z-10 flex-1">
-                <h3 className="text-[12px] font-semibold text-foreground group-hover:text-primary transition-colors duration-200 mb-1 leading-tight">
+              <div className="relative z-10 flex-1 mt-1">
+                <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-200 mb-1.5 leading-tight">
                   {tool.name}
                 </h3>
-                <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
+                <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
                   {tool.desc}
                 </p>
               </div>
 
               {/* Row 3: input example */}
-              <code className="relative z-10 font-mono text-[9px] text-muted-foreground/60 bg-black/30 px-2 py-1 rounded border border-border/20 truncate block">
+              <code className="relative z-10 font-mono text-[10px] text-muted-foreground/60 bg-black/40 px-2.5 py-1.5 rounded border border-border/20 truncate block mt-2">
                 <span className="text-primary/50 mr-1">$</span>{tool.input}
               </code>
             </Link>
