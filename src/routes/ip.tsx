@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState, useEffect, useRef } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
+import { PivotMenu } from "@/components/PivotMenu";
 import { ipLookup, type IpInfo } from "@/lib/osint.functions";
 import { ShieldAlert, ShieldCheck, AlertTriangle, Wifi } from "lucide-react";
 
@@ -125,7 +126,7 @@ function IpPage() {
                   k="IP" 
                   v={
                     <div className="flex items-center gap-2">
-                      <span>{result.query}</span>
+                      <PivotMenu type="ip" value={result.query} />
                       <a href={`https://shodan.io/host/${result.query}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors text-[9px] uppercase tracking-wider">
                         Ver no Shodan ↗
                       </a>

@@ -127,6 +127,14 @@ function EmailPage() {
                 <KeyValue k="Formato" v={result.formatValid ? "✓ Válido" : "✕ Inválido"} />
                 <KeyValue k="Descartável" v={result.isDisposable ? "⚠ Sim" : "✓ Não"} />
                 <KeyValue k="Provedor Free" v={result.isFreeProvider ? "Sim" : "Não"} />
+                <KeyValue 
+                  k="Validação SMTP (Ativa)" 
+                  v={
+                    result.smtpStatus === "deliverable" ? <span className="text-green-500 font-bold">✓ Caixa Postal Confirmada (250 OK)</span> :
+                    result.smtpStatus === "undeliverable" ? <span className="text-red-500 font-bold">✕ E-mail Inexistente (550)</span> :
+                    <span className="text-yellow-500">⚠ Indisponível/Timeout</span>
+                  }
+                />
               </ResultCard>
 
               <ResultCard title="Registros MX">
@@ -145,6 +153,16 @@ function EmailPage() {
                   </ul>
                 )}
               </ResultCard>
+
+              {result.smtpLog && (
+                <ResultCard title="SMTP Handshake Log (Raw)" className="lg:col-span-2">
+                  <div className="bg-black/60 border border-border/30 p-3 max-h-48 overflow-y-auto">
+                    <pre className="font-mono text-[9px] text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                      {result.smtpLog}
+                    </pre>
+                  </div>
+                </ResultCard>
+              )}
 
               {gravatarResult && (
                 <ResultCard

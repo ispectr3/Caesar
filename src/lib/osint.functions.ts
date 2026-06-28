@@ -467,6 +467,8 @@ export type EmailValidation = {
   mxRecords: string[];
   isDisposable: boolean;
   isFreeProvider: boolean;
+  smtpStatus?: "deliverable" | "undeliverable" | "catch_all" | "unknown";
+  smtpLog?: string;
 };
 
 const FREE_PROVIDERS = new Set([
@@ -485,6 +487,56 @@ const FREE_PROVIDERS = new Set([
   "live.com",
   "msn.com",
 ]);
+
+async function smtpVerify(email: string, mxRecord: string): Promise<{ status: "deliverable" | "undeliverable" | "catch_all" | "unknown"; log: string }> {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    let log = "";
+    let step = 0;
+    
+    const timeout = setTimeout(() => {
+      socket.destroy();
+      resolve({ status: "unknown", log: log + "\\n[Timeout]" });
+    }, 5000);
+    
+    socket.on("data", (data) => {
+      const msg = data.toString();
+      log += msg;
+      
+      if (step === 0 && msg.startsWith("220")) {
+        socket.write("EHLO caesar.local\\r\\n");
+        step = 1;
+      } else if (step === 1 && (msg.startsWith("250") || msg.startsWith("220"))) {
+        socket.write("MAIL FROM:<verify@caesar.local>\\r\\n");
+        step = 2;
+      } else if (step === 2 && msg.startsWith("250")) {
+        socket.write(`RCPT TO:<${email}>\\r\\n`);
+        step = 3;
+      } else if (step === 3) {
+        let status: "deliverable" | "undeliverable" | "catch_all" | "unknown" = "unknown";
+        if (msg.startsWith("250")) status = "deliverable";
+        else if (msg.startsWith("550")) status = "undeliverable";
+        
+        socket.write("QUIT\\r\\n");
+        clearTimeout(timeout);
+        socket.destroy();
+        resolve({ status, log });
+      } else if (msg.startsWith("4") || msg.startsWith("5")) {
+        clearTimeout(timeout);
+        socket.destroy();
+        resolve({ status: "unknown", log });
+      }
+    });
+    
+    socket.on("error", (err) => {
+      clearTimeout(timeout);
+      socket.destroy();
+      resolve({ status: "unknown", log: log + "\\n[Error: " + err.message + "]" });
+    });
+    
+    socket.connect(25, mxRecord);
+  });
+}
 
 export const emailValidate = createServerFn({ method: "POST" })
   .validator(emailSchema)
@@ -512,6 +564,18 @@ export const emailValidate = createServerFn({ method: "POST" })
       // DNS lookup failed
     }
 
+    let smtpStatus: "deliverable" | "undeliverable" | "catch_all" | "unknown" = "unknown";
+    let smtpLog = "";
+    if (domainHasMx && mxRecords.length > 0) {
+      try {
+        const smtpRes = await smtpVerify(email, mxRecords[0]);
+        smtpStatus = smtpRes.status;
+        smtpLog = smtpRes.log;
+      } catch (e) {
+        smtpLog = "[SMTP Verification Failed]";
+      }
+    }
+
     return {
       error: null,
       data: {
@@ -523,6 +587,8 @@ export const emailValidate = createServerFn({ method: "POST" })
         mxRecords,
         isDisposable: DISPOSABLE_DOMAINS.has(domain),
         isFreeProvider: FREE_PROVIDERS.has(domain),
+        smtpStatus,
+        smtpLog,
       },
     };
   });
