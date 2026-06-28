@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { ResultCard } from "../components/ToolForm";
 import { scamAnalyze, type ScamAnalysisResult } from "../lib/osint.functions";
-import { ShieldAlert, AlertTriangle, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { ShieldAlert, AlertTriangle, AlertCircle, CheckCircle, Loader2, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/scam")({
     head: () => ({
@@ -114,17 +114,20 @@ function ScamTool() {
                 </div>
 
                 <button
-                  onClick={handleAnalyze}
-                  disabled={status === "loading" || !text.trim()}
-                  className="w-full py-3.5 border border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_10px_var(--glow-subtle)] hover:shadow-[0_0_15px_var(--primary)]"
+                  onClick={() => handleAnalyze()}
+                  disabled={status === "loading"}
+                  className="group w-full py-3.5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 flex items-center justify-center gap-2 hover:opacity-90 hover:shadow-[0_0_20px_var(--primary)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {status === "loading" ? (
                     <>
                       <Loader2 size={14} className="animate-spin" />
-                      [ SCANNING THREAT PATTERNS... ]
+                      [ PROCESSANDO... ]
                     </>
                   ) : (
-                    "[ ANALISAR MENSAGEM ]"
+                    <>
+                      [ ANALISAR MENSAGEM ]
+                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </>
                   )}
                 </button>
               </div>

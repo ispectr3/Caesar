@@ -89,6 +89,7 @@ function AbuseIpdbPage() {
         eyebrow="// Módulo 13"
         title="AbuseIPDB Scanner"
         description="Analisa a reputação de um IP verificando histórico de ataques, malwares e fraudes recentes."
+        requiresKey={true}
       />
       <ToolForm
         defaultValue={q}

@@ -120,6 +120,7 @@ function HibpPage() {
         eyebrow="// Módulo 27"
         title="HIBP Breach Check"
         description="Investigue se contas de e-mail ou credenciais foram comprometidas em vazamentos de dados públicos e ataques cibernéticos."
+        requiresKey={true}
       />
 
       {/* Tabs */}

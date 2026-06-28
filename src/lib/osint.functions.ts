@@ -60,6 +60,73 @@ function sanitizeInput(val: string): string {
     .trim();
 }
 
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit & { timeout?: number } = {},
+  retries = 2,
+  delayMs = 1500
+): Promise<Response> {
+  const timeout = options.timeout ?? 12000;
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+      const fetchOptions = {
+        ...options,
+        signal: controller.signal,
+      };
+      
+      const res = await fetch(url, fetchOptions);
+      clearTimeout(id);
+      
+      if (res.status === 429 || res.status === 503) {
+        if (attempt === retries) {
+          if (res.status === 429) {
+            throw new Error("Limite de requisições excedido na API de origem (HTTP 429). O Caesar tentou consultar, mas o servidor está ocupado. Tente novamente em alguns instantes.");
+          } else {
+            throw new Error(`Serviço temporariamente indisponível na API de origem (HTTP ${res.status}).`);
+          }
+        }
+        
+        let waitTime = delayMs * Math.pow(2, attempt);
+        const retryAfter = res.headers.get("retry-after");
+        if (retryAfter) {
+          const seconds = parseInt(retryAfter, 10);
+          if (!isNaN(seconds)) {
+            waitTime = seconds * 1000;
+          }
+        }
+        console.warn(`[Caesar OSINT] HTTP ${res.status} em ${url}. Tentativa ${attempt + 1}/${retries + 1}. Aguardando ${waitTime}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        continue;
+      }
+      
+      return res;
+    } catch (err: any) {
+      clearTimeout(id);
+      
+      const isTimeout = err.name === "AbortError";
+      const isLastAttempt = attempt === retries;
+      
+      if (isLastAttempt) {
+        if (isTimeout) {
+          throw new Error("O tempo limite de conexão foi excedido (Timeout). O servidor remoto demorou demais para responder.");
+        }
+        throw err;
+      }
+      
+      const waitTime = delayMs * Math.pow(2, attempt);
+      console.warn(`[Caesar OSINT] Falha de rede em ${url} (${err.message}). Tentativa ${attempt + 1}/${retries + 1}. Aguardando ${waitTime}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+    }
+  }
+  
+  throw new Error("Falha desconhecida na requisição.");
+}
+
+
 const ipSchema = z.object({
   ip: z
     .string()
@@ -106,7 +173,7 @@ export const ipLookup = createServerFn({ method: "POST" })
       return { data: cached, error: null };
     }
 
-    const res = await fetch(
+    const res = await fetchWithRetry(
       `http://ip-api.com/json/${encodeURIComponent(data.ip)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`,
     );
     if (!res.ok) {
@@ -145,7 +212,7 @@ export const whoisLookup = createServerFn({ method: "POST" })
       return { data: cached, error: null };
     }
 
-    const res = await fetch(`https://rdap.org/domain/${data.domain}`, {
+    const res = await fetchWithRetry(`https://rdap.org/domain/${data.domain}`, {
       headers: { Accept: "application/rdap+json" },
     });
     if (res.status === 404) {
@@ -877,12 +944,14 @@ export const subdomainScan = createServerFn({ method: "POST" })
 
       let fetchError: Error | null = null;
       try {
-        const res = await fetch(
+        const res = await fetchWithRetry(
           `https://crt.sh/?q=%25.${encodeURIComponent(cleanDomain)}&output=json`,
           {
             headers: { Accept: "application/json" },
-            signal: AbortSignal.timeout(10000), // 10s timeout for crt.sh
+            timeout: 10000, // 10s timeout for crt.sh
           },
+          1,
+          2000
         );
 
         if (res.ok) {
@@ -897,11 +966,13 @@ export const subdomainScan = createServerFn({ method: "POST" })
       // If crt.sh failed, timed out, or returned nothing, try HackerTarget fallback
       if (json.length === 0) {
         try {
-          const fallbackRes = await fetch(
+          const fallbackRes = await fetchWithRetry(
             `https://api.hackertarget.com/hostsearch/?q=${encodeURIComponent(cleanDomain)}`,
             {
-              signal: AbortSignal.timeout(8000), // 8s timeout for fallback
-            }
+              timeout: 8000, // 8s timeout for fallback
+            },
+            1,
+            1500
           );
           if (fallbackRes.ok) {
             const text = await fallbackRes.text();
@@ -1054,10 +1125,10 @@ export const cnpjLookup = createServerFn({ method: "POST" })
         return { data: cached, error: null };
       }
 
-      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`, {
+      const res = await fetchWithRetry(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`, {
         headers: { Accept: "application/json", "User-Agent": userAgent },
-        signal: AbortSignal.timeout(8000),
-      });
+        timeout: 8000,
+      }, 1, 1500);
 
       if (res.ok) {
         const json = (await res.json()) as CnpjInfo;
@@ -1071,10 +1142,10 @@ export const cnpjLookup = createServerFn({ method: "POST" })
       console.log(
         `BrasilAPI CNPJ lookup returned status ${res.status}. Trying minha-receita.org fallback...`,
       );
-      const fallbackRes = await fetch(`https://minhareceita.org/${cleanCnpj}`, {
+      const fallbackRes = await fetchWithRetry(`https://minhareceita.org/${cleanCnpj}`, {
         headers: { Accept: "application/json", "User-Agent": userAgent },
-        signal: AbortSignal.timeout(8000),
-      });
+        timeout: 8000,
+      }, 1, 1500);
 
       if (fallbackRes.ok) {
         const json = (await fallbackRes.json()) as any;
@@ -1266,12 +1337,14 @@ export const cveSearch = createServerFn({ method: "POST" })
 
     try {
       const keyword = encodeURIComponent(data.query);
-      const res = await fetch(
+      const res = await fetchWithRetry(
         `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=${keyword}&resultsPerPage=10`,
         {
           headers: { Accept: "application/json" },
-          signal: AbortSignal.timeout(15000),
+          timeout: 15000,
         },
+        2,
+        2000
       );
 
       if (!res.ok) {
@@ -1324,15 +1397,17 @@ export const geocodeLookup = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ error: string | null; data: GeocodeResult[] | null }> => {
     try {
       const query = encodeURIComponent(data.query);
-      const res = await fetch(
+      const res = await fetchWithRetry(
         `https://nominatim.openstreetmap.org/search?q=${query}&format=jsonv2`,
         {
           headers: {
             Accept: "application/json",
             "User-Agent": "CaesarOSINT-Tool/1.0",
           },
-          signal: AbortSignal.timeout(10000),
+          timeout: 10000,
         },
+        1,
+        1500
       );
 
       if (!res.ok) {
@@ -2180,9 +2255,9 @@ export const leaklookerScan = createServerFn({ method: "POST" })
       // Query Shodan InternetDB API
       let shodanData: { ports?: number[]; vulns?: string[]; hostnames?: string[] } = {};
       try {
-        const shodanRes = await fetch(`https://internetdb.shodan.io/${ip}`, {
-          signal: AbortSignal.timeout(6000),
-        });
+        const shodanRes = await fetchWithRetry(`https://internetdb.shodan.io/${ip}`, {
+          timeout: 6000,
+        }, 1, 1500);
         if (shodanRes.ok) {
           shodanData = await shodanRes.json();
         } else if (shodanRes.status === 404) {
@@ -3702,12 +3777,13 @@ export const virustotalLookup = createServerFn({ method: "POST" })
         endpoint = `https://www.virustotal.com/api/v3/urls/${base64Url}`;
       }
 
-      const res = await fetch(endpoint, {
+      const res = await fetchWithRetry(endpoint, {
         headers: {
           "x-apikey": apiKey,
           Accept: "application/json",
         },
-      });
+        timeout: 12000,
+      }, 1, 1500);
 
       if (!res.ok) {
         if (res.status === 404) {

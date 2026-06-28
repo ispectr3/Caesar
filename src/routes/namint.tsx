@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard } from "@/components/ToolForm";
-import { Copy, Check, Search, Filter, HelpCircle } from "lucide-react";
+import { Copy, Check, Search, Filter, HelpCircle, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/namint")({
     head: () => ({
@@ -240,9 +240,10 @@ function NamintTool() {
 
               <button
                 type="submit"
-                className="w-full py-2 bg-primary hover:bg-primary/95 text-white font-mono text-xs uppercase tracking-wider transition-all duration-200 border border-transparent shadow-[0_0_10px_rgba(237,4,8,0.2)]"
+                className="group w-full py-3 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 flex items-center justify-center gap-2 hover:opacity-90 hover:shadow-[0_0_20px_var(--primary)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Gerar Combinações
+                [ GERAR COMBINAÇÕES ]
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </form>
           </ResultCard>

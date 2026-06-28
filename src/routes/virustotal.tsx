@@ -82,6 +82,7 @@ function VirusTotalPage() {
         eyebrow="// Módulo — Threat Intel"
         title="VirusTotal Lookup"
         description="Verifique a reputação de um hash de arquivo, URL, endereço IP ou domínio utilizando os logs de análise do VirusTotal (72+ motores de antivírus)."
+        requiresKey={true}
       />
       <ToolForm
         defaultValue={q}

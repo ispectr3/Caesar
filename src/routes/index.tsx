@@ -64,6 +64,7 @@ const TOOLS: {
   icon: any;
   color: string;
   category: ToolCategory;
+  requiresKey?: boolean;
 }[] = [
   // ── Identidade & Pessoas ──
   {
@@ -156,6 +157,7 @@ const TOOLS: {
     icon: ShieldCheck,
     color: "from-primary/25 to-accent/10",
     category: "threat",
+    requiresKey: true,
   },
   {
     code: "42",
@@ -218,6 +220,7 @@ const TOOLS: {
     icon: Server,
     color: "from-primary/25 to-accent/10",
     category: "infra",
+    requiresKey: true,
   },
   {
     code: "48",
@@ -311,6 +314,7 @@ const TOOLS: {
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
     category: "threat",
+    requiresKey: true,
   },
   {
     code: "14",
@@ -483,6 +487,7 @@ const TOOLS: {
     icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
     category: "threat",
+    requiresKey: true,
   },
   {
     code: "30",
@@ -773,6 +778,11 @@ function Index() {
                   <tool.icon size={14} className="text-muted-foreground group-hover:text-primary transition-colors duration-200" />
                 </div>
                 <div className="flex items-center gap-1.5">
+                  {tool.requiresKey && (
+                    <span className="font-mono text-[7px] uppercase tracking-wider px-1 py-0.5 border border-red-500/30 bg-red-500/10 text-red-400 font-bold" title="Requer configuração de API Key">
+                      API KEY
+                    </span>
+                  )}
                   {tool.category && CATEGORY_TAGS[tool.category] && (
                     <span className={`font-mono text-[7px] uppercase tracking-wider px-1 py-0.5 border ${CATEGORY_TAGS[tool.category].color}`}>
                       {CATEGORY_TAGS[tool.category].label}
@@ -801,6 +811,23 @@ function Index() {
               </code>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* ── Disclaimer Banner ── */}
+      <section className="mx-auto max-w-[1600px] w-full px-4 sm:px-8 mt-12 mb-6 animate-fadeSlideIn">
+        <div className="border border-destructive/20 bg-destructive/5 p-5 text-xs text-muted-foreground leading-relaxed flex flex-col md:flex-row items-start md:items-center gap-4">
+          <div className="p-2.5 bg-destructive/10 border border-destructive/30 text-destructive shrink-0">
+            <ShieldAlert size={20} />
+          </div>
+          <div>
+            <strong className="text-destructive font-mono uppercase tracking-wider block mb-1">
+              AVISO DE RESPONSABILIDADE & USO ÉTICO
+            </strong>
+            <p className="font-mono text-[10px] text-muted-foreground/80 leading-normal">
+              O Caesar OSINT é uma plataforma tática de código aberto destinada exclusivamente a fins de pesquisa legítima, auditorias de segurança de TI, atividades educacionais e inteligência de fontes abertas sob conformidade legal. A coleta de dados baseia-se em APIs públicas. O mau uso destas ferramentas para stalking, doxxing, assédio ou infrações regulatórias de privacidade é de inteira responsabilidade do operador. O Caesar não retém, armazena ou rastreia históricos de consultas.
+            </p>
+          </div>
         </div>
       </section>
 

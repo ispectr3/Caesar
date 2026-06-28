@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent, type ReactNode } from "react";
-import { Search, Loader2, Download, Printer, Brain, ArrowRight } from "lucide-react";
+import { Search, Loader2, Download, Printer, Brain, ArrowRight, FilePlus, Check, AlertTriangle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { generateAiDossier } from "@/lib/osint.functions";
 
@@ -149,21 +149,24 @@ export function ToolForm({
             placeholder={placeholder}
             autoComplete="off"
             spellCheck={false}
-            className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl pl-8 pr-4 py-3.5 font-sans text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-inner"
+            className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-none pl-8 pr-4 py-3.5 font-sans text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-inner"
           />
         </div>
         <button
           type="submit"
-          disabled={loading || !value.trim()}
-          className="px-8 py-3.5 bg-primary text-primary-foreground font-sans font-semibold text-xs uppercase tracking-wider rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-subtle)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading}
+          className="group px-8 py-3.5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 flex items-center justify-center gap-2 hover:opacity-90 hover:shadow-[0_0_20px_var(--primary)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>
               <Loader2 size={14} className="animate-spin" />
-              RUN SCAN
+              [ PROCESSANDO... ]
             </>
           ) : (
-            buttonText.toUpperCase()
+            <>
+              [ {buttonText.toUpperCase()} ]
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </>
           )}
         </button>
       </form>
@@ -234,6 +237,70 @@ export function ResultCard({
   const [cardId] = useState(`rc_${Math.random().toString(36).substring(2, 9)}`);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiDossier, setAiDossier] = useState<string | null>(null);
+  const [compiled, setCompiled] = useState(false);
+
+  useEffect(() => {
+    try {
+      const existing = localStorage.getItem("caesar_compiled_report");
+      if (existing) {
+        const reportList = JSON.parse(existing);
+        const alreadyExists = reportList.some((item: any) => item.title === title && item.route === window.location.pathname);
+        if (alreadyExists) {
+          setCompiled(true);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [title]);
+
+  const handleCompile = () => {
+    const element = document.getElementById(cardId);
+    if (!element) return;
+
+    // Clone element to sanitize it before saving
+    const clone = element.cloneNode(true) as HTMLElement;
+    
+    // Remove the actions/header bar
+    const actionBar = clone.querySelector('[data-html2canvas-ignore]');
+    if (actionBar) {
+      actionBar.remove();
+    }
+    
+    // Remove pivot links if any
+    const pivotContainer = clone.querySelector('.border-t.border-border\\/20');
+    if (pivotContainer) {
+      if (pivotContainer.textContent?.includes("Continuar Investigação")) {
+        pivotContainer.remove();
+      }
+    }
+    
+    const htmlContent = clone.innerHTML;
+    
+    try {
+      const existing = localStorage.getItem("caesar_compiled_report");
+      const reportList = existing ? JSON.parse(existing) : [];
+      
+      const alreadyExists = reportList.some((item: any) => item.title === title && item.route === window.location.pathname);
+      if (!alreadyExists) {
+        const newEntry = {
+          id: `rep_${Math.random().toString(36).substring(2, 9)}`,
+          title,
+          html: htmlContent,
+          timestamp: new Date().toISOString(),
+          route: window.location.pathname,
+          data: exportData || null,
+        };
+        reportList.push(newEntry);
+        localStorage.setItem("caesar_compiled_report", JSON.stringify(reportList));
+      }
+      
+      setCompiled(true);
+      window.dispatchEvent(new Event("caesar-report-updated"));
+    } catch (err) {
+      console.error("Failed to compile card to dossier", err);
+    }
+  };
 
   return (
     <div
@@ -291,7 +358,20 @@ export function ResultCard({
             <Printer size={10} />
             PDF
           </button>
-          <span className="font-mono text-[9px] text-muted-foreground/35">MODULE_SECURE // ON</span>
+          <button
+            onClick={handleCompile}
+            className={`flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono transition-all duration-200 cursor-pointer ${
+              compiled 
+                ? "text-green-400 border border-green-500/40 bg-green-500/10 font-bold" 
+                : "text-muted-foreground hover:text-primary border border-border/40 hover:border-primary bg-card/60"
+            }`}
+            title={compiled ? "Módulo já compilado no relatório" : "Compilar módulo no relatório unificado"}
+            disabled={compiled}
+          >
+            {compiled ? <Check size={10} /> : <FilePlus size={10} />}
+            {compiled ? "COMPILADO" : "COMPILAR"}
+          </button>
+          <span className="font-mono text-[9px] text-muted-foreground/35 hidden sm:inline">MODULE_SECURE // ON</span>
         </div>
       </div>
       <div className="font-mono text-xs space-y-1">{children}</div>
@@ -332,7 +412,7 @@ export function PivotLinks({
 }) {
   if (!pivots || pivots.length === 0) return null;
   return (
-    <div className="mt-5 pt-4 border-t border-border/20">
+    <div className="mt-5 pt-4 border-t border-border/20 no-print" data-html2canvas-ignore>
       <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground block mb-2.5">
         <span className="text-primary mr-1">//</span> Continuar Investigação
       </span>
@@ -418,6 +498,13 @@ export function ModuleInfoTabs({
             <p className="text-muted-foreground">{interpret}</p>
           </div>
         )}
+      </div>
+
+      <div className="mt-5 pt-3.5 border-t border-border/15 flex items-start gap-2.5 text-destructive/95 text-[10px] leading-relaxed">
+        <AlertTriangle size={12} className="shrink-0 mt-0.5 text-destructive" />
+        <p className="font-mono uppercase tracking-wide">
+          <strong className="text-destructive font-bold">AVISO LEGAL:</strong> Esta ferramenta destina-se exclusivamente a auditorias legítimas de segurança e pesquisa OSINT. O uso indevido para fins ilícitos é de inteira responsabilidade do operador.
+        </p>
       </div>
     </div>
   );

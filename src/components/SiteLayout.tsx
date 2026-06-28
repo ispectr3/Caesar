@@ -21,6 +21,7 @@ import {
   Scan,
   ChevronLeft,
   ChevronRight,
+  FileText,
 } from "lucide-react";
 
 const NAV = [
@@ -194,7 +195,33 @@ export function SiteLayout({ children }: { children: ReactNode }) {
     }
     return false;
   });
+  const [reportCount, setReportCount] = useState(0);
   const location = useLocation();
+
+  const updateReportCount = () => {
+    try {
+      const existing = localStorage.getItem("caesar_compiled_report");
+      if (existing) {
+        const reportList = JSON.parse(existing);
+        setReportCount(reportList.length);
+      } else {
+        setReportCount(0);
+      }
+    } catch {
+      setReportCount(0);
+    }
+  };
+
+  useEffect(() => {
+    updateReportCount();
+    const handleReportUpdate = () => {
+      updateReportCount();
+    };
+    window.addEventListener("caesar-report-updated", handleReportUpdate);
+    return () => {
+      window.removeEventListener("caesar-report-updated", handleReportUpdate);
+    };
+  }, []);
 
   useEffect(() => {
     setPaletteQuery("");
@@ -315,6 +342,19 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 
 
             <Link
+              to="/report"
+              className="group flex items-center px-2.5 py-1.5 text-[11px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-none hover:bg-white/5 gap-1.5"
+              activeProps={{ className: "!text-primary glow-text" }}
+            >
+              Relatório
+              {reportCount > 0 && (
+                <span className="bg-primary/20 text-primary border border-primary/30 px-1 py-0.2 text-[8px] font-bold rounded-sm animate-pulse">
+                  {reportCount}
+                </span>
+              )}
+            </Link>
+
+            <Link
               to="/about"
               className="group flex items-center px-2.5 py-1.5 text-[11px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-none hover:bg-white/5"
               activeProps={{ className: "!text-primary glow-text" }}
@@ -372,6 +412,20 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                 activeOptions={{ exact: true }}
               >
                 <Search size={14} className="opacity-60" /> Home
+              </Link>
+
+              <Link
+                to="/report"
+                onClick={() => setMobileOpen(false)}
+                className="group flex items-center gap-3 px-3 py-2.5 text-xs font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-none transition-colors"
+                activeProps={{ className: "!text-primary bg-primary/5" }}
+              >
+                <FileText size={14} className="opacity-60" /> Relatório
+                {reportCount > 0 && (
+                  <span className="ml-auto bg-primary/20 text-primary border border-primary/30 px-1.5 py-0.5 text-[9px] font-bold rounded-sm animate-pulse">
+                    {reportCount}
+                  </span>
+                )}
               </Link>
               
               <div className="pt-3 pb-1 px-3 font-mono text-[10px] text-primary/70 uppercase tracking-widest border-b border-border/20 mb-2">
@@ -567,10 +621,12 @@ export function PageHeader({
   eyebrow,
   title,
   description,
+  requiresKey = false,
 }: {
   eyebrow: string;
   title: string;
   description: string;
+  requiresKey?: boolean;
 }) {
   return (
     <div className="border-b border-border-active bg-card/20 accent-bar">
@@ -578,8 +634,13 @@ export function PageHeader({
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-3 fade-in-up">
           {eyebrow}
         </p>
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight fade-in-up stagger-1">
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight fade-in-up stagger-1 flex flex-wrap items-center gap-3">
           {title}
+          {requiresKey && (
+            <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 border border-red-500/30 bg-red-500/10 text-red-400 font-bold select-none h-fit">
+              Requer API Key
+            </span>
+          )}
         </h1>
         <p className="mt-3 text-sm text-muted-foreground max-w-2xl fade-in-up stagger-2">
           {description}

@@ -24,13 +24,35 @@ function AboutPage() {
         description="O que é, como funciona e os limites éticos de uso."
       />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 space-y-10">
-        <section className="fade-in-up">
+        <section className="fade-in-up space-y-4">
           <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-4">
-            // Conceito
+            // Conceito & Filosofia
           </h2>
-          <p className="text-foreground leading-relaxed">
-            OSINT (Open-Source Intelligence) é a prática de coletar e analisar informações de fontes
-            públicas. Esta plataforma reúne consultas comuns em uma única interface para fins de auditoria interna, investigação e controle de segurança.
+          <p className="text-foreground leading-relaxed text-sm">
+            OSINT (Open-Source Intelligence) é a ciência e arte de coletar, analisar e correlacionar informações provenientes de fontes públicas e abertas. Esta plataforma reúne mais de 50 módulos táticos de busca em uma interface unificada, servindo analistas de ameaças, pesquisadores de segurança, auditores e peritos digitais.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div className="border border-white/5 bg-white/[0.02] p-4">
+              <span className="font-mono text-[10px] uppercase text-primary font-bold block mb-1">🛡️ OpSec do Investigador</span>
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                A segurança operacional é prioridade absoluta. O Caesar foi projetado para atuar localmente, encaminhando requisições diretamente aos endpoints ou através de funções serverless seguras de proxy.
+              </p>
+            </div>
+            <div className="border border-white/5 bg-white/[0.02] p-4">
+              <span className="font-mono text-[10px] uppercase text-primary font-bold block mb-1">❌ Retenção Zero de Dados</span>
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                Nenhum termo pesquisado, IP investigado, CPF digitado ou histórico de inteligência é enviado para bancos de dados centralizados ou armazenado no lado do servidor. O dossiê é gerado localmente no seu navegador.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="fade-in-up stagger-1">
+          <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-primary glow-text mb-4">
+            // Desenvolvimento & Mantenedores
+          </h2>
+          <p className="text-foreground leading-relaxed text-sm">
+            O Caesar OSINT é um ecossistema independente, desenvolvido pelo especialista de segurança <a href="https://github.com/ispectr3" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-bold">ispectr3</a> e alimentado por contribuições voluntárias da comunidade global de InfoSec. A ferramenta é baseada em padrões brutais de transparência de código.
           </p>
         </section>
 
