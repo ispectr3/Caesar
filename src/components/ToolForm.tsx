@@ -50,6 +50,17 @@ const exportToJson = (data: any, fileName: string) => {
   URL.revokeObjectURL(url);
 };
 
+const exportToTxt = (data: any, fileName: string) => {
+  const content = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${fileName.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.txt`;
+  link.click();
+  URL.revokeObjectURL(url);
+};
+
 export function ToolForm({
   label,
   placeholder,
@@ -347,6 +358,14 @@ export function ResultCard({
               >
                 <Download size={10} />
                 JSON
+              </button>
+              <button
+                onClick={() => exportToTxt(exportData, exportName || title)}
+                className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-mono text-muted-foreground hover:text-primary border border-border/40 hover:border-primary transition-colors cursor-pointer bg-card/60"
+                title="Exportar dados como TXT"
+              >
+                <Download size={10} />
+                TXT
               </button>
             </>
           )}

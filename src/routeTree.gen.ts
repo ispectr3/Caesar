@@ -59,6 +59,7 @@ import { Route as BgpRouteImport } from './routes/bgp'
 import { Route as AbuseipdbRouteImport } from './routes/abuseipdb'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StatusRouteImport } from './routes/status'
 import { Route as PasteRouteImport } from './routes/paste'
 import { Route as MacRouteImport } from './routes/mac'
 import { Route as JwtRouteImport } from './routes/jwt'
@@ -329,6 +330,11 @@ const PasteRoute = PasteRouteImport.update({
   path: '/paste',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -342,6 +348,7 @@ export interface FileRoutesByFullPath {
   '/jwt': typeof JwtRoute
   '/mac': typeof MacRoute
   '/paste': typeof PasteRoute
+  '/status': typeof StatusRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/jwt': typeof JwtRoute
   '/mac': typeof MacRoute
   '/paste': typeof PasteRoute
+  '/status': typeof StatusRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -463,6 +471,7 @@ export interface FileRoutesById {
   '/jwt': typeof JwtRoute
   '/mac': typeof MacRoute
   '/paste': typeof PasteRoute
+  '/status': typeof StatusRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -525,6 +534,7 @@ export interface FileRouteTypes {
     | '/jwt'
     | '/mac'
     | '/paste'
+    | '/status'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -583,6 +593,7 @@ export interface FileRouteTypes {
     | '/jwt'
     | '/mac'
     | '/paste'
+    | '/status'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -641,6 +652,7 @@ export interface FileRouteTypes {
     | '/jwt'
     | '/mac'
     | '/paste'
+    | '/status'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -698,6 +710,7 @@ export interface RootRouteChildren {
   JwtRoute: typeof JwtRoute
   MacRoute: typeof MacRoute
   PasteRoute: typeof PasteRoute
+  StatusRoute: typeof StatusRoute
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AbuseipdbRoute: typeof AbuseipdbRoute
@@ -752,6 +765,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/paste': {
       id: '/paste'
       path: '/paste'
