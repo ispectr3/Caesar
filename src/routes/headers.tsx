@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { headersAnalyze, type HeadersAnalysis } from "@/lib/osint.functions";
@@ -78,19 +78,17 @@ const RATING_META = {
 
 function HeadersPage() {
   const { q } = Route.useSearch();
-  const fn = useServerFn(headersAnalyze);
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(headersAnalyze);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<HeadersAnalysis | null>(null);
   const [snippetTab, setSnippetTab] = useState<"nginx" | "apache" | "html">("nginx");
-  const didAutoRun = useRef(false);
-
-  useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
-      submit(q);
-    }
-  }, [q]);
 
   async function submit(value: string) {
     setLoading(true);

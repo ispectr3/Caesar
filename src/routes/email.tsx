@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import {
@@ -48,20 +48,18 @@ function StatusBadge({ ok, label, warn = false }: { ok: boolean; label: string; 
 
 function EmailPage() {
   const { q } = Route.useSearch();
-  const fn = useServerFn(emailValidate);
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(emailValidate);
   const gravatarFn = useServerFn(gravatarLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EmailValidation | null>(null);
   const [gravatarResult, setGravatarResult] = useState<GravatarProfile | null>(null);
-  const didAutoRun = useRef(false);
-
-  useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
-      submit(q);
-    }
-  }, [q]);
 
   async function submit(value: string) {
     setLoading(true);
@@ -117,7 +115,16 @@ function EmailPage() {
               {result.isFreeProvider && <StatusBadge ok warn label="Provedor gratuito" />}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <PivotLinks
+              pivots={[
+                { label: "Email Auth (SPF/DKIM)", to: "/emailverify", query: result.email, tag: "AUDIT" },
+                { label: "Google Workspace (GHunt)", to: "/ghunt", query: result.email, tag: "OSINT" },
+                { label: "HaveIBeenPwned (Vazamentos)", to: "/hibp", query: result.email, tag: "LEAK" },
+                { label: "Mailsleuth (Dark Web)", to: "/mailsleuth", query: result.email, tag: "DARKWEB" }
+              ]}
+            />
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
               <ResultCard
                 exportData={result}
                 exportName="email_export" title="Informações do Email">
@@ -127,14 +134,6 @@ function EmailPage() {
                 <KeyValue k="Formato" v={result.formatValid ? "✓ Válido" : "✕ Inválido"} />
                 <KeyValue k="Descartável" v={result.isDisposable ? "⚠ Sim" : "✓ Não"} />
                 <KeyValue k="Provedor Free" v={result.isFreeProvider ? "Sim" : "Não"} />
-                <KeyValue 
-                  k="Validação SMTP (Ativa)" 
-                  v={
-                    result.smtpStatus === "deliverable" ? <span className="text-green-500 font-bold">✓ Caixa Postal Confirmada (250 OK)</span> :
-                    result.smtpStatus === "undeliverable" ? <span className="text-red-500 font-bold">✕ E-mail Inexistente (550)</span> :
-                    <span className="text-yellow-500">⚠ Indisponível/Timeout</span>
-                  }
-                />
               </ResultCard>
 
               <ResultCard title="Registros MX">
@@ -153,16 +152,6 @@ function EmailPage() {
                   </ul>
                 )}
               </ResultCard>
-
-              {result.smtpLog && (
-                <ResultCard title="SMTP Handshake Log (Raw)" className="lg:col-span-2">
-                  <div className="bg-black/60 border border-border/30 p-3 max-h-48 overflow-y-auto">
-                    <pre className="font-mono text-[9px] text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                      {result.smtpLog}
-                    </pre>
-                  </div>
-                </ResultCard>
-              )}
 
               {gravatarResult && (
                 <ResultCard

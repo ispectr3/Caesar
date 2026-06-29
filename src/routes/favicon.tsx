@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { Search, Copy, Check, Terminal, ExternalLink } from "lucide-react";
@@ -24,18 +24,17 @@ export const Route = createFileRoute("/favicon")({
 
 function FaviconTool() {
   const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const didAutoRun = useRef(false);
-
-  useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
-      submit(q);
-    }
-  }, [q]);
 
   const submit = (domain: string) => {
     const clean = domain.trim().toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, "");
@@ -168,14 +167,14 @@ function FaviconTool() {
                   <p>
                     Devido às restrições de **CORS (Cross-Origin Resource Sharing)** dos navegadores, arquivos binários externos não podem ser lidos diretamente do cliente sem um proxy. Você pode rodar o comando Python abaixo em seu terminal local para extrair o hash exato de forma nativa:
                   </p>
-                  <div className="font-mono text-[10px] text-muted-foreground p-4 bg-background/50 border border-border/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="flex-1 overflow-x-auto whitespace-pre-wrap break-all">
-                      <span className="text-primary mr-2">&gt;_</span>
-                      {`pip3 install mmh3 -q --break-system-packages && python3 -c "import urllib.request, mmh3, codecs; response = urllib.request.urlopen('https://${result.domain}/favicon.ico'); icon = response.read(); val = codecs.encode(icon, 'base64'); print(mmh3.hash(val))"`}
-                    </div>
+                  <div className="bg-black/60 p-4 border border-border/50 text-primary break-all relative group flex items-start gap-4">
+                    <Terminal size={14} className="shrink-0 text-primary mt-0.5" />
+                    <code className="select-all block flex-1">
+                      {`python3 -c "import urllib.request, mmh3, codecs; response = urllib.request.urlopen('https://${result.domain}/favicon.ico'); icon = response.read(); val = codecs.encode(icon, 'base64'); print(mmh3.hash(val))"`}
+                    </code>
                     <button
-                      onClick={() => copyToClipboard(`pip3 install mmh3 -q --break-system-packages && python3 -c "import urllib.request, mmh3, codecs; response = urllib.request.urlopen('https://${result.domain}/favicon.ico'); icon = response.read(); val = codecs.encode(icon, 'base64'); print(mmh3.hash(val))"`, "terminal")}
-                      className="px-3 py-1 border border-border/30 hover:border-primary/50 text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 text-[9px] uppercase tracking-wider shrink-0"
+                      onClick={() => copyToClipboard(`python3 -c "import urllib.request, mmh3, codecs; response = urllib.request.urlopen('https://${result.domain}/favicon.ico'); icon = response.read(); val = codecs.encode(icon, 'base64'); print(mmh3.hash(val))"`, "terminal")}
+                      className="px-2 py-1 border border-border/40 text-[9px] hover:border-primary text-muted-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
                     >
                       {copiedKey === "terminal" ? "Copiado!" : "Copiar"}
                     </button>

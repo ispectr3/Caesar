@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
-import { PivotMenu } from "@/components/PivotMenu";
 import { ipLookup, type IpInfo } from "@/lib/osint.functions";
 import { ShieldAlert, ShieldCheck, AlertTriangle, Wifi } from "lucide-react";
 
@@ -58,18 +57,16 @@ export const Route = createFileRoute("/ip")({
 
 function IpPage() {
   const { q } = Route.useSearch();
-  const fn = useServerFn(ipLookup);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<IpInfo | null>(null);
-  const didAutoRun = useRef(false);
 
   useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
+    if (q && !result) {
       submit(q);
     }
   }, [q]);
+    const fn = useServerFn(ipLookup);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<IpInfo | null>(null);
 
   async function submit(value: string) {
     setLoading(true);
@@ -122,17 +119,7 @@ function IpPage() {
             </div>
             <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
               <ResultCard title="Localização" exportData={result} exportName={`ip_loc_${result.query}`}>
-                <KeyValue 
-                  k="IP" 
-                  v={
-                    <div className="flex items-center gap-2">
-                      <PivotMenu type="ip" value={result.query} />
-                      <a href={`https://shodan.io/host/${result.query}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors text-[9px] uppercase tracking-wider">
-                        Ver no Shodan ↗
-                      </a>
-                    </div>
-                  } 
-                />
+                <KeyValue k="IP" v={result.query} />
                 <KeyValue k="País" v={`${result.country} (${result.countryCode})`} />
                 <KeyValue k="Região" v={result.regionName} />
                 <KeyValue k="Cidade" v={result.city} />

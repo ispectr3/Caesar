@@ -33,29 +33,11 @@ async function setCacheValue(key: string, value: any, ttlSecs: number = 86400) {
   }
 }
 
-async function checkRateLimit(): Promise<void> {
+function checkRateLimit(): void {
   const now = Date.now();
   const windowMs = 60000; // 1 min
   const maxRequests = 50; // max 50 reqs per minute globally to prevent DDoS
   
-  // Cloudflare KV integration
-  const kv = (globalThis as any).RATE_LIMIT_KV || (process && process.env && process.env.RATE_LIMIT_KV);
-  if (kv && typeof kv.get === "function") {
-    const recordStr = await kv.get("global_limit");
-    let record = recordStr ? JSON.parse(recordStr) : null;
-    if (!record || now - record.lastReset > windowMs) {
-      record = { count: 1, lastReset: now };
-    } else {
-      record.count++;
-    }
-    await kv.put("global_limit", JSON.stringify(record));
-    if (record.count > maxRequests) {
-      throw new Error("Rate limit excedido (KV). Defesa Anti-Bot ativada.");
-    }
-    return;
-  }
-
-  // Local memory fallback
   let record = rateLimitMap.get("global");
   if (!record || now - record.lastReset > windowMs) {
     record = { count: 1, lastReset: now };
@@ -68,13 +50,13 @@ async function checkRateLimit(): Promise<void> {
   }
 }
 
-async function sanitizeInput(val: string): Promise<string> {
-  await checkRateLimit();
+function sanitizeInput(val: string): string {
+  checkRateLimit();
   // Remove script tags, eval, common injection chars to prevent Prompt Injection / XSS
   return val
     .replace(/<[^>]*>?/gm, "")
     .replace(/eval\s*\(/gi, "")
-    .replace(/[\<\>\;]/g, "")
+    .replace(/[\$\{\}\<\>\;]/g, "")
     .trim();
 }
 
@@ -301,12 +283,6 @@ const DNS_TYPES = ["A", "AAAA", "MX", "NS", "TXT", "CNAME", "SOA"] as const;
 export const dnsLookup = createServerFn({ method: "POST" })
   .validator(domainSchema)
   .handler(async ({ data }) => {
-    const cacheKey = `dns_${data.domain}`;
-    const cached = await getCacheValue(cacheKey);
-    if (cached) {
-      return { data: cached, error: null };
-    }
-
     const results = await Promise.all(
       DNS_TYPES.map(async (type) => {
         try {
@@ -326,7 +302,6 @@ export const dnsLookup = createServerFn({ method: "POST" })
         }
       }),
     );
-    await setCacheValue(cacheKey, results, 86400);
     return { error: null, data: results };
   });
 
@@ -467,8 +442,6 @@ export type EmailValidation = {
   mxRecords: string[];
   isDisposable: boolean;
   isFreeProvider: boolean;
-  smtpStatus?: "deliverable" | "undeliverable" | "catch_all" | "unknown";
-  smtpLog?: string;
 };
 
 const FREE_PROVIDERS = new Set([
@@ -487,56 +460,6 @@ const FREE_PROVIDERS = new Set([
   "live.com",
   "msn.com",
 ]);
-
-async function smtpVerify(email: string, mxRecord: string): Promise<{ status: "deliverable" | "undeliverable" | "catch_all" | "unknown"; log: string }> {
-  return new Promise((resolve) => {
-    const socket = new net.Socket();
-    let log = "";
-    let step = 0;
-    
-    const timeout = setTimeout(() => {
-      socket.destroy();
-      resolve({ status: "unknown", log: log + "\\n[Timeout]" });
-    }, 5000);
-    
-    socket.on("data", (data) => {
-      const msg = data.toString();
-      log += msg;
-      
-      if (step === 0 && msg.startsWith("220")) {
-        socket.write("EHLO caesar.local\\r\\n");
-        step = 1;
-      } else if (step === 1 && (msg.startsWith("250") || msg.startsWith("220"))) {
-        socket.write("MAIL FROM:<verify@caesar.local>\\r\\n");
-        step = 2;
-      } else if (step === 2 && msg.startsWith("250")) {
-        socket.write(`RCPT TO:<${email}>\\r\\n`);
-        step = 3;
-      } else if (step === 3) {
-        let status: "deliverable" | "undeliverable" | "catch_all" | "unknown" = "unknown";
-        if (msg.startsWith("250")) status = "deliverable";
-        else if (msg.startsWith("550")) status = "undeliverable";
-        
-        socket.write("QUIT\\r\\n");
-        clearTimeout(timeout);
-        socket.destroy();
-        resolve({ status, log });
-      } else if (msg.startsWith("4") || msg.startsWith("5")) {
-        clearTimeout(timeout);
-        socket.destroy();
-        resolve({ status: "unknown", log });
-      }
-    });
-    
-    socket.on("error", (err) => {
-      clearTimeout(timeout);
-      socket.destroy();
-      resolve({ status: "unknown", log: log + "\\n[Error: " + err.message + "]" });
-    });
-    
-    socket.connect(25, mxRecord);
-  });
-}
 
 export const emailValidate = createServerFn({ method: "POST" })
   .validator(emailSchema)
@@ -564,18 +487,6 @@ export const emailValidate = createServerFn({ method: "POST" })
       // DNS lookup failed
     }
 
-    let smtpStatus: "deliverable" | "undeliverable" | "catch_all" | "unknown" = "unknown";
-    let smtpLog = "";
-    if (domainHasMx && mxRecords.length > 0) {
-      try {
-        const smtpRes = await smtpVerify(email, mxRecords[0]);
-        smtpStatus = smtpRes.status;
-        smtpLog = smtpRes.log;
-      } catch (e) {
-        smtpLog = "[SMTP Verification Failed]";
-      }
-    }
-
     return {
       error: null,
       data: {
@@ -587,8 +498,6 @@ export const emailValidate = createServerFn({ method: "POST" })
         mxRecords,
         isDisposable: DISPOSABLE_DOMAINS.has(domain),
         isFreeProvider: FREE_PROVIDERS.has(domain),
-        smtpStatus,
-        smtpLog,
       },
     };
   });
@@ -2666,7 +2575,6 @@ export type PortStatus = {
   port: number;
   service: string;
   status: "open" | "closed" | "timeout";
-  banner?: string;
 };
 
 export type PortScanResult = {
@@ -2689,44 +2597,25 @@ const COMMON_PORTS = [
   { port: 8080, service: "HTTP-Proxy" },
 ];
 
-async function checkPort(host: string, port: number, timeoutMs = 2000): Promise<{ status: "open" | "closed" | "timeout", banner?: string }> {
+async function checkPort(host: string, port: number, timeoutMs = 2000): Promise<"open" | "closed" | "timeout"> {
   return new Promise((resolve) => {
     const socket = new net.Socket();
-    let banner = "";
-    let isResolved = false;
     
     const timeout = setTimeout(() => {
-      if (!isResolved) {
-        isResolved = true;
-        socket.destroy();
-        resolve({ status: banner ? "open" : "timeout", banner: banner ? banner.slice(0, 100).trim() : undefined });
-      }
+      socket.destroy();
+      resolve("timeout");
     }, timeoutMs);
 
     socket.on("connect", () => {
-      if ([80, 443, 8080, 8443].includes(port)) {
-        socket.write("HEAD / HTTP/1.0\\r\\n\\r\\n");
-      }
-      setTimeout(() => {
-        if (!isResolved) {
-          isResolved = true;
-          socket.destroy();
-          resolve({ status: "open", banner: banner ? banner.slice(0, 100).replace(/\\r?\\n/g, " ").trim() : undefined });
-        }
-      }, 800);
-    });
-
-    socket.on("data", (data) => {
-      banner += data.toString();
+      clearTimeout(timeout);
+      socket.destroy();
+      resolve("open");
     });
 
     socket.on("error", () => {
-      if (!isResolved) {
-        isResolved = true;
-        clearTimeout(timeout);
-        socket.destroy();
-        resolve({ status: "closed" });
-      }
+      clearTimeout(timeout);
+      socket.destroy();
+      resolve("closed");
     });
 
     socket.connect(port, host);
@@ -2736,14 +2625,14 @@ async function checkPort(host: string, port: number, timeoutMs = 2000): Promise<
 export const portScan = createServerFn({ method: "POST" })
   .validator(z.object({ target: z.string().trim() }))
   .handler(async ({ data }): Promise<{ error: string | null; data: PortScanResult | null }> => {
-    await checkRateLimit();
+    checkRateLimit();
     try {
       const hostname = data.target.replace(/^https?:\/\//, "").split("/")[0];
       if (!hostname) throw new Error("Alvo inválido");
 
       const promises = COMMON_PORTS.map(async (p) => {
-        const { status, banner } = await checkPort(hostname, p.port);
-        return { port: p.port, service: p.service, status, banner };
+        const status = await checkPort(hostname, p.port);
+        return { port: p.port, service: p.service, status };
       });
 
       const results = await Promise.all(promises);

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import {
@@ -25,18 +25,16 @@ export const Route = createFileRoute("/mosint")({
 
 function MosintTool() {
   const { q } = Route.useSearch();
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [error, setError] = useState<string | null>(null);
-  const [validation, setValidation] = useState<EmailValidation | null>(null);
-  const [profile, setProfile] = useState<GravatarProfile | null>(null);
-  const didAutoRun = useRef(false);
 
   useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
+    if (q && !result) {
       handleSubmit(q);
     }
   }, [q]);
+      const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [validation, setValidation] = useState<EmailValidation | null>(null);
+  const [profile, setProfile] = useState<GravatarProfile | null>(null);
 
   const handleSubmit = async (email: string) => {
     if (!email.trim()) return;

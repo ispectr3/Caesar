@@ -1,449 +1,214 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
-import { 
-  Printer, 
-  Download, 
-  Trash2, 
-  ArrowUp, 
-  ArrowDown, 
-  ShieldAlert, 
-  User, 
-  Calendar, 
-  Terminal, 
-  FileText, 
-  AlertTriangle 
-} from "lucide-react";
+import { Trash2, Printer, FileText, ArrowRight, ShieldAlert, CheckCircle } from "lucide-react";
 
 export const Route = createFileRoute("/report")({
   head: () => ({
     meta: [
-      { title: "Central de Relatórios - Caesar OSINT" },
-      { name: "description", content: "Compile resultados de múltiplos módulos em um único dossiê PDF profissional." },
+      { title: "Dossiê Unificado" },
+      { name: "description", content: "Gerador de Relatório OSINT consolidado." },
     ],
   }),
-  component: ReportPage,
+  component: ReportBuilder,
 });
 
-interface CompiledCard {
+type CompiledItem = {
   id: string;
   title: string;
   html: string;
   timestamp: string;
   route: string;
   data: any;
-}
+};
 
-function ReportPage() {
-  const [cards, setCards] = useState<CompiledCard[]>([]);
-  const [caseName, setCaseName] = useState("OPERAÇÃO CAESAR");
-  const [analyst, setAnalyst] = useState("ANALYST_DECA_9");
-  const [target, setTarget] = useState("");
-  const [securityLevel, setSecurityLevel] = useState("CONFIDENTIAL");
-  const [notes, setNotes] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+function ReportBuilder() {
+  const [items, setItems] = useState<CompiledItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load from localStorage on mount
   useEffect(() => {
-    loadDossier();
-    const handleUpdate = () => loadDossier();
+    loadItems();
+    
+    const handleUpdate = () => loadItems();
     window.addEventListener("caesar-report-updated", handleUpdate);
-    return () => {
-      window.removeEventListener("caesar-report-updated", handleUpdate);
-    };
+    return () => window.removeEventListener("caesar-report-updated", handleUpdate);
   }, []);
 
-  const loadDossier = () => {
+  const loadItems = () => {
     try {
       const existing = localStorage.getItem("caesar_compiled_report");
       if (existing) {
-        setCards(JSON.parse(existing));
+        setItems(JSON.parse(existing));
       } else {
-        setCards([]);
+        setItems([]);
       }
     } catch {
-      setCards([]);
+      setItems([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleMove = (index: number, direction: "up" | "down") => {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= cards.length) return;
-
-    const newCards = [...cards];
-    const temp = newCards[index];
-    newCards[index] = newCards[targetIndex];
-    newCards[targetIndex] = temp;
-
-    setCards(newCards);
-    localStorage.setItem("caesar_compiled_report", JSON.stringify(newCards));
+  const removeItem = (id: string) => {
+    const updated = items.filter(item => item.id !== id);
+    setItems(updated);
+    localStorage.setItem("caesar_compiled_report", JSON.stringify(updated));
     window.dispatchEvent(new Event("caesar-report-updated"));
   };
 
-  const handleRemove = (id: string) => {
-    const newCards = cards.filter((c) => c.id !== id);
-    setCards(newCards);
-    localStorage.setItem("caesar_compiled_report", JSON.stringify(newCards));
-    window.dispatchEvent(new Event("caesar-report-updated"));
-  };
-
-  const handleClear = () => {
-    if (confirm("Tem certeza que deseja limpar todo o dossiê compilado?")) {
+  const clearReport = () => {
+    if (confirm("Tem certeza que deseja apagar todo o dossiê compilado?")) {
+      setItems([]);
       localStorage.removeItem("caesar_compiled_report");
-      setCards([]);
       window.dispatchEvent(new Event("caesar-report-updated"));
     }
   };
 
-  const exportToJsonReport = () => {
-    const reportData = {
-      metadata: {
-        caseName,
-        analyst,
-        target,
-        securityLevel,
-        compiledAt: new Date().toISOString(),
-        notes,
-      },
-      findings: cards.map((c) => ({
-        title: c.title,
-        route: c.route,
-        timestamp: c.timestamp,
-        data: c.data,
-      })),
-    };
-
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(reportData, null, 2));
-    const downloadAnchor = document.createElement("a");
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `caesar_dossier_${caseName.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-  };
-
-  const generatePdfReport = async () => {
-    setIsGenerating(true);
-    const element = document.getElementById("dossier-print-root");
-    if (!element) {
-      setIsGenerating(false);
-      return;
-    }
-
+  const exportMasterPdf = async () => {
+    const element = document.getElementById("master-dossier");
+    if (!element) return;
     try {
       // @ts-ignore
       const html2pdf = (await import("html2pdf.js")).default;
       const opt = {
-        margin: [0.4, 0.4, 0.4, 0.4],
-        filename: `dossie_${caseName.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`,
+        margin: 0.4,
+        filename: `dossie_tatico_caesar_${new Date().toISOString().split('T')[0]}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#0b0b0c" },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#0e0e10" },
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       };
-      
-      // Momentarily make the print container block display for html2pdf execution
-      element.style.display = "block";
-      await html2pdf().set(opt).from(element).save();
-      element.style.display = "none";
+      html2pdf().set(opt).from(element).save();
     } catch (err) {
-      console.error("Failed to generate unified PDF", err);
-      alert("Erro ao exportar PDF. Imprimindo via navegador.");
+      console.error("Failed to generate PDF", err);
       window.print();
-    } finally {
-      setIsGenerating(false);
     }
   };
 
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Central de Relatórios"
+        eyebrow="// Módulo 00 — Inteligência"
         title="Dossiê Unificado"
-        description="Agregue descobertas e resultados forenses coletados em diferentes ferramentas do Caesar em um relatório único exportável."
+        description="Compile cards de diversos módulos do sistema em um único relatório estruturado. Exporte a inteligência de múltiplas fontes como um único artefato."
       />
 
-      <div className="mx-auto max-w-[1600px] w-full px-4 sm:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left Column: Dossier Information Config */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="card-cyber p-5 space-y-4">
-            <div className="flex items-center gap-2 border-b border-border/30 pb-3">
-              <Terminal size={14} className="text-primary" />
-              <span className="font-mono text-xs uppercase tracking-wider font-bold">
-                Metadados do Dossiê
-              </span>
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 p-2.5 border border-primary/30">
+              <FileText className="text-primary" size={24} />
             </div>
-
-            <div className="space-y-4 font-mono text-xs">
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-[10px] uppercase">
-                  Caso / Nome da Operação
-                </label>
-                <input
-                  type="text"
-                  value={caseName}
-                  onChange={(e) => setCaseName(e.target.value.toUpperCase())}
-                  className="w-full bg-input border border-border/80 rounded-none px-3 py-2 text-foreground focus:outline-none focus:border-primary/80 transition-colors uppercase"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-[10px] uppercase">
-                  Código do Analista
-                </label>
-                <input
-                  type="text"
-                  value={analyst}
-                  onChange={(e) => setAnalyst(e.target.value.toUpperCase())}
-                  className="w-full bg-input border border-border/80 rounded-none px-3 py-2 text-foreground focus:outline-none focus:border-primary/80 transition-colors uppercase"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-[10px] uppercase">
-                  Alvo / Investigado
-                </label>
-                <input
-                  type="text"
-                  placeholder="Nome, CPF ou Domínio"
-                  value={target}
-                  onChange={(e) => setTarget(e.target.value)}
-                  className="w-full bg-input border border-border/80 rounded-none px-3 py-2 text-foreground focus:outline-none focus:border-primary/80 transition-colors"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-[10px] uppercase">
-                  Nível de Classificação
-                </label>
-                <select
-                  value={securityLevel}
-                  onChange={(e) => setSecurityLevel(e.target.value)}
-                  className="w-full bg-input border border-border/80 rounded-none px-3 py-2 text-foreground focus:outline-none focus:border-primary/80 transition-colors"
-                >
-                  <option value="UNCLASSIFIED">UNCLASSIFIED // PÚBLICO</option>
-                  <option value="RESTRICTED">RESTRICTED // RESTRITO</option>
-                  <option value="CONFIDENTIAL">CONFIDENTIAL // CONFIDENCIAL</option>
-                  <option value="SECRET">SECRET // SECRETO</option>
-                  <option value="TOP SECRET">TOP SECRET // ULTRA SECRETO</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-muted-foreground block text-[10px] uppercase">
-                  Sumário Geral / Parecer Técnico
-                </label>
-                <textarea
-                  placeholder="Escreva conclusões ou notas adicionais sobre a investigação..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows={6}
-                  className="w-full bg-input border border-border/80 rounded-none px-3 py-2 text-foreground focus:outline-none focus:border-primary/80 transition-colors resize-y text-xs leading-relaxed"
-                />
-              </div>
+            <div>
+              <h2 className="text-xl font-mono font-bold text-foreground">REPORT BUILDER</h2>
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
+                {items.length} Módulos Compilados
+              </span>
             </div>
           </div>
 
-          {/* Core Action buttons */}
-          <div className="card-cyber p-5 space-y-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
-              onClick={generatePdfReport}
-              disabled={cards.length === 0 || isGenerating}
-              className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-wider py-3 hover:bg-primary/80 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed font-bold"
+              onClick={clearReport}
+              disabled={items.length === 0}
+              className="px-4 py-2 text-xs font-mono border border-border/50 text-muted-foreground hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              <Printer size={14} />
-              {isGenerating ? "Exportando..." : "[ GERAR DOSSIÊ PDF ]"}
+              <Trash2 size={14} /> LIMPAR DOSSIÊ
             </button>
-
             <button
-              onClick={exportToJsonReport}
-              disabled={cards.length === 0}
-              className="w-full flex items-center justify-center gap-2 border border-border/80 hover:border-primary hover:text-primary bg-card/60 font-mono text-xs uppercase tracking-wider py-2.5 transition-colors cursor-pointer disabled:opacity-40"
+              onClick={exportMasterPdf}
+              disabled={items.length === 0}
+              className="px-5 py-2 bg-primary text-primary-foreground font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:opacity-90 hover:shadow-[0_0_15px_var(--primary)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Download size={14} />
-              [ EXPORTAR DATA JSON ]
-            </button>
-
-            <button
-              onClick={handleClear}
-              disabled={cards.length === 0}
-              className="w-full flex items-center justify-center gap-2 border border-border/30 hover:border-red-500/60 hover:text-red-400 bg-card/10 font-mono text-xs uppercase tracking-wider py-2 transition-colors cursor-pointer disabled:opacity-40"
-            >
-              <Trash2 size={12} />
-              Limpar Dossiê
+              <Printer size={14} /> EXPORTAR PDF
             </button>
           </div>
         </div>
 
-        {/* Right Column: Compiled findings list */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between border-b border-border/30 pb-3">
-            <div className="flex items-center gap-2">
-              <FileText size={16} className="text-primary" />
-              <span className="font-mono text-sm uppercase tracking-widest font-bold">
-                Descobertas Compiladas
-              </span>
+        {loading ? (
+          <div className="flex justify-center py-20 text-primary">
+            <div className="animate-pulse flex items-center gap-2 font-mono text-sm">
+              <span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+              CARREGANDO BASE DE INTELIGÊNCIA...
             </div>
-            <span className="font-mono text-xs bg-primary/10 border border-primary/20 text-primary px-2.5 py-0.5 font-bold">
-              {cards.length} Módulo(s)
-            </span>
           </div>
-
-          {cards.length === 0 ? (
-            <div className="border border-dashed border-border/50 p-12 text-center space-y-4 bg-card/10">
-              <AlertTriangle size={36} className="text-muted-foreground/40 mx-auto" />
-              <div className="font-mono text-xs text-muted-foreground leading-relaxed max-w-md mx-auto">
-                <span className="text-primary font-bold block mb-1">DOSSIÊ VAZIO</span>
-                Nenhum módulo foi compilado até o momento. Visite as ferramentas de busca (ex: IP, CPF, WhatsMyName) e clique em <span className="text-primary font-bold">[COMPILAR]</span> para trazer os resultados para este painel.
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {cards.map((card, idx) => (
-                <div key={card.id} className="relative group">
-                  
-                  {/* Actions overlay for order/delete */}
-                  <div className="absolute -top-3 right-4 z-10 flex items-center gap-1.5 bg-black/90 border border-border/60 px-2 py-1 rounded-sm no-print">
-                    <button
-                      onClick={() => handleMove(idx, "up")}
-                      disabled={idx === 0}
-                      className="p-1 text-muted-foreground hover:text-primary disabled:opacity-20 cursor-pointer"
-                      title="Mover para cima"
-                    >
-                      <ArrowUp size={12} />
-                    </button>
-                    <button
-                      onClick={() => handleMove(idx, "down")}
-                      disabled={idx === cards.length - 1}
-                      className="p-1 text-muted-foreground hover:text-primary disabled:opacity-20 cursor-pointer"
-                      title="Mover para baixo"
-                    >
-                      <ArrowDown size={12} />
-                    </button>
-                    <span className="text-border/40 text-[10px]">│</span>
-                    <button
-                      onClick={() => handleRemove(card.id)}
-                      className="p-1 text-muted-foreground hover:text-red-400 cursor-pointer"
-                      title="Remover do dossiê"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </div>
-
-                  {/* Rendered Card Content */}
-                  <div className="pointer-events-none">
-                    <div 
-                      className="card-cyber p-5 border-l-primary/60 border-l-2 bg-black/45"
-                      dangerouslySetInnerHTML={{ __html: card.html }}
-                    />
+        ) : items.length === 0 ? (
+          <div className="card-cyber p-12 text-center flex flex-col items-center justify-center border-dashed border-border/40 bg-black/20">
+            <ShieldAlert size={48} className="text-muted-foreground/30 mb-4" />
+            <h3 className="font-mono text-lg text-foreground mb-2">DOSSIÊ VAZIO</h3>
+            <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6 leading-relaxed">
+              Você ainda não compilou nenhum resultado. Navegue pelos módulos de investigação e clique no botão <span className="font-mono text-primary bg-primary/10 px-1 border border-primary/20">COMPILAR</span> presente nos resultados para adicioná-los aqui.
+            </p>
+            <Link to="/" className="text-primary hover:underline font-mono text-xs uppercase tracking-wider flex items-center gap-1.5">
+              Ir para o Arsenal <ArrowRight size={14} />
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-6" id="master-dossier">
+            {/* Header of Dossier (Visible in PDF) */}
+            <div className="border border-border/40 p-6 bg-card relative overflow-hidden mb-8">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full translate-x-10 -translate-y-10"></div>
+              <div className="flex justify-between items-start relative z-10">
+                <div>
+                  <h1 className="text-2xl font-mono font-black tracking-tight uppercase text-foreground">
+                    DOSSIÊ DE INTELIGÊNCIA
+                  </h1>
+                  <p className="text-sm text-primary font-mono mt-1 mb-4 flex items-center gap-2">
+                    <CheckCircle size={14} /> CAESAR OSINT PLATFORM
+                  </p>
+                  <div className="space-y-1 font-mono text-[10px] text-muted-foreground">
+                    <p>DATA DE EMISSÃO: {new Date().toLocaleString('pt-BR')}</p>
+                    <p>Nº DE MÓDULOS: {items.length}</p>
+                    <p className="text-red-400 mt-2">CLASSIFICAÇÃO: CONFIDENCIAL / RESTRICTED</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── HIDDEN PRINT-ONLY DOSSIER CONTAINER ── */}
-      {/* This renders inside a hidden overlay and only shows visually during PDF conversion */}
-      <div 
-        id="dossier-print-root" 
-        className="bg-[#0b0b0c] text-foreground p-10 font-mono text-xs space-y-8 border-4 border-primary/50 w-[780px]"
-        style={{ display: "none", color: "#e4e4e7", backgroundColor: "#0b0b0c" }}
-      >
-        {/* PDF Top Branding */}
-        <div className="border-b-2 border-primary pb-4 flex justify-between items-end">
-          <div>
-            <span className="text-[10px] text-primary font-bold tracking-[0.2em] block uppercase">
-              DECA AGENCY // CYBER TACTICAL OPERATIONS
-            </span>
-            <span className="text-base font-black tracking-widest block uppercase text-foreground mt-1 font-sans">
-              CAESAR OSINT PLATFORM
-            </span>
-            <span className="text-[9px] text-muted-foreground block tracking-wider mt-0.5">
-              RELATÓRIO ENCRIPTADO GERADO LOCALMENTE // SECURE NODE LOCAL_GEN
-            </span>
-          </div>
-          <div className="text-right border border-red-500/50 bg-red-500/10 px-3 py-2 text-center rounded-none select-none">
-            <span className="text-[8px] text-red-500 block uppercase tracking-widest font-bold">CLASSIFICAÇÃO</span>
-            <span className="text-xs font-black text-red-400 uppercase tracking-widest font-sans">{securityLevel}</span>
-          </div>
-        </div>
-
-        {/* Executive Metadata Box */}
-        <div className="border-2 border-primary bg-[#0e0e10] p-6 space-y-4">
-          <div className="flex items-center gap-2 border-b border-border/20 pb-3 justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-primary font-bold">//</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider">DADOS GERAIS DO DOSSIÊ</span>
-            </div>
-            <span className="text-[8px] text-primary/70 tracking-widest uppercase">ID: CAESAR_{Math.random().toString(36).substring(2, 6).toUpperCase()}</span>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-xs">
-            <div className="space-y-1 py-1 border-b border-border/10">
-              <span className="text-[9px] uppercase text-muted-foreground block font-bold tracking-widest">CASO / OPERAÇÃO</span>
-              <span className="font-bold text-foreground uppercase">{caseName || "NÃO DEFINIDO"}</span>
-            </div>
-            <div className="space-y-1 py-1 border-b border-border/10">
-              <span className="text-[9px] uppercase text-muted-foreground block font-bold tracking-widest">ALVO PRINCIPAL</span>
-              <span className="font-bold text-foreground uppercase">{target || "NENHUM ALVO SELECIONADO"}</span>
-            </div>
-            <div className="space-y-1 py-1 border-b border-border/10">
-              <span className="text-[9px] uppercase text-muted-foreground block font-bold tracking-widest">ANALISTA RESPONSÁVEL</span>
-              <span className="font-bold text-foreground uppercase">{analyst || "SYSTEM"}</span>
-            </div>
-            <div className="space-y-1 py-1 border-b border-border/10">
-              <span className="text-[9px] uppercase text-muted-foreground block font-bold tracking-widest">TIMESTAMP EMISSÃO</span>
-              <span className="font-bold text-foreground">{new Date().toLocaleString("pt-BR")}</span>
-            </div>
-          </div>
-
-          {notes && (
-            <div className="border border-primary/25 bg-black/40 p-4 mt-3 rounded-none">
-              <span className="text-[9px] uppercase text-primary font-bold block mb-1.5 tracking-wider">// PARECER TÉCNICO E NOTAS DO ANALISTA</span>
-              <p className="text-xs text-foreground/90 whitespace-pre-wrap leading-relaxed font-sans">{notes}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Divider */}
-        <div className="text-center text-muted-foreground/20 text-[8px] tracking-[0.4em] font-bold select-none pt-2">
-          ══════════════ DO NOT DISTRIBUTE // FOR OFFICIAL USE ONLY ══════════════
-        </div>
-
-        {/* Compiled cards in PDF */}
-        <div className="space-y-8">
-          {cards.map((card, idx) => (
-            <div 
-              key={card.id} 
-              className="space-y-3 p-5 border border-border/20 bg-[#0c0c0e] break-inside-avoid"
-              style={{ pageBreakInside: "avoid", breakInside: "avoid" }}
-            >
-              <div className="flex items-center justify-between border-b border-primary/20 pb-2">
-                <span className="font-bold text-xs text-primary uppercase font-mono tracking-wider">
-                  ANEXO {String(idx + 1).padStart(2, "0")} — {card.title}
-                </span>
-                <span className="text-[9px] text-muted-foreground/60 font-mono font-bold tracking-wider">
-                  FONTE: {card.route.toUpperCase()}
-                </span>
+                <div className="text-right font-mono hidden sm:block">
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-1">
+                    Operador
+                  </span>
+                  <span className="text-sm font-bold bg-white/5 border border-border px-3 py-1">
+                    SYSADMIN
+                  </span>
+                </div>
               </div>
-              <div 
-                className="prose-report text-xs leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: card.html }}
-              />
             </div>
-          ))}
-        </div>
 
-        {/* Footer */}
-        <div className="border-t border-border/20 pt-4 mt-10 flex justify-between items-center text-[8px] text-muted-foreground select-none">
-          <span>CAESAR OSINT PLATFORM // SECURE REPORT GEN</span>
-          <span>CLASSIFICAÇÃO: <strong className="text-red-500">{securityLevel}</strong></span>
-          <span>PÁGINA INTEL // SYSTEM COMPILATION COMPLETE</span>
-        </div>
+            {/* Compiled Items */}
+            {items.map((item, index) => (
+              <div key={item.id} className="relative group">
+                {/* Remove button (hidden in PDF via standard rules or we handle it visually) */}
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="absolute -top-3 -right-3 w-7 h-7 bg-red-500/10 border border-red-500/30 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-red-500 hover:text-white"
+                  title="Remover do Dossiê"
+                  data-html2canvas-ignore
+                >
+                  <Trash2 size={12} />
+                </button>
+                
+                {/* Origin Tag */}
+                <div className="flex items-center gap-2 mb-2 font-mono text-[10px] text-muted-foreground uppercase tracking-wider pl-2" data-html2canvas-ignore>
+                  <span className="text-primary font-bold">{index + 1}.</span> 
+                  Origem: {item.route}
+                  <span className="mx-1">•</span>
+                  Captura: {new Date(item.timestamp).toLocaleTimeString('pt-BR')}
+                </div>
+                
+                {/* Rendered HTML from local storage */}
+                <div 
+                  className="[&>div]:!bg-[#0e0e10] [&>div]:!border-border/40"
+                  dangerouslySetInnerHTML={{ __html: item.html }} 
+                />
+              </div>
+            ))}
+
+            {/* Footer of Dossier */}
+            <div className="mt-12 pt-6 border-t border-border/20 text-center font-mono text-[9px] text-muted-foreground uppercase tracking-widest">
+              <p>FIM DO RELATÓRIO — GERADO POR CAESAR TACTICAL OSINT</p>
+              <p className="mt-1 opacity-50">STRICTLY FOR AUTHORIZED USE ONLY.</p>
+            </div>
+          </div>
+        )}
       </div>
-
     </SiteLayout>
   );
 }

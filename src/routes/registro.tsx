@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { ShieldCheck, Calendar, ShieldAlert } from "lucide-react";
@@ -24,17 +24,16 @@ export const Route = createFileRoute("/registro")({
 
 function RegistroBrTool() {
   const { q } = Route.useSearch();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any | null>(null);
-  const didAutoRun = useRef(false);
 
   useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
+    if (q && !result) {
       submit(q);
     }
   }, [q]);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<any | null>(null);
 
   const submit = (domain: string) => {
     const clean = domain.trim().toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, "");

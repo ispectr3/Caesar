@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { leaklookerScan, type LeakLookerResult } from "@/lib/osint.functions";
@@ -20,17 +20,15 @@ export const Route = createFileRoute("/leaklooker")({
 
 function LeakLookerTool() {
   const { q } = Route.useSearch();
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<LeakLookerResult | null>(null);
-  const didAutoRun = useRef(false);
 
   useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
+    if (q && !result) {
       handleSubmit(q);
     }
   }, [q]);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<LeakLookerResult | null>(null);
 
   const handleSubmit = async (target: string) => {
     if (!target.trim()) return;

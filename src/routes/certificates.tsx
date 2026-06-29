@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { certificatesLookup, type CertificatesResult } from "@/lib/osint.functions";
@@ -21,18 +21,17 @@ export const Route = createFileRoute("/certificates")({
 
 function CertificatesTool() {
   const { q } = Route.useSearch() as { q?: string };
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+
   const lookupFn = useServerFn(certificatesLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CertificatesResult | null>(null);
-  const didAutoRun = useRef(false);
-
-  useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
-      handleSubmit(q);
-    }
-  }, [q]);
 
   const handleSubmit = async (value: string) => {
     setLoading(true);
@@ -285,13 +284,7 @@ function CertificatesTool() {
               </div>
             </div>
           </div>
-        ) : (
-          <ModuleInfoTabs
-            how={"Busca o histórico de certificados SSL/TLS públicos em logs de Transparência de Certificados (CT) via crt.sh."}
-            interpret={"Examine certificados antigos ou expirados para descobrir infraestruturas legadas, subdomínios não documentados e painéis internos expostos (SANs)."}
-            isPassive={true}
-          />
-        )}
+        ) : null}
       </ToolForm>
     
     </SiteLayout>

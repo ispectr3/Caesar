@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Building2, MapPin, Phone, Users, ShieldCheck, Landmark } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 import { cnpjLookup, type CnpjInfo } from "../lib/osint.functions";
@@ -21,18 +21,16 @@ export const Route = createFileRoute("/cnpj")({
 
 function CnpjTool() {
   const { q } = Route.useSearch();
-  const [cnpj, setCnpj] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<CnpjInfo | null>(null);
-  const didAutoRun = useRef(false);
 
   useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
+    if (q && !result) {
       handleSubmit(q);
     }
   }, [q]);
+      const [cnpj, setCnpj] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<CnpjInfo | null>(null);
 
   const handleSubmit = async (value: string) => {
     const cleanCnpj = value.replace(/\D/g, "");
@@ -143,6 +141,12 @@ function CnpjTool() {
                 )}
               </div>
             </div>
+
+            <PivotLinks
+              pivots={[
+                { label: "Google Dorks (Empresa)", to: "/google", query: `"${result.cnpj}" OR "${result.razao_social}"`, tag: "OSINT" }
+              ]}
+            />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* General details */}

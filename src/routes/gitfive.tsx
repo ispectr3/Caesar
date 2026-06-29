@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { gitfiveLookup, type GitFiveResult } from "@/lib/osint.functions";
@@ -20,17 +20,15 @@ export const Route = createFileRoute("/gitfive")({
 
 function GitFiveTool() {
   const { q } = Route.useSearch();
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<GitFiveResult | null>(null);
-  const didAutoRun = useRef(false);
 
   useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
+    if (q && !result) {
       handleSubmit(q);
     }
   }, [q]);
+      const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<GitFiveResult | null>(null);
 
   const handleSubmit = async (username: string) => {
     if (!username.trim()) return;

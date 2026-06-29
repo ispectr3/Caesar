@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 import { cpfLookup, type CpfResult } from "../lib/osint.functions";
@@ -21,19 +21,17 @@ export const Route = createFileRoute("/cpf")({
 
 function CpfTool() {
   const { q } = Route.useSearch();
-  const fn = useServerFn(cpfLookup);
+
+  useEffect(() => {
+    if (q && !result) {
+      handleSubmit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(cpfLookup);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CpfResult | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const didAutoRun = useRef(false);
-
-  useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
-      handleSubmit(q);
-    }
-  }, [q]);
 
   const handleCopy = (onion: string) => {
     navigator.clipboard.writeText(onion);
@@ -116,43 +114,11 @@ function CpfTool() {
         {status === "success" && result ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="lg:col-span-2 space-y-6">
-              {/* Bloco de Estilo para Impressão PDF */}
-              <style>{`
-                @media print {
-                  header, footer, .print\\:hidden, form, button {
-                    display: none !important;
-                  }
-                  body, main {
-                    background: #ffffff !important;
-                    color: #000000 !important;
-                  }
-                  .card-cyber, .border, [class*="border-"] {
-                    border-color: #6b7280 !important;
-                    background: #ffffff !important;
-                    color: #000000 !important;
-                  }
-                  .text-muted-foreground, .text-primary, h1, h2, h3, p, span, div {
-                    color: #000000 !important;
-                    text-shadow: none !important;
-                  }
-                  .status-secure, .status-warning, .status-danger {
-                    background: none !important;
-                    border: 1px solid #000000 !important;
-                    color: #000000 !important;
-                  }
-                }
-              `}</style>
-
-              {/* Ações de Relatório */}
-              <div className="flex justify-end gap-3 print:hidden">
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="px-5 py-2.5 border border-primary bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 flex items-center gap-2 shadow-[0_0_10px_var(--glow-subtle)] hover:shadow-[0_0_15px_var(--primary)]"
-                >
-                  <span>[ Exportar Dossiê PDF ]</span>
-                </button>
-              </div>
+              <PivotLinks
+                pivots={[
+                  { label: "Google Dorks Avançados", to: "/google", query: `"${result.formatted}" OR "${result.digits}"`, tag: "OSINT" }
+                ]}
+              />
 
                {/* Resumo Cadastral */}
               <div className="card-cyber p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover-lift transition-all duration-300">

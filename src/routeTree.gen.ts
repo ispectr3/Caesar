@@ -61,6 +61,7 @@ import { Route as BgpRouteImport } from './routes/bgp'
 import { Route as AbuseipdbRouteImport } from './routes/abuseipdb'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReportRouteImport } from './routes/report'
 
 const WhoisRoute = WhoisRouteImport.update({
   id: '/whois',
@@ -317,6 +318,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -324,6 +330,9 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/report': typeof ReportRoute
+  '/report': typeof ReportRoute
+  '/report': typeof ReportRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -378,6 +387,9 @@ export interface FileRoutesByFullPath {
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesByTo {
+  '/report': typeof ReportRoute
+  '/report': typeof ReportRoute
+  '/report': typeof ReportRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -433,6 +445,9 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/report': typeof ReportRoute
+  '/report': typeof ReportRoute
+  '/report': typeof ReportRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -489,6 +504,9 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/report'
+    | '/report'
+    | '/report'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -543,6 +561,9 @@ export interface FileRouteTypes {
     | '/whois'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/report'
+    | '/report'
+    | '/report'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -597,6 +618,9 @@ export interface FileRouteTypes {
     | '/whois'
   id:
     | '__root__'
+    | '/report'
+    | '/report'
+    | '/report'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -652,6 +676,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  ReportRoute: typeof ReportRoute
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AbuseipdbRoute: typeof AbuseipdbRoute
@@ -708,6 +733,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/whois': {
       id: '/whois'
       path: '/whois'

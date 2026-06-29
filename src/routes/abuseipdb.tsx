@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { abuseIpdbLookup, type AbuseIpdbInfo } from "@/lib/osint.functions";
@@ -48,18 +48,16 @@ function getCategoryName(cat: number): string {
 
 function AbuseIpdbPage() {
   const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
   const fn = useServerFn(abuseIpdbLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AbuseIpdbInfo | null>(null);
-  const didAutoRun = useRef(false);
-
-  useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
-      submit(q);
-    }
-  }, [q]);
 
   async function submit(value: string) {
     setLoading(true);

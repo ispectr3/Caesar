@@ -182,15 +182,17 @@ function EmailVerifyTool() {
         description="Analise o SPF, chaves DKIM (20+ seletores comuns) e políticas DMARC do domínio para auditoria de proteção anti-spoofing."
       />
 
-      <ToolForm
-        defaultValue={q}
-        onSubmit={(value) => verifyEmail(value)}
-        placeholder="Digite o e-mail completo (ex: contato@microsoft.com)"
-        buttonText="Auditar Autenticação"
-        loading={loading}
-      />
-
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-6">
+        <div className="card-cyber p-6">
+          <ToolForm
+            defaultValue={q}
+            onSubmit={(value) => verifyEmail(value)}
+            placeholder="Digite o e-mail completo (ex: contato@microsoft.com)"
+            buttonText="Auditar Autenticação"
+            loading={loading}
+          />
+        </div>
+
         {loading && (
           <div className="flex items-center justify-center gap-2 font-mono text-xs text-primary py-12">
             <Loader2 size={16} className="animate-spin" />

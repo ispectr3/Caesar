@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { dnsLookup } from "@/lib/osint.functions";
@@ -80,19 +80,17 @@ const TYPE_STYLES: Record<string, { color: string; icon: React.ReactNode; descri
 
 function DnsPage() {
   const { q } = Route.useSearch();
-  const fn = useServerFn(dnsLookup);
+
+  useEffect(() => {
+    if (q && !result) {
+      submit(q);
+    }
+  }, [q]);
+      const fn = useServerFn(dnsLookup);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DnsResult | null>(null);
   const [domain, setDomain] = useState(q || "");
-  const didAutoRun = useRef(false);
-
-  useEffect(() => {
-    if (q && !didAutoRun.current) {
-      didAutoRun.current = true;
-      submit(q);
-    }
-  }, [q]);
 
   async function submit(value: string) {
     setDomain(value);
@@ -173,7 +171,7 @@ function DnsPage() {
               {result.map((r) => {
                 const style = TYPE_STYLES[r.type] || { color: "text-muted-foreground border-border/30 bg-transparent", icon: null, description: "" };
                 return (
-                  <ResultCard exportData={r.records} exportName={`dns_${r.type}`} key={r.type} title={`Registros ${r.type}`}>
+                  <ResultCard exportData={result} exportName="dns_export" key={r.type} title={`Registros ${r.type}`}>
                     <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 border rounded-none font-mono text-[9px] mb-3 ${style.color}`}>
                       {style.icon} {r.type}
                     </div>
