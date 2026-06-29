@@ -116,7 +116,7 @@ function CpfTool() {
             <div className="lg:col-span-2 space-y-6">
               <PivotLinks
                 pivots={[
-                  { label: "Google Dorks Avançados", to: "/google", query: `"${result.formatted}" OR "${result.digits}"`, tag: "OSINT" }
+                  { label: "Google Dorks Avançados", to: "/dorks", query: `"${result.formatted}" OR "${result.digits}"`, tag: "OSINT" }
                 ]}
               />
 

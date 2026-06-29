@@ -144,7 +144,7 @@ function CnpjTool() {
 
             <PivotLinks
               pivots={[
-                { label: "Google Dorks (Empresa)", to: "/google", query: `"${result.cnpj}" OR "${result.razao_social}"`, tag: "OSINT" }
+                { label: "Google Dorks (Empresa)", to: "/dorks", query: `"${result.cnpj}" OR "${result.razao_social}"`, tag: "OSINT" }
               ]}
             />
 
