@@ -481,7 +481,7 @@ export function ModuleInfoTabs({
               ? "bg-green-500/10 border-green-500/20 text-green-400"
               : "bg-red-500/10 border-red-500/20 text-red-400"
           }`}>
-            {isPassive ? "PASSIVA (100% SIGILOSA)" : "ATIVA (REQUISIÇÃO DIRETA)"}
+            {isPassive ? "PASSIVA (100% SIGILOSA)" : "ATIVA (CONTATO COM ALVO)"}
           </span>
         </div>
       </div>
