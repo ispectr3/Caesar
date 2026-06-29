@@ -18,14 +18,12 @@ import { Route as TorRouteImport } from './routes/tor'
 import { Route as TimestampRouteImport } from './routes/timestamp'
 import { Route as TelegramRouteImport } from './routes/telegram'
 import { Route as SubdomainsRouteImport } from './routes/subdomains'
-import { Route as SpeedtestRouteImport } from './routes/speedtest'
 import { Route as ShodanRouteImport } from './routes/shodan'
 import { Route as ScamRouteImport } from './routes/scam'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as RegexRouteImport } from './routes/regex'
 import { Route as PortscanRouteImport } from './routes/portscan'
 import { Route as PhoneRouteImport } from './routes/phone'
-import { Route as PasswordRouteImport } from './routes/password'
 import { Route as NamintRouteImport } from './routes/namint'
 import { Route as MosintRouteImport } from './routes/mosint'
 import { Route as MalwarebazaarRouteImport } from './routes/malwarebazaar'
@@ -61,6 +59,9 @@ import { Route as BgpRouteImport } from './routes/bgp'
 import { Route as AbuseipdbRouteImport } from './routes/abuseipdb'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PasteRouteImport } from './routes/paste'
+import { Route as MacRouteImport } from './routes/mac'
+import { Route as JwtRouteImport } from './routes/jwt'
 import { Route as ReportRouteImport } from './routes/report'
 
 const WhoisRoute = WhoisRouteImport.update({
@@ -108,11 +109,6 @@ const SubdomainsRoute = SubdomainsRouteImport.update({
   path: '/subdomains',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SpeedtestRoute = SpeedtestRouteImport.update({
-  id: '/speedtest',
-  path: '/speedtest',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ShodanRoute = ShodanRouteImport.update({
   id: '/shodan',
   path: '/shodan',
@@ -141,11 +137,6 @@ const PortscanRoute = PortscanRouteImport.update({
 const PhoneRoute = PhoneRouteImport.update({
   id: '/phone',
   path: '/phone',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PasswordRoute = PasswordRouteImport.update({
-  id: '/password',
-  path: '/password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NamintRoute = NamintRouteImport.update({
@@ -323,6 +314,21 @@ const ReportRoute = ReportRouteImport.update({
   path: '/report',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JwtRoute = JwtRouteImport.update({
+  id: '/jwt',
+  path: '/jwt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MacRoute = MacRouteImport.update({
+  id: '/mac',
+  path: '/mac',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PasteRoute = PasteRouteImport.update({
+  id: '/paste',
+  path: '/paste',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -333,6 +339,9 @@ export interface FileRoutesByFullPath {
   '/report': typeof ReportRoute
   '/report': typeof ReportRoute
   '/report': typeof ReportRoute
+  '/jwt': typeof JwtRoute
+  '/mac': typeof MacRoute
+  '/paste': typeof PasteRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -390,6 +399,9 @@ export interface FileRoutesByTo {
   '/report': typeof ReportRoute
   '/report': typeof ReportRoute
   '/report': typeof ReportRoute
+  '/jwt': typeof JwtRoute
+  '/mac': typeof MacRoute
+  '/paste': typeof PasteRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -448,6 +460,9 @@ export interface FileRoutesById {
   '/report': typeof ReportRoute
   '/report': typeof ReportRoute
   '/report': typeof ReportRoute
+  '/jwt': typeof JwtRoute
+  '/mac': typeof MacRoute
+  '/paste': typeof PasteRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -507,6 +522,9 @@ export interface FileRouteTypes {
     | '/report'
     | '/report'
     | '/report'
+    | '/jwt'
+    | '/mac'
+    | '/paste'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -542,14 +560,12 @@ export interface FileRouteTypes {
     | '/malwarebazaar'
     | '/mosint'
     | '/namint'
-    | '/password'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
     | '/scam'
     | '/shodan'
-    | '/speedtest'
     | '/subdomains'
     | '/telegram'
     | '/timestamp'
@@ -564,6 +580,9 @@ export interface FileRouteTypes {
     | '/report'
     | '/report'
     | '/report'
+    | '/jwt'
+    | '/mac'
+    | '/paste'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -599,14 +618,12 @@ export interface FileRouteTypes {
     | '/malwarebazaar'
     | '/mosint'
     | '/namint'
-    | '/password'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
     | '/scam'
     | '/shodan'
-    | '/speedtest'
     | '/subdomains'
     | '/telegram'
     | '/timestamp'
@@ -621,6 +638,9 @@ export interface FileRouteTypes {
     | '/report'
     | '/report'
     | '/report'
+    | '/jwt'
+    | '/mac'
+    | '/paste'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -656,14 +676,12 @@ export interface FileRouteTypes {
     | '/malwarebazaar'
     | '/mosint'
     | '/namint'
-    | '/password'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
     | '/scam'
     | '/shodan'
-    | '/speedtest'
     | '/subdomains'
     | '/telegram'
     | '/timestamp'
@@ -677,6 +695,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   ReportRoute: typeof ReportRoute
+  JwtRoute: typeof JwtRoute
+  MacRoute: typeof MacRoute
+  PasteRoute: typeof PasteRoute
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AbuseipdbRoute: typeof AbuseipdbRoute
@@ -712,14 +733,12 @@ export interface RootRouteChildren {
   MalwarebazaarRoute: typeof MalwarebazaarRoute
   MosintRoute: typeof MosintRoute
   NamintRoute: typeof NamintRoute
-  PasswordRoute: typeof PasswordRoute
   PhoneRoute: typeof PhoneRoute
   PortscanRoute: typeof PortscanRoute
   RegexRoute: typeof RegexRoute
   RegistroRoute: typeof RegistroRoute
   ScamRoute: typeof ScamRoute
   ShodanRoute: typeof ShodanRoute
-  SpeedtestRoute: typeof SpeedtestRoute
   SubdomainsRoute: typeof SubdomainsRoute
   TelegramRoute: typeof TelegramRoute
   TimestampRoute: typeof TimestampRoute
@@ -733,6 +752,27 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/paste': {
+      id: '/paste'
+      path: '/paste'
+      fullPath: '/paste'
+      preLoaderRoute: typeof PasteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mac': {
+      id: '/mac'
+      path: '/mac'
+      fullPath: '/mac'
+      preLoaderRoute: typeof MacRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jwt': {
+      id: '/jwt'
+      path: '/jwt'
+      fullPath: '/jwt'
+      preLoaderRoute: typeof JwtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/report': {
       id: '/report'
       path: '/report'
@@ -803,13 +843,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubdomainsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/speedtest': {
-      id: '/speedtest'
-      path: '/speedtest'
-      fullPath: '/speedtest'
-      preLoaderRoute: typeof SpeedtestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/shodan': {
       id: '/shodan'
       path: '/shodan'
@@ -850,13 +883,6 @@ declare module '@tanstack/react-router' {
       path: '/phone'
       fullPath: '/phone'
       preLoaderRoute: typeof PhoneRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/password': {
-      id: '/password'
-      path: '/password'
-      fullPath: '/password'
-      preLoaderRoute: typeof PasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/namint': {
@@ -1143,14 +1169,12 @@ const rootRouteChildren: RootRouteChildren = {
   MalwarebazaarRoute: MalwarebazaarRoute,
   MosintRoute: MosintRoute,
   NamintRoute: NamintRoute,
-  PasswordRoute: PasswordRoute,
   PhoneRoute: PhoneRoute,
   PortscanRoute: PortscanRoute,
   RegexRoute: RegexRoute,
   RegistroRoute: RegistroRoute,
   ScamRoute: ScamRoute,
   ShodanRoute: ShodanRoute,
-  SpeedtestRoute: SpeedtestRoute,
   SubdomainsRoute: SubdomainsRoute,
   TelegramRoute: TelegramRoute,
   TimestampRoute: TimestampRoute,

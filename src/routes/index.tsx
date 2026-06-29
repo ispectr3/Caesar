@@ -539,16 +539,7 @@ const TOOLS: {
     color: "from-primary/25 to-accent/10",
     category: "análise",
   },
-  {
-    code: "36",
-    to: "/password" as const,
-    name: "Gerador de Senha",
-    desc: "Gere senhas criptograficamente seguras com análise de entropia, força e critérios configuráveis.",
-    input: "Comprimento, charset...",
-    icon: Lock,
-    color: "from-primary/25 to-accent/10",
-    category: "análise",
-  },
+
   {
     code: "37",
     to: "/emailblacklist" as const,
@@ -570,14 +561,34 @@ const TOOLS: {
     category: "web",
   },
   {
-    code: "39",
-    to: "/speedtest" as const,
-    name: "Medidor de Velocidade",
-    desc: "Mede download e latência da sua conexão via Cloudflare CDN com velocímetro visual.",
-    input: "Clique em Iniciar Teste",
-    icon: Zap,
+    code: "51",
+    to: "/jwt" as const,
+    name: "JWT Decoder",
+    desc: "Analise tokens JWT, header, payload e detecção crítica de alg: none.",
+    input: "eyJhbGciOi...",
+    icon: ShieldAlert,
     color: "from-primary/25 to-accent/10",
     category: "análise",
+  },
+  {
+    code: "52",
+    to: "/mac" as const,
+    name: "MAC Address Lookup",
+    desc: "Identifique fabricantes, OUI e MACs randomizados em rede.",
+    input: "00:1A:2B:3C:4D:5E",
+    icon: ShieldAlert, // Temporariamente usando icon existente se Cpu não estiver importado
+    color: "from-primary/25 to-accent/10",
+    category: "rede",
+  },
+  {
+    code: "53",
+    to: "/paste" as const,
+    name: "Paste OSINT",
+    desc: "Busca agregada de credenciais e dados em serviços de Pastebin.",
+    input: "email ou domínio",
+    icon: Search,
+    color: "from-primary/25 to-accent/10",
+    category: "threat",
   },
 ];
 
