@@ -561,7 +561,7 @@ const TOOLS: {
     category: "web",
   },
   {
-    code: "51",
+    code: "36",
     to: "/jwt" as const,
     name: "JWT Decoder",
     desc: "Analise tokens JWT, header, payload e detecção crítica de alg: none.",
@@ -571,7 +571,7 @@ const TOOLS: {
     category: "análise",
   },
   {
-    code: "52",
+    code: "39",
     to: "/mac" as const,
     name: "MAC Address Lookup",
     desc: "Identifique fabricantes, OUI e MACs randomizados em rede.",
@@ -581,7 +581,7 @@ const TOOLS: {
     category: "rede",
   },
   {
-    code: "53",
+    code: "51",
     to: "/paste" as const,
     name: "Paste OSINT",
     desc: "Busca agregada de credenciais e dados em serviços de Pastebin.",

@@ -30,7 +30,7 @@ function PasteTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 53"
+        eyebrow="// Módulo 51"
         title="Paste OSINT"
         description="Agregador de Dorks e APIs para buscar vazamentos de credenciais, logs e código-fonte em sites de paste."
       />

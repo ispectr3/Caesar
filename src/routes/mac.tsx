@@ -27,7 +27,7 @@ function MacTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 52"
+        eyebrow="// Módulo 39"
         title="MAC Address Lookup"
         description="Identifique fabricantes através do OUI de endereços MAC."
       />

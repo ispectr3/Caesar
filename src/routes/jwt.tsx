@@ -31,7 +31,7 @@ function JwtTool() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo 51"
+        eyebrow="// Módulo 36"
         title="JWT Decoder"
         description="Decodifica tokens JWT client-side para análise forense e segurança de APIs. Detecta algoritmos fracos e timestamps de expiração."
       />
