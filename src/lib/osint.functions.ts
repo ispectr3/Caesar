@@ -50,6 +50,23 @@ function checkRateLimit(): void {
   }
 }
 
+export function checkLlmRateLimit(): void {
+  const now = Date.now();
+  const windowMs = 60000; // 1 min
+  const maxRequests = 10; // max 10 LLM reqs per minute
+  
+  let record = rateLimitMap.get("llm_global");
+  if (!record || now - record.lastReset > windowMs) {
+    record = { count: 1, lastReset: now };
+  } else {
+    record.count++;
+  }
+  rateLimitMap.set("llm_global", record);
+  if (record.count > maxRequests) {
+    throw new Error("Rate limit de IA excedido (máximo 10 análises por minuto). Tente novamente em instantes.");
+  }
+}
+
 function sanitizeInput(val: string): string {
   checkRateLimit();
   // Remove script tags, eval, common injection chars to prevent Prompt Injection / XSS
@@ -1790,6 +1807,7 @@ export const scamAnalyze = createServerFn({ method: "POST" })
   .validator(scamSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: ScamAnalysisResult | null }> => {
     try {
+      checkLlmRateLimit();
       const text = data.text;
       const lowerText = text.toLowerCase();
       const indicators: ScamIndicator[] = [];

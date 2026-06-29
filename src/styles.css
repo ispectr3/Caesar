@@ -17,6 +17,17 @@
   background: transparent;
 }
 
+/* Mobile Polish & Accessibility */
+@media screen and (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important; /* Previne auto-zoom no iOS Safari */
+  }
+}
+
+button {
+  min-height: 44px; /* Touch target mínimo da Apple/WCAG */
+}
+
 /* ResultCard entrance animation */
 @keyframes fadeSlideIn {
   from {
