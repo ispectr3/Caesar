@@ -175,24 +175,7 @@ function CpfTool() {
                 </ResultCard>
               </div>
 
-              {/* Informações sobre Integrações Reais */}
-              <ResultCard title="Mapeamento de Riscos & Dark Web">
-                <div className="space-y-4 text-xs font-mono text-muted-foreground leading-relaxed">
-                  <div className="p-4 border border-border/30 bg-background/50">
-                    <span className="text-primary font-bold block mb-2 uppercase tracking-widest text-[10px]">
-                      [!] Integração de APIs Necessária
-                    </span>
-                    <p className="mb-3 text-[11px] text-foreground/80 leading-relaxed">
-                      A verificação avançada de vazamento de credenciais na Dark Web, monitoramento de listas de sanções internacionais, alertas da Interpol e rastros de Pessoas Politicamente Expostas (PEP) requerem acesso a serviços de enriquecimento de dados corporativos ou chaves de API de terceiros (como HaveIBeenPwned, IntelX, ou bases de dados governamentais homologadas).
-                    </p>
-                    <div className="flex flex-wrap gap-2 pt-1.5">
-                      <span className="bg-primary/5 border border-border/40 text-[9px] px-2 py-0.5 font-sans font-semibold">HIBP API</span>
-                      <span className="bg-primary/5 border border-border/40 text-[9px] px-2 py-0.5 font-sans font-semibold">IntelX (OSINT)</span>
-                      <span className="bg-primary/5 border border-border/40 text-[9px] px-2 py-0.5 font-sans font-semibold">OFAC Sanctions List</span>
-                    </div>
-                  </div>
-                </div>
-              </ResultCard>
+
             </div>
             
             <div className="lg:col-span-1 print:hidden">
