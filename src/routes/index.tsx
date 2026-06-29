@@ -744,7 +744,7 @@ function Index() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar ferramenta..."
-              className="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 font-mono text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-all duration-200"
+              className="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 font-mono text-xs text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-primary/50 transition-all duration-200"
             />
             {search && (
               <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">

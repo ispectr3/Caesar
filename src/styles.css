@@ -121,14 +121,14 @@ button {
   --popover-foreground: #E8EDF2;
 
   /* Vermelho crimson preciso — inteligência, não alarme */
-  --primary: #E8253A;
+  --primary: #C0002A;
   --primary-foreground: #FFFFFF;
 
   --secondary: #131B28;
   --secondary-foreground: #E8EDF2;
 
   --muted: #131B28;
-  --muted-foreground: #6E7E8A;
+  --muted-foreground: #8fa3c2;
 
   /* Accent: crimson-rose mais profundo para hover/destaque */
   --accent: #C2185B;
