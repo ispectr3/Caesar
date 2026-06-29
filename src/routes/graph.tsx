@@ -4,8 +4,9 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ToolForm } from "@/components/ToolForm";
 import { ReactFlow, Background, Controls, Node, Edge, Position, Handle } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { dnsLookup, whoisLookup, ipLookup } from "@/lib/osint.functions";
-import { Loader2 } from "lucide-react";
+import { dnsLookup, whoisLookup, ipLookup, generateAiDossier } from "@/lib/osint.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { Loader2, Brain } from "lucide-react";
 
 export const Route = createFileRoute("/graph")({
   head: () => ({
@@ -44,13 +45,33 @@ function GraphPage() {
   const [edges, setEdges] = useState<Edge[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const generateAiFn = useServerFn(generateAiDossier);
   const { q } = Route.useSearch() as { q?: string };
+
+  const handleGenerateSummary = async () => {
+    if (nodes.length === 0) return;
+    setAiLoading(true);
+    try {
+      const dataContext = JSON.stringify(nodes.map(n => n.data));
+      const prompt = `Com base nestes dados de infraestrutura (nós de um grafo OSINT): ${dataContext}, escreva um relatório de reconhecimento conciso e tático em 5 bullet points.`;
+      const res = await generateAiFn({ data: { moduleName: "Visual OSINT Graph", dataContext: prompt } });
+      if (res.data) setAiSummary(res.data);
+      else if (res.error) setAiSummary("Erro: " + res.error);
+    } catch (e) {
+      setAiSummary("Falha ao gerar resumo tático.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const handleScan = async (domain: string) => {
     setLoading(true);
     setError(null);
     setNodes([]);
     setEdges([]);
+    setAiSummary(null);
 
     try {
       const cleanDomain = domain.replace(/^https?:\/\//, "").replace(/\/.*$/, "").toLowerCase();
@@ -151,8 +172,12 @@ function GraphPage() {
         inputType="domain"
       >
         {(nodes.length > 0 || loading) && (
-          <div className="card-cyber border border-primary/30 h-[600px] mt-4 relative bg-[#0e0e10]">
-            {loading && (
+          <div className="space-y-4">
+            <div className="block md:hidden border border-warning/40 bg-warning/10 text-warning px-4 py-3 rounded-none font-mono text-[10px] uppercase tracking-wider text-center">
+              Recomendado visualização em Desktop para explorar o grafo de forma eficiente.
+            </div>
+            <div className="card-cyber border border-primary/30 h-[600px] relative bg-[#0e0e10]">
+              {loading && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm font-mono text-primary gap-4">
                 <Loader2 size={32} className="animate-spin" />
                 <span className="tracking-[0.2em] text-sm">MAPEANDO INFRAESTRUTURA...</span>
@@ -170,8 +195,30 @@ function GraphPage() {
               <Controls className="bg-card border border-border fill-primary" />
             </ReactFlow>
             <div className="absolute bottom-2 right-2 text-[9px] font-mono text-muted-foreground/50 uppercase">
-              // INTERACTIVE MAP ACTIVE
+                // INTERACTIVE MAP ACTIVE
+              </div>
             </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleGenerateSummary}
+                disabled={aiLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 hover:border-primary/50 transition-colors font-mono text-xs disabled:opacity-50"
+              >
+                {aiLoading ? <Loader2 size={14} className="animate-spin" /> : <Brain size={14} />}
+                [ GERAR RESUMO TÁTICO COM IA ]
+              </button>
+            </div>
+
+            {aiSummary && (
+              <div className="mt-4 p-5 border border-primary/40 bg-primary/5 font-mono text-sm leading-relaxed text-foreground whitespace-pre-wrap fade-in-up">
+                <div className="flex items-center gap-2 text-primary font-bold mb-3 uppercase tracking-wider text-xs">
+                  <Brain size={16} /> // RELATÓRIO DE RECONHECIMENTO (GROQ)
+                </div>
+                {aiSummary}
+              </div>
+            )}
           </div>
         )}
       </ToolForm>

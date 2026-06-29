@@ -73,11 +73,12 @@ export function ToolForm({
   storageKey,
   children,
   extraInputs,
+  apiKeyStorageKey,
 }: {
   label: string;
   placeholder: string;
   buttonText: string;
-  onSubmit: (value: string) => void;
+  onSubmit: (value: string, apiKey?: string) => void;
   loading: boolean;
   error: string | null;
   inputType?: "cnpj" | "cpf" | "phone" | "domain" | "ip" | "email" | "default";
@@ -85,9 +86,18 @@ export function ToolForm({
   storageKey?: string;
   children?: ReactNode;
   extraInputs?: ReactNode;
+  apiKeyStorageKey?: string;
 }) {
   const [value, setValue] = useState(defaultValue);
   const [history, setHistory] = useState<string[]>([]);
+  const [apiKey, setApiKey] = useState('');
+
+  useEffect(() => {
+    if (apiKeyStorageKey) {
+      const storedKey = sessionStorage.getItem(`caesar_apikey_${apiKeyStorageKey}`);
+      if (storedKey) setApiKey(storedKey);
+    }
+  }, [apiKeyStorageKey]);
 
   useEffect(() => {
     if (defaultValue) {
@@ -145,10 +155,29 @@ export function ToolForm({
           e.preventDefault();
           if (value.trim()) {
             saveToHistory(value);
-            onSubmit(value.trim());
+            if (apiKeyStorageKey && apiKey.trim()) {
+              sessionStorage.setItem(`caesar_apikey_${apiKeyStorageKey}`, apiKey.trim());
+            }
+            onSubmit(value.trim(), apiKey.trim() || undefined);
           }
         }}
         className="flex flex-col sm:flex-row gap-3 mb-8 no-print max-w-4xl mx-auto w-full"
+      >
+{apiKeyStorageKey && (
+        <div className="max-w-4xl mx-auto mb-4 px-1 no-print">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 border border-red-500/30 bg-red-500/5 p-3 font-mono text-xs">
+            <span className="text-red-400 font-bold uppercase tracking-wider shrink-0 flex items-center gap-1"><AlertTriangle size={12}/> {apiKeyStorageKey} API KEY:</span>
+            <input 
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder={`Sua chave da API (Salva apenas no navegador)`}
+              className="flex-1 bg-black/60 border border-white/10 px-3 py-1.5 focus:outline-none focus:border-red-500/50 text-foreground placeholder:text-muted-foreground/50 w-full"
+            />
+          </div>
+        </div>
+      )}
+      <div className="flex flex-col sm:flex-row gap-3 w-full"
       >
         <label className="sr-only">{label}</label>
         <div className="flex-1 relative">
@@ -180,6 +209,7 @@ export function ToolForm({
             </>
           )}
         </button>
+      </div>
       </form>
 
       {extraInputs && (

@@ -93,6 +93,7 @@ function AbuseIpdbPage() {
       />
       <ToolForm
         defaultValue={q}
+        apiKeyStorageKey="AbuseIPDB"
         storageKey="abuseipdb"
         label="Endereço IP"
         placeholder="ex: 1.2.3.4"

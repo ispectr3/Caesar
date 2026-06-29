@@ -67,7 +67,7 @@ function ShodanPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any | null>(null);
 
-  const handleSubmit = async (value: string) => {
+  const handleSubmit = async (value: string, apiKey?: string) => {
     setLoading(true);
     setError(null);
     setResult(null);
@@ -92,6 +92,7 @@ function ShodanPage() {
       />
       <ToolForm
         defaultValue={q}
+        apiKeyStorageKey="Shodan"
         storageKey="shodan"
         label="IP ou Hostname"
         placeholder="ex: 8.8.8.8 ou target.com"

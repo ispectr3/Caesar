@@ -55,7 +55,7 @@ function VirusTotalPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<VirusTotalInfo | null>(null);
 
-  const handleSubmit = async (value: string) => {
+  const handleSubmit = async (value: string, apiKey?: string) => {
     setLoading(true);
     setError(null);
     setResult(null);
@@ -63,7 +63,7 @@ function VirusTotalPage() {
     const query = value.trim();
 
     try {
-      const res = await fn({ data: { query } });
+      const res = await fn({ data: { query, apiKey } });
       if (res.error) {
         setError(res.error);
       } else {
@@ -86,6 +86,7 @@ function VirusTotalPage() {
       />
       <ToolForm
         defaultValue={q}
+        apiKeyStorageKey="VirusTotal"
         storageKey="virustotal"
         label="Hash / URL / IP / Domínio"
         placeholder="ex: d41d8cd98f00b204e9800998ecf8427e ou 8.8.8.8 ou malware.com"

@@ -3824,7 +3824,7 @@ export const virustotalLookup = createServerFn({ method: "POST" })
   .validator(virustotalSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: VirusTotalInfo | null }> => {
     try {
-      const apiKey = process.env.VIRUSTOTAL_API_KEY || (globalThis as any).VIRUSTOTAL_API_KEY;
+      const apiKey = data.apiKey || process.env.VIRUSTOTAL_API_KEY || (globalThis as any).VIRUSTOTAL_API_KEY;
       if (!apiKey) {
         return { error: "VIRUSTOTAL_API_KEY não está configurada nas variáveis de ambiente.", data: null };
       }
@@ -3928,5 +3928,50 @@ export const virustotalLookup = createServerFn({ method: "POST" })
       };
     } catch (e) {
       return { error: e instanceof Error ? e.message : "Erro desconhecido", data: null };
+    }
+  });
+
+
+export const generateSmartUsernames = createServerFn({ method: "POST" })
+  .validator(z.object({ name: z.string() }))
+  .handler(async ({ data }): Promise<{ error: string | null; data: string[] | null }> => {
+    try {
+      const groqApiKey = process.env.GROQ_API_KEY || (globalThis as any).GROQ_API_KEY;
+      if (!groqApiKey) return { error: "Chave do Groq não configurada no backend.", data: null };
+      
+      const prompt = `Atue como um especialista em profiling e OSINT. Dado o nome real "${data.name}", gere EXATAMENTE 30 variações inteligentes e realistas de usernames que esta pessoa poderia usar em redes sociais corporativas ou informais. Baseie-se em padrões psicológicos reais (iniciais, abreviações, sufixos de ano, underscores, leetspeak, etc). Retorne APENAS um JSON válido contendo um array de strings. Nada mais. Exemplo: ["john.doe", "jdoe99", "_johnd"]`;
+      
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${groqApiKey}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.7,
+          response_format: { type: "json_object" } // Using json object to enforce JSON, wait Groq llama3 supports this if we say JSON
+        })
+      });
+      
+      if (!response.ok) return { error: `Erro na API do Groq (Status ${response.status})`, data: null };
+      const body = await response.json();
+      const text = body.choices?.[0]?.message?.content || "";
+      
+      // parse JSON
+      try {
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) return { error: null, data: parsed };
+        if (parsed.usernames && Array.isArray(parsed.usernames)) return { error: null, data: parsed.usernames };
+        // regex fallback
+        const matches = text.match(/"([^"]+)"/g);
+        if (matches) return { error: null, data: matches.map(m => m.replace(/"/g, '')) };
+        return { error: "Formato de resposta inesperado da IA.", data: null };
+      } catch (e) {
+        return { error: "Falha ao extrair JSON da IA.", data: null };
+      }
+    } catch (err: any) {
+      return { error: `Falha na IA: ${err.message}`, data: null };
     }
   });

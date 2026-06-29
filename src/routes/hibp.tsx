@@ -151,7 +151,8 @@ function HibpPage() {
 
       {activeTab === "email" ? (
         <ToolForm
-          storageKey="hibp_email"
+          apiKeyStorageKey="HaveIBeenPwned"
+        storageKey="hibp_email"
           label="E-mail"
           placeholder="ex: investigacao@alvo.com"
           buttonText="Verificar E-mail"

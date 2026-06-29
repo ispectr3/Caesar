@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard } from "@/components/ToolForm";
+import { generateSmartUsernames } from "@/lib/osint.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { Loader2, Brain } from "lucide-react";
 import { Copy, Check, Search, Filter, HelpCircle, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/namint")({
@@ -39,6 +42,9 @@ function NamintTool() {
   const [filter, setFilter] = useState("");
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"all" | "usernames" | "emails">("all");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiGeneratedUsernames, setAiGeneratedUsernames] = useState<string[]>([]);
+  const generateAiFn = useServerFn(generateSmartUsernames);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -51,6 +57,12 @@ function NamintTool() {
     if (!firstName.trim() && !lastName.trim()) return;
     setSubmitted(true);
     setFilter("");
+    setAiGeneratedUsernames([]);
+    setAiLoading(true);
+    generateAiFn({ data: { name: `${firstName} ${middleName} ${lastName}`.trim() } })
+      .then(res => { if (res.data) setAiGeneratedUsernames(res.data); })
+      .catch(e => console.error(e))
+      .finally(() => setAiLoading(false));
   };
 
   // Logic to generate combinations
@@ -141,7 +153,9 @@ function NamintTool() {
     usernamesSet.add(`${u}real`);
   });
 
-  const generatedUsernames = Array.from(usernamesSet).sort();
+  const baseGenerated = Array.from(usernamesSet);
+  aiGeneratedUsernames.forEach(u => baseGenerated.push(u));
+  const generatedUsernames = Array.from(new Set(baseGenerated)).sort();
 
   const emailDomains = [
     "gmail.com",
@@ -318,7 +332,7 @@ function NamintTool() {
                         : "bg-background/20 text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    Usernames ({generatedUsernames.length})
+                    Usernames ({generatedUsernames.length}) {aiLoading && <Loader2 size={10} className="inline animate-spin ml-1" />}
                   </button>
                   <button
                     type="button"
@@ -349,6 +363,7 @@ function NamintTool() {
                           </span>
                           <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground block mt-0.5">
                             {item.type === "username" ? "Username" : "E-mail"}
+                            {aiGeneratedUsernames.includes(item.val) && <span className="ml-2 text-[8px] bg-primary/20 text-primary border border-primary/30 px-1 py-0.5 rounded-sm inline-flex items-center gap-1"><Brain size={8}/> AI GENERATED</span>}
                           </span>
                         </div>
 
