@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { ResultCard, ToolForm } from "../components/ToolForm";
-import { KeyValue } from "../components/KeyValue";
+import { ResultCard, ToolForm, KeyValue } from "../components/ToolForm";
 
 export const Route = createFileRoute("/mac")({
   head: () => ({
