@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { DisclaimerModal } from "../components/DisclaimerModal";
 
 import appCss from "../styles.css?url";
 
@@ -123,6 +124,7 @@ function RootComponent() {
       </head>
       <body className="noise-overlay">
         <QueryClientProvider client={queryClient}>
+          <DisclaimerModal />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
         </QueryClientProvider>

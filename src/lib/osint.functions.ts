@@ -60,12 +60,62 @@ function sanitizeInput(val: string): string {
     .trim();
 }
 
+function isSafeUrl(urlStr: string): boolean {
+  try {
+    const parsed = new URL(urlStr);
+    
+    // 1. Only allow HTTP and HTTPS
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return false;
+    }
+
+    const hostname = parsed.hostname.toLowerCase();
+    
+    // 2. Block loopback and link-local hostnames
+    if (
+      hostname === "localhost" ||
+      hostname.endsWith(".localhost") ||
+      hostname === "127.0.0.1" ||
+      hostname === "[::1]" ||
+      hostname === "169.254.169.254" // AWS metadata
+    ) {
+      return false;
+    }
+
+    // 3. Block private IP ranges (IPv4)
+    const ipv4Regex = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;
+    const match = hostname.match(ipv4Regex);
+    if (match) {
+      const p1 = parseInt(match[1], 10);
+      const p2 = parseInt(match[2], 10);
+      
+      // 10.0.0.0/8
+      if (p1 === 10) return false;
+      // 172.16.0.0/12
+      if (p1 === 172 && p2 >= 16 && p2 <= 31) return false;
+      // 192.168.0.0/16
+      if (p1 === 192 && p2 === 168) return false;
+      // 127.0.0.0/8
+      if (p1 === 127) return false;
+    }
+
+    return true;
+  } catch (e) {
+    return false; // se a URL for malformada, bloqueia
+  }
+}
+
 async function fetchWithRetry(
   url: string,
   options: RequestInit & { timeout?: number } = {},
   retries = 2,
   delayMs = 1500
 ): Promise<Response> {
+  // [!] Defesa Anti-SSRF
+  if (!isSafeUrl(url)) {
+    throw new Error("Acesso negado: URL alvo é restrita ou inválida (Filtro Anti-SSRF).");
+  }
+
   const timeout = options.timeout ?? 12000;
   
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -586,14 +636,14 @@ export const headersAnalyze = createServerFn({ method: "POST" })
   .validator(urlSchema)
   .handler(async ({ data }): Promise<{ error: string | null; data: HeadersAnalysis | null }> => {
     try {
-      const res = await fetch(data.url, {
+      const res = await fetchWithRetry(data.url, {
         method: "GET",
         redirect: "follow",
         headers: {
           "User-Agent": "Mozilla/5.0 (compatible; OSINT-HeaderCheck/1.0)",
         },
-        signal: AbortSignal.timeout(10000),
-      });
+        timeout: 10000,
+      }, 1);
 
       const headers: Record<string, string> = {};
       res.headers.forEach((value, key) => {
