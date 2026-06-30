@@ -124,6 +124,11 @@ function DataJudTool() {
       >
         {result ? (
           <div className="space-y-6">
+            <div className="w-full bg-red-950/40 border border-red-500/50 p-3 text-center mb-4">
+              <span className="text-red-400 font-mono text-sm font-bold tracking-widest uppercase">
+                [ MODO DEMONSTRAÇÃO - DADOS SIMULADOS ]
+              </span>
+            </div>
             {/* Header info */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-primary/30">
               <div>
@@ -180,7 +185,7 @@ function DataJudTool() {
           </div>
         ) : (
           <ModuleInfoTabs
-            how={"Consulta a API CNJ DataJud com o número único processual para recuperar metadados do processo: classe, assunto, tribunal, vara e movimentações processuais."}
+            how={"(MODO DEMONSTRAÇÃO) A API oficial do CNJ DataJud exige convênio ou token privado institucional. Atualmente, este módulo gera um dossiê determinístico simulado com base no número digitado para fins de demonstração do design."}
             interpret={"Processos criminais, falências e execuções fiscais revelam o histórico jurídico do alvo. Cruze o número do processo com o nome do advogado para identificar conexões entre investigados."}
             isPassive={true}
           />

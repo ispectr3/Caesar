@@ -56,7 +56,7 @@ export function DisclaimerModal() {
               </div>
 
               <p>
-                <strong>Privacidade e Telemetria:</strong> O Caesar não retém, não armazena e não envia históricos de consultas para servidores centrais. Todos os dossiês compilados residem exclusivamente no armazenamento local (localStorage) do seu navegador.
+                <strong>Privacidade e Telemetria:</strong> Todos os dossiês compilados residem exclusivamente no armazenamento local (localStorage) do seu navegador.
               </p>
 
               <p>

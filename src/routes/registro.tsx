@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { ShieldCheck, Calendar, ShieldAlert } from "lucide-react";
+import { whoisLookup } from "@/lib/osint.functions";
 
 export const Route = createFileRoute("/registro")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -35,7 +36,7 @@ function RegistroBrTool() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any | null>(null);
 
-  const submit = (domain: string) => {
+  const submit = async (domain: string) => {
     const clean = domain.trim().toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, "");
     if (!clean || !clean.includes(".")) {
       setError("Insira um domínio válido.");
@@ -52,41 +53,57 @@ function RegistroBrTool() {
     setError(null);
     setResult(null);
 
-    // Realistic deterministic simulation
-    setTimeout(() => {
-      const length = clean.length;
-      const firstChar = clean[0];
-      const isCnpj = length % 2 === 0;
+    try {
+      const resp = await whoisLookup({ data: { domain: clean } });
+      if (resp.error) {
+        setError(resp.error);
+      } else if (resp.data) {
+        const info = resp.data;
+        
+        let holder = "Não disponível";
+        let document = "Não disponível";
+        let owner = "Não disponível";
+        let billing = "Não disponível";
+        let tech = "Não disponível";
 
-      // Deterministic fake CNPJ or CPF
-      const doc = isCnpj 
-        ? `${(length * 7).toString().padStart(2, "0")}.${(length * 11).toString().padStart(3, "0")}.${(length * 13).toString().padStart(3, "0")}/0001-${(length * 3).toString().padStart(2, "0")}`
-        : `${(length * 9).toString().padStart(3, "0")}.${(length * 15).toString().padStart(3, "0")}.${(length * 21).toString().padStart(3, "0")}-${(length * 2).toString().padStart(2, "0")}`;
-
-      const holder = firstChar < "m" ? "Caesar Security Ltda" : "Investigação & Cia S/A";
-      const status = "publicado";
-
-      setResult({
-        domain: clean,
-        status,
-        holder,
-        document: doc,
-        documentType: isCnpj ? "CNPJ" : "CPF",
-        createdAt: new Date(2018, (length % 12), (length % 28) + 1).toLocaleDateString("pt-BR"),
-        updatedAt: new Date(2025, (length % 12), (length % 28) + 1).toLocaleDateString("pt-BR"),
-        expiresAt: new Date(2027, (length % 12), (length % 28) + 1).toLocaleDateString("pt-BR"),
-        dns: [
-          `ns1.${clean}`,
-          `ns2.${clean}`
-        ],
-        contacts: {
-          owner: "ADMIN_BR_SEC",
-          billing: "BILL_BR_SEC",
-          tech: "TECH_BR_SEC"
+        for (const ent of info.entities) {
+          if (ent.roles.includes("registrant")) {
+            if (ent.name) holder = ent.name;
+            if (ent.document) document = ent.document;
+            owner = ent.handle;
+          }
+          if (ent.roles.includes("administrative")) {
+            billing = ent.handle;
+          }
+          if (ent.roles.includes("technical")) {
+            tech = ent.handle;
+          }
         }
-      });
+
+        const getEvent = (action: string) => info.events.find(e => e.eventAction === action)?.eventDate;
+
+        setResult({
+          domain: info.domain,
+          status: info.status[0] || "publicado",
+          holder,
+          document,
+          documentType: document.length > 14 ? "CNPJ" : "CPF",
+          createdAt: getEvent("registration") ? new Date(getEvent("registration")!).toLocaleDateString("pt-BR") : "N/A",
+          updatedAt: getEvent("last changed") ? new Date(getEvent("last changed")!).toLocaleDateString("pt-BR") : "N/A",
+          expiresAt: getEvent("expiration") ? new Date(getEvent("expiration")!).toLocaleDateString("pt-BR") : "N/A",
+          dns: info.nameservers,
+          contacts: {
+            owner,
+            billing,
+            tech
+          }
+        });
+      }
+    } catch (err: any) {
+      setError(err.message || "Erro desconhecido ao consultar RDAP");
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (

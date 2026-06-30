@@ -96,6 +96,11 @@ function FaviconTool() {
       >
         {result ? (
           <div className="space-y-6">
+            <div className="w-full bg-red-950/40 border border-red-500/50 p-3 text-center mb-4">
+              <span className="text-red-400 font-mono text-sm font-bold tracking-widest uppercase">
+                [ MODO DEMONSTRAÇÃO - DADOS SIMULADOS ]
+              </span>
+            </div>
             {/* Header info */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-primary/20">
               <div className="flex items-center gap-4">
@@ -185,7 +190,7 @@ function FaviconTool() {
           </div>
         ) : (
           <ModuleInfoTabs
-            how={"Baixa o favicon do site, calcula seu MurmurHash3 e exibe o valor pronto para buscas no Shodan (query: http.favicon.hash:XXXXXXXX). Permite encontrar outros servidores usando o mesmo favicon."}
+            how={"(MODO DEMONSTRAÇÃO) O download direto de favicons de terceiros para cálculo de hashes binários é tipicamente bloqueado por políticas de CORS nos navegadores. Atualmente, este módulo exibe dados mockados baseados no tamanho da URL para fins visuais e de demonstração da plataforma."}
             interpret={"O mesmo hash de favicon em múltiplos IPs indica a mesma aplicação/empresa. Útil para descobrir infraestrutura oculta de um alvo que usa o mesmo template ou painel de controle em vários servidores."}
             isPassive={true}
           />

@@ -104,8 +104,16 @@ function AbuseIpdbPage() {
         inputType="ip"
       >
         {result ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ResultCard
+          <div className="space-y-4">
+            {result.isSimulated && (
+              <div className="w-full bg-red-950/40 border border-red-500/50 p-3 text-center mb-4">
+                <span className="text-red-400 font-mono text-sm font-bold tracking-widest uppercase">
+                  [ MODO DEMONSTRAÇÃO - DADOS SIMULADOS DEVIDO A FALTA DE API KEY ]
+                </span>
+              </div>
+            )}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <ResultCard
                 exportData={result}
                 exportName="abuseipdb_export" title="Reputação do IP">
               <KeyValue k="IP" v={result.ipAddress} />

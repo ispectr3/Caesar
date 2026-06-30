@@ -265,7 +265,7 @@ export type WhoisInfo = {
   status: string[];
   events: Array<{ eventAction: string; eventDate: string }>;
   nameservers: string[];
-  entities: Array<{ handle: string; roles: string[] }>;
+  entities: Array<{ handle: string; roles: string[]; document?: string; name?: string }>;
   registrarName?: string;
   registrarEmail?: string;
 };
@@ -294,16 +294,11 @@ export const whoisLookup = createServerFn({ method: "POST" })
       status?: string[];
       events?: Array<{ eventAction: string; eventDate: string }>;
       nameservers?: Array<{ ldhName?: string }>;
-      entities?: Array<{ handle?: string; roles?: string[]; vcardArray?: any[] }>;
+      entities?: Array<{ handle?: string; roles?: string[]; vcardArray?: any[]; publicIds?: Array<{identifier?: string}> }>;
     };
     const nameservers = (json.nameservers ?? [])
       .map((ns) => ns.ldhName ?? "")
       .filter((n): n is string => n.length > 0);
-    const entities = (json.entities ?? []).map((e) => ({
-      handle: e.handle ?? "",
-      roles: e.roles ?? [],
-    }));
-
     function getVcardValue(vcardArray: any[] | undefined, propName: string): string | null {
       if (!vcardArray || !Array.isArray(vcardArray) || vcardArray.length < 2) return null;
       const props = vcardArray[1];
@@ -312,6 +307,13 @@ export const whoisLookup = createServerFn({ method: "POST" })
       if (!prop) return null;
       return prop[prop.length - 1];
     }
+
+    const entities = (json.entities ?? []).map((e) => ({
+      handle: e.handle ?? "",
+      roles: e.roles ?? [],
+      document: e.publicIds?.[0]?.identifier,
+      name: getVcardValue(e.vcardArray, "fn") ?? undefined
+    }));
 
     let registrarName = "";
     let registrarEmail = "";
@@ -3016,6 +3018,7 @@ export type AbuseIpdbInfo = {
   numDistinctUsers: number;
   lastReportedAt: string | null;
   reports?: AbuseIpdbReport[];
+  isSimulated?: boolean;
 };
 
 export const abuseIpdbLookup = createServerFn({ method: "POST" })
@@ -3084,6 +3087,7 @@ export const abuseIpdbLookup = createServerFn({ method: "POST" })
         }
         
         const mockData: AbuseIpdbInfo = {
+          isSimulated: true,
           ipAddress: ip,
           isPublic: true,
           ipVersion: ip.includes(":") ? 6 : 4,
