@@ -63,8 +63,10 @@ const exportToTxt = (data: any, fileName: string) => {
 
 export function ToolForm({
   label,
+  title,
   placeholder,
   buttonText,
+  buttonLabel,
   onSubmit,
   loading,
   error,
@@ -75,12 +77,14 @@ export function ToolForm({
   extraInputs,
   apiKeyStorageKey,
 }: {
-  label: string;
+  label?: string;
+  title?: string;
   placeholder: string;
-  buttonText: string;
+  buttonText?: string;
+  buttonLabel?: string;
   onSubmit: (value: string, apiKey?: string) => void;
-  loading: boolean;
-  error: string | null;
+  loading?: boolean;
+  error?: string | null;
   inputType?: "cnpj" | "cpf" | "phone" | "domain" | "ip" | "email" | "default";
   defaultValue?: string;
   storageKey?: string;
@@ -88,6 +92,10 @@ export function ToolForm({
   extraInputs?: ReactNode;
   apiKeyStorageKey?: string;
 }) {
+  const displayLabel = label || title || "";
+  const displayButtonText = buttonText || buttonLabel || "Consultar";
+  const displayLoading = loading || false;
+  const displayError = error || null;
   const [value, setValue] = useState(defaultValue);
   const [history, setHistory] = useState<string[]>([]);
   const [apiKey, setApiKey] = useState('');
@@ -179,7 +187,7 @@ export function ToolForm({
       )}
       <div className="flex flex-col sm:flex-row gap-3 w-full"
       >
-        <label className="sr-only">{label}</label>
+        <label className="sr-only">{displayLabel}</label>
         <div className="flex-1 relative">
           <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm font-bold text-primary/70 pointer-events-none z-10 select-none">$</span>
           <input
@@ -194,17 +202,17 @@ export function ToolForm({
         </div>
         <button
           type="submit"
-          disabled={loading}
+          disabled={displayLoading}
           className="group px-8 py-3.5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-wider rounded-none transition-all duration-300 flex items-center justify-center gap-2 hover:opacity-90 hover:shadow-[0_0_20px_var(--primary)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? (
+          {displayLoading ? (
             <>
               <Loader2 size={14} className="animate-spin" />
               [ PROCESSANDO... ]
             </>
           ) : (
             <>
-              [ {buttonText.toUpperCase()} ]
+              [ {displayButtonText.toUpperCase()} ]
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </>
           )}
@@ -218,14 +226,14 @@ export function ToolForm({
         </div>
       )}
 
-      {error && (
+      {displayError && (
         <div className="mb-8 border border-destructive/40 bg-destructive/5 text-destructive px-5 py-4 rounded-none font-mono text-xs flex items-start gap-3 fade-in-up">
           <span className="text-destructive font-bold text-sm leading-none">✕ ERROR //</span>
-          <span>{error}</span>
+          <span>{displayError}</span>
         </div>
       )}
 
-      {loading && (
+      {displayLoading && (
         <div className="mb-8 space-y-3 font-mono text-xs text-primary/70 animate-pulse no-print">
           <div className="flex items-center gap-2">
             <Loader2 size={12} className="animate-spin" />

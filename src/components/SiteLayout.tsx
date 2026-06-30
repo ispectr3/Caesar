@@ -39,7 +39,6 @@ const MODULE_CATEGORIES = [
       { to: "/phone", label: "Phone OSINT" },
       { to: "/namint", label: "NAMINT Combiner" },
       { to: "/username", label: "WhatsMyName" },
-      { to: "/datajud", label: "CNJ DataJud" },
     ],
   },
   {
@@ -50,6 +49,7 @@ const MODULE_CATEGORIES = [
       { to: "/malwarebazaar", label: "Malware Bazaar" },
       { to: "/tor", label: "Tor Exit Node Check" },
       { to: "/abuseipdb", label: "AbuseIPDB" },
+      { to: "/paste", label: "Paste OSINT" },
     ],
   },
   {
@@ -81,6 +81,7 @@ const MODULE_CATEGORIES = [
       { to: "/cve", label: "CVE Search" },
       { to: "/registro", label: "Registro.br WHOIS" },
       { to: "/favicon", label: "Favicon Hash" },
+      { to: "/mac", label: "MAC Address Lookup" },
     ],
   },
   {
@@ -100,6 +101,9 @@ const MODULE_CATEGORIES = [
       { to: "/timestamp", label: "Timestamp Converter" },
       { to: "/ela", label: "Error Level Analysis" },
       { to: "/crypto", label: "Crypto Tracker" },
+      { to: "/wayback", label: "Wayback Machine" },
+      { to: "/emailblacklist", label: "Email Blacklist" },
+      { to: "/emailverify", label: "Email Verify" },
     ],
   },
 ];
