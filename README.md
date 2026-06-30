@@ -41,7 +41,7 @@ A plataforma conta com **50 módulos de reconhecimento** ativos e acessíveis di
 26. 🖼️ **EXIF Extractor** – Extrai metadados EXIF ocultos de imagens, incluindo GPS, modelo de câmera e data.
 27. 🚨 **HIBP Breach Check** – Verifique se seu e-mail ou senhas vazaram em brechas de segurança públicas.
 28. 🗄️ **Registro.br WHOIS** – Consulte proprietários, documentos associados (CNPJ/CPF) e DNS de domínios nacionais .br.
-29. ⚖️ **CNJ DataJud** – Consulte processos judiciais em tribunais nacionais usando a numeração única do CNJ.
+29. 🕰️ **Wayback Machine Archive** – Pesquise snapshots históricos e URLs ocultas cacheadas pelo Internet Archive.
 30. 🎛️ **Encoder / Decoder** – Codificador e decodificador multi-formato: Base64, URL, Hex, HTML e Binário.
 31. 🎛️ **Regex Extractor** – Extraia CPFs, CNPJs, e-mails, IPs, telefones e URLs de dumps de texto.
 32. ⏱️ **Timestamp Converter** – Converta Epoch Unix Timestamps para datas legíveis e vice-versa.
@@ -68,7 +68,7 @@ A plataforma conta com **50 módulos de reconhecimento** ativos e acessíveis di
 
 ## ⚙️ Under the Hood (Arquitetura Técnica)
 
-O Caesar opera em uma arquitetura serverless de borda (**Cloudflare Pages**). Para garantir a privacidade do investigador (zero-logging e proteção contra vazamento do IP original) e contornar bloqueios de CORS, o tráfego de módulos sensíveis é roteado e intermediado silenciosamente por **Server Functions** nativas do *TanStack Start*. No front-end, o estado é controlado estritamente para manter a alta performance das micro-animações, entregando uma simulação autêntica e ininterrupta de um terminal de inteligência.
+O Caesar opera em uma arquitetura serverless de borda (**Cloudflare Pages**). Para garantir a privacidade investigativa (proteção contra vazamento do IP original do analista para a infraestrutura do alvo) e contornar restrições severas de CORS (como cálculos criptográficos de Favicon e MAC Vendors), o tráfego de módulos sensíveis é roteado e intermediado silenciosamente por **Server Functions** nativas do *TanStack Start*. No front-end, o estado é controlado estritamente para manter a alta performance das micro-animações, entregando uma simulação autêntica e ininterrupta de um terminal de inteligência.
 
 ---
 
