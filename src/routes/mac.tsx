@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { ResultCard, ToolForm, KeyValue } from "../components/ToolForm";
+import { ResultCard, ToolForm, KeyValue, ModuleInfoTabs } from "../components/ToolForm";
 import { useServerFn } from "@tanstack/react-start";
 import { macLookup } from "../lib/osint.functions";
 
@@ -50,32 +50,31 @@ function MacTool() {
         description="Identifique fabricantes através do OUI de endereços MAC."
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-6 items-start">
-          <div className="space-y-6">
-            <ToolForm
-              title="Busca de Fabricante (OUI)"
-              placeholder="Ex: 00:1A:2B:3C:4D:5E"
-              buttonLabel="Consultar MAC"
-              onSubmit={handleAnalyze}
-              loading={loading}
-              error={error}
-              isPassive={true}
+      <ToolForm
+        title="Busca de Fabricante (OUI)"
+        placeholder="Ex: 00:1A:2B:3C:4D:5E"
+        buttonLabel="Consultar MAC"
+        onSubmit={handleAnalyze}
+        loading={loading}
+        error={error}
+      >
+        {result ? (
+          <div className="space-y-6 fade-in-up max-w-4xl mx-auto">
+            <ResultCard title="Resultados OUI">
+              <KeyValue k="Endereço Consultado" v={result.mac} />
+              <KeyValue k="Fabricante (Vendor)" v={result.vendor} />
+            </ResultCard>
+          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto">
+            <ModuleInfoTabs
               how="Consulta bases públicas de OUI (Organizationally Unique Identifier) na API MacVendors."
               interpret="Útil para reconhecer hardwares desconhecidos em capturas de tráfego de rede interna."
+              isPassive={true}
             />
-
-            {result && (
-              <div className="space-y-6 fade-in-up">
-                <ResultCard title="Resultados OUI">
-                  <KeyValue k="Endereço Consultado" v={result.mac} />
-                  <KeyValue k="Fabricante (Vendor)" v={result.vendor} />
-                </ResultCard>
-              </div>
-            )}
           </div>
-        </div>
-      </div>
+        )}
+      </ToolForm>
     </SiteLayout>
   );
 }
