@@ -523,16 +523,7 @@ export function ModuleInfoTabs({
             🔬 Playbook & Análise
           </button>
         </div>
-        <div className="sm:ml-auto flex items-center gap-1.5">
-          <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">Consulta:</span>
-          <span className={`px-2 py-0.5 font-mono text-[9px] uppercase font-bold border ${
-            isPassive
-              ? "bg-green-500/10 border-green-500/20 text-green-400"
-              : "bg-red-500/10 border-red-500/20 text-red-400"
-          }`}>
-            {isPassive ? "PASSIVA (100% SIGILOSA)" : "ATIVA (CONTATO COM ALVO)"}
-          </span>
-        </div>
+
       </div>
 
       <div className="font-sans text-xs text-foreground/80 leading-relaxed min-h-[60px]">

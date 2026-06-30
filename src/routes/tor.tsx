@@ -71,7 +71,7 @@ function TorCheckPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo — Threat Intel"
+        eyebrow="// Módulo 44"
         title="Tor Exit Node Check"
         description="Verifique se um endereço IPv4 consta na lista oficial e atualizada de nós de saída da rede Tor (The Onion Router). Essencial para identificar tentativas de anonimização em logs."
       />

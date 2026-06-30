@@ -118,7 +118,7 @@ function WafDetectorPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo — Infraestrutura"
+        eyebrow="// Módulo 50"
         title="WAF Fingerprint Detector"
         description="Identifica o Web Application Firewall (WAF) de um domínio analisando headers HTTP, padrões de resposta e cookies. Detecta Cloudflare, Akamai, Imperva, Sucuri, F5 e mais."
       />

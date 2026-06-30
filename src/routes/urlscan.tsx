@@ -94,7 +94,7 @@ function URLScanPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo — Threat Intel"
+        eyebrow="// Módulo 42"
         title="URLScan.io"
         description="Analise URLs suspeitas com screenshot, requisições de rede, DOM e geolocalização do servidor. Consulta o banco de dados público do URLScan.io."
       />

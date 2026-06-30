@@ -3998,7 +3998,10 @@ export const waybackLookup = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ error: string | null; data: any[] | null }> => {
     try {
       const target = data.domain.trim().replace(/^(https?:\/\/)?(www\.)?/, "");
-      const response = await fetchWithRetry(`http://web.archive.org/cdx/search/cdx?url=*.${target}/*&output=json&fl=original,timestamp,mimetype,statuscode&collapse=urlkey&limit=500`);
+      const response = await fetchWithRetry(
+        `https://web.archive.org/cdx/search/cdx?url=*.${target}/*&output=json&fl=original,timestamp,mimetype,statuscode&collapse=urlkey&limit=500`,
+        { timeout: 30000 }
+      );
       if (!response.ok) return { error: "Erro ao consultar a Wayback Machine", data: null };
       
       const json = await response.json();

@@ -85,7 +85,7 @@ function ShodanPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo — Infraestrutura"
+        eyebrow="// Módulo 47"
         title="Shodan Lookup"
         description="Consulte portas abertas, serviços, banners e vulnerabilidades conhecidas (CVEs) de um IP ou hostname através da API da Shodan — o maior motor de busca de dispositivos conectados."
         requiresKey={true}

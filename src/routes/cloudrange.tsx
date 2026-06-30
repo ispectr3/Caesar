@@ -160,7 +160,7 @@ function CloudRangePage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo — Infraestrutura"
+        eyebrow="// Módulo 49"
         title="Cloud Range Detector"
         description="Identifique se um endereço IP pertence a AWS, GCP (Google Cloud), Microsoft Azure, Cloudflare, DigitalOcean ou outros provedores cloud. Detecção nativa via ranges oficiais."
       />

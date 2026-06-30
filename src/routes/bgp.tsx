@@ -102,7 +102,7 @@ function BgpPage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="// Módulo — Infraestrutura"
+        eyebrow="// Módulo 48"
         title="BGP / ASN Map"
         description="Consulte prefixos IPv4/IPv6, peers BGP e informações de roteamento de um Sistema Autônomo (ASN). Útil para mapear a infraestrutura de rede de uma organização via BGPView."
       />
