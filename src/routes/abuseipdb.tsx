@@ -172,6 +172,7 @@ function AbuseIpdbPage() {
                 </ResultCard>
               </div>
             )}
+            </div>
           </div>
         ) : (
           <ModuleInfoTabs
