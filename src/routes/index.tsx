@@ -139,13 +139,13 @@ const TOOLS: {
   },
   {
     code: "29",
-    to: "/datajud" as const,
-    name: "CNJ DataJud",
-    desc: "Consulte processos judiciais em tribunais nacionais usando a numeração única do CNJ.",
-    input: "0000000-00.0000.0.00.0000",
-    icon: Scale,
+    to: "/wayback" as const,
+    name: "Wayback Machine",
+    desc: "Pesquise snapshots históricos e URLs ocultas cacheadas pelo Internet Archive.",
+    input: "target.com",
+    icon: History,
     color: "from-primary/25 to-accent/10",
-    category: "brasil",
+    category: "web",
   },
   // ── Threat Intel (novos) ──
   {

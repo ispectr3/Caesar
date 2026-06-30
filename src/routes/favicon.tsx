@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { Search, Copy, Check, Terminal, ExternalLink } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { faviconLookup } from "@/lib/osint.functions";
 
 export const Route = createFileRoute("/favicon")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -36,7 +38,9 @@ function FaviconTool() {
   const [result, setResult] = useState<any | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  const submit = (domain: string) => {
+  const fn = useServerFn(faviconLookup);
+
+  const submit = async (domain: string) => {
     const clean = domain.trim().toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, "");
     if (!clean || !clean.includes(".")) {
       setError("Insira um domínio ou link válido.");
@@ -48,26 +52,26 @@ function FaviconTool() {
     setError(null);
     setResult(null);
 
-    // Simulated/Deterministic calculation due to browser CORS locks on direct binary file downloads
-    setTimeout(() => {
-      const length = clean.length;
-      
-      // Seed-based deterministic MurmurHash3 mock values
-      const mmh3Hash = ((length * 123456789) % 2000000000) - 1000000000;
-      const md5Hash = Array.from(clean).reduce((acc, char) => (acc + char.charCodeAt(0)), 0).toString(16).padStart(32, "f");
-
-      const faviconUrl = `https://www.google.com/s2/favicons?domain=${clean}&sz=64`;
-
-      setResult({
-        domain: clean,
-        faviconUrl,
-        mmh3: mmh3Hash,
-        md5: md5Hash,
-        shodanQuery: `http.favicon.hash:${mmh3Hash}`,
-        censysQuery: `services.http.response.favicons.hashes: "${md5Hash}"`
-      });
+    try {
+      const res = await fn({ data: { domain: clean } });
+      if (res.error) {
+        setError(res.error);
+      } else {
+        const info = res.data;
+        setResult({
+          domain: clean,
+          faviconUrl: info.faviconUrl,
+          mmh3: info.mmh3,
+          md5: info.md5,
+          shodanQuery: `http.favicon.hash:${info.mmh3}`,
+          censysQuery: `services.http.response.favicons.hashes: "${info.md5}"`
+        });
+      }
+    } catch (e: any) {
+      setError(e.message || "Erro desconhecido");
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const copyToClipboard = (text: string, key: string) => {
@@ -96,11 +100,6 @@ function FaviconTool() {
       >
         {result ? (
           <div className="space-y-6">
-            <div className="w-full bg-red-950/40 border border-red-500/50 p-3 text-center mb-4">
-              <span className="text-red-400 font-mono text-sm font-bold tracking-widest uppercase">
-                [ MODO DEMONSTRAÇÃO - DADOS SIMULADOS ]
-              </span>
-            </div>
             {/* Header info */}
             <div className="card-cyber p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-primary/20">
               <div className="flex items-center gap-4">
@@ -190,7 +189,7 @@ function FaviconTool() {
           </div>
         ) : (
           <ModuleInfoTabs
-            how={"(MODO DEMONSTRAÇÃO) O download direto de favicons de terceiros para cálculo de hashes binários é tipicamente bloqueado por políticas de CORS nos navegadores. Atualmente, este módulo exibe dados mockados baseados no tamanho da URL para fins visuais e de demonstração da plataforma."}
+            how={"Baixa o favicon do site via backend, calcula seu MurmurHash3 e MD5, e exibe os valores prontos para buscas no Shodan ou Censys. Permite encontrar outros servidores (C2, templates) usando o mesmo favicon."}
             interpret={"O mesmo hash de favicon em múltiplos IPs indica a mesma aplicação/empresa. Útil para descobrir infraestrutura oculta de um alvo que usa o mesmo template ou painel de controle em vários servidores."}
             isPassive={true}
           />

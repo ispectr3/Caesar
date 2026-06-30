@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { ResultCard, ToolForm, KeyValue } from "../components/ToolForm";
+import { useServerFn } from "@tanstack/react-start";
+import { macLookup } from "../lib/osint.functions";
 
 export const Route = createFileRoute("/mac")({
   head: () => ({
@@ -12,16 +14,32 @@ export const Route = createFileRoute("/mac")({
 
 function MacTool() {
   const [result, setResult] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fn = useServerFn(macLookup);
 
   const handleAnalyze = async (mac: string) => {
-    // API mockada para demonstração rápida (macvendors.com pode ter bloqueio CORS)
-    // Em produção, isso iria para um osint.functions.ts
     const cleanMac = mac.replace(/[:-]/g, "").toUpperCase();
-    if (cleanMac.length !== 12) throw new Error("Formato de MAC inválido.");
+    if (cleanMac.length !== 12) {
+      setError("Formato de MAC inválido.");
+      setResult(null);
+      return;
+    }
     
-    // Simulate API fetch delay
-    await new Promise(r => setTimeout(r, 600));
-    setResult({ mac, vendor: "Desconhecido / Blocked by CORS for demo", random: false });
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const res = await fn({ data: { mac } });
+      if (res.error) setError(res.error);
+      else setResult({ mac, vendor: res.data });
+    } catch (e: any) {
+      setError(e.message || "Erro desconhecido");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,8 +58,10 @@ function MacTool() {
               placeholder="Ex: 00:1A:2B:3C:4D:5E"
               buttonLabel="Consultar MAC"
               onSubmit={handleAnalyze}
+              loading={loading}
+              error={error}
               isPassive={true}
-              how="Consulta bases públicas de OUI (Organizationally Unique Identifier)."
+              how="Consulta bases públicas de OUI (Organizationally Unique Identifier) na API MacVendors."
               interpret="Útil para reconhecer hardwares desconhecidos em capturas de tráfego de rede interna."
             />
 

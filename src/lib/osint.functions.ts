@@ -3979,3 +3979,118 @@ export const generateSmartUsernames = createServerFn({ method: "POST" })
       return { error: `Falha na IA: ${err.message}`, data: null };
     }
   });
+
+// --- FAVICON HASH LOOKUP ---
+function murmurhash3_32_gc(key: string) {
+  var remainder, bytes, h1, h1b, c1, c2, k1, i;
+  remainder = key.length & 3; bytes = key.length - remainder;
+  h1 = 0; c1 = 0xcc9e2d51; c2 = 0x1b873593; i = 0;
+  while (i < bytes) {
+      k1 = ((key.charCodeAt(i) & 0xff)) | ((key.charCodeAt(++i) & 0xff) << 8) | ((key.charCodeAt(++i) & 0xff) << 16) | ((key.charCodeAt(++i) & 0xff) << 24);
+    ++i;
+    k1 = ((((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16))) & 0xffffffff;
+    k1 = (k1 << 15) | (k1 >>> 17);
+    k1 = ((((k1 & 0xffff) * c2) + ((((k1 >>> 16) * c2) & 0xffff) << 16))) & 0xffffffff;
+    h1 ^= k1; h1 = (h1 << 13) | (h1 >>> 19);
+    h1b = ((((h1 & 0xffff) * 5) + ((((h1 >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
+    h1 = (((h1b & 0xffff) + 0x6b64) + ((((h1b >>> 16) + 0xe654) & 0xffff) << 16));
+  }
+  k1 = 0;
+  switch (remainder) {
+    case 3: k1 ^= (key.charCodeAt(i + 2) & 0xff) << 16;
+    case 2: k1 ^= (key.charCodeAt(i + 1) & 0xff) << 8;
+    case 1: k1 ^= (key.charCodeAt(i) & 0xff);
+    k1 = (((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
+    k1 = (k1 << 15) | (k1 >>> 17);
+    k1 = (((k1 & 0xffff) * c2) + ((((k1 >>> 16) * c2) & 0xffff) << 16)) & 0xffffffff;
+    h1 ^= k1;
+  }
+  h1 ^= key.length; h1 ^= h1 >>> 16;
+  h1 = (((h1 & 0xffff) * 0x85ebca6b) + ((((h1 >>> 16) * 0x85ebca6b) & 0xffff) << 16)) & 0xffffffff;
+  h1 ^= h1 >>> 13;
+  h1 = ((((h1 & 0xffff) * 0xc2b2ae35) + ((((h1 >>> 16) * 0xc2b2ae35) & 0xffff) << 16))) & 0xffffffff;
+  h1 ^= h1 >>> 16;
+  return h1 >>> 0;
+}
+
+import md5 from "md5";
+
+export const faviconLookup = createServerFn({ method: "POST" })
+  .validator(z.object({ domain: z.string() }))
+  .handler(async ({ data }): Promise<{ error: string | null; data: any | null }> => {
+    try {
+      let target = data.domain;
+      if (!target.startsWith("http")) target = "http://" + target;
+
+      const fetchUrl = `https://www.google.com/s2/favicons?domain=${data.domain}&sz=64`;
+
+      const response = await fetchWithRetry(fetchUrl);
+      if (!response.ok) return { error: "Falha ao baixar o favicon.", data: null };
+
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      
+      const base64 = buffer.toString('base64');
+      const chunks = base64.match(/.{1,76}/g) || [];
+      const formatted = chunks.join('\n') + '\n';
+      
+      let hash = murmurhash3_32_gc(formatted);
+      if (hash > 0x7fffffff) hash = hash - 0x100000000;
+
+      const md5Hash = md5(buffer);
+
+      return {
+        error: null,
+        data: {
+          faviconUrl: fetchUrl,
+          mmh3: hash,
+          md5: md5Hash
+        }
+      };
+    } catch (e: any) {
+      return { error: e.message || "Erro desconhecido", data: null };
+    }
+  });
+
+// --- MAC ADDRESS LOOKUP ---
+export const macLookup = createServerFn({ method: "POST" })
+  .validator(z.object({ mac: z.string() }))
+  .handler(async ({ data }): Promise<{ error: string | null; data: string | null }> => {
+    try {
+      const response = await fetchWithRetry(`https://api.macvendors.com/${encodeURIComponent(data.mac)}`);
+      if (response.status === 404) return { error: null, data: "Vendor não encontrado" };
+      if (!response.ok) return { error: "Erro na API MacVendors", data: null };
+      const vendor = await response.text();
+      return { error: null, data: vendor };
+    } catch (e: any) {
+      return { error: e.message || "Erro desconhecido", data: null };
+    }
+  });
+
+// --- WAYBACK MACHINE ---
+export const waybackLookup = createServerFn({ method: "POST" })
+  .validator(z.object({ domain: z.string() }))
+  .handler(async ({ data }): Promise<{ error: string | null; data: any[] | null }> => {
+    try {
+      const target = data.domain.trim().replace(/^(https?:\/\/)?(www\.)?/, "");
+      const response = await fetchWithRetry(`http://web.archive.org/cdx/search/cdx?url=*.${target}/*&output=json&fl=original,timestamp,mimetype,statuscode&collapse=urlkey&limit=500`);
+      if (!response.ok) return { error: "Erro ao consultar a Wayback Machine", data: null };
+      
+      const json = await response.json();
+      if (!Array.isArray(json) || json.length < 2) return { error: null, data: [] };
+      
+      const rows = json.slice(1);
+      const results = rows.map((row: string[]) => {
+        return {
+          url: row[0],
+          timestamp: row[1],
+          mime: row[2],
+          status: row[3]
+        };
+      });
+      
+      return { error: null, data: results };
+    } catch (e: any) {
+      return { error: e.message || "Erro desconhecido", data: null };
+    }
+  });
