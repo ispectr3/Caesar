@@ -3018,7 +3018,6 @@ export type AbuseIpdbInfo = {
   numDistinctUsers: number;
   lastReportedAt: string | null;
   reports?: AbuseIpdbReport[];
-  isSimulated?: boolean;
 };
 
 export const abuseIpdbLookup = createServerFn({ method: "POST" })
@@ -3033,79 +3032,7 @@ export const abuseIpdbLookup = createServerFn({ method: "POST" })
     try {
       const apiKey = process.env.ABUSEIPDB_API_KEY;
       if (!apiKey) {
-        // Fallback simulado determinístico para testes e demonstração
-        const ip = data.ip;
-        let seed = 0;
-        for (let i = 0; i < ip.length; i++) {
-          seed += ip.charCodeAt(i);
-        }
-        
-        const isMalicious = seed % 3 === 0;
-        const confidenceScore = isMalicious ? (seed % 60) + 40 : 0;
-        const totalReports = isMalicious ? (seed % 120) + 5 : 0;
-        
-        // Determinar país
-        const countries = ["BR", "US", "NL", "DE", "CN", "RU", "GB"];
-        const countryCode = countries[seed % countries.length];
-        
-        // Determinar ISP/Usage
-        const isps = [
-          { isp: "Claro Brasil", domain: "claro.com.br", usage: "ISP/Hosting" },
-          { isp: "DigitalOcean, LLC", domain: "digitalocean.com", usage: "Data Center/Web Hosting" },
-          { isp: "Comcast Cable Communications", domain: "comcast.net", usage: "ISP/Hosting" },
-          { isp: "Amazon.com, Inc.", domain: "amazonaws.com", usage: "Data Center/Web Hosting" },
-          { isp: "Linode, LLC", domain: "linode.com", usage: "Data Center/Web Hosting" },
-          { isp: "Vivo S.A.", domain: "vivo.com.br", usage: "ISP/Hosting" },
-        ];
-        const selectedIsp = isps[seed % isps.length];
-        
-        const reports: AbuseIpdbReport[] = [];
-        if (isMalicious) {
-          const comments = [
-            "SSH brute force attack detected from this host.",
-            "Port scanning activity targeting web ports.",
-            "Attempted SQL Injection injection payload sent.",
-            "DDoS traffic originating from IP.",
-            "Host participating in botnet spam campaign.",
-          ];
-          
-          const numReports = Math.min(5, totalReports);
-          for (let i = 0; i < numReports; i++) {
-            const timeAgo = (i + 1) * 2;
-            const reportedDate = new Date();
-            reportedDate.setHours(reportedDate.getHours() - timeAgo);
-            
-            reports.push({
-              reportedAt: reportedDate.toISOString(),
-              comment: comments[(seed + i) % comments.length],
-              categories: [(seed + i) % 20 + 3],
-              reporterId: (seed * (i + 1)) % 10000 + 500,
-              reporterCountryCode: countries[(seed + i) % countries.length],
-              reporterCountryName: null,
-            });
-          }
-        }
-        
-        const mockData: AbuseIpdbInfo = {
-          isSimulated: true,
-          ipAddress: ip,
-          isPublic: true,
-          ipVersion: ip.includes(":") ? 6 : 4,
-          isWhitelisted: false,
-          abuseConfidenceScore: confidenceScore,
-          countryCode,
-          usageType: selectedIsp.usage,
-          isp: selectedIsp.isp,
-          domain: selectedIsp.domain,
-          hostnames: isMalicious ? [`bad-bot-${seed}.malicious.net`] : [`dynamic-${ip.replace(/\./g, "-")}.isp.net`],
-          totalReports,
-          numDistinctUsers: isMalicious ? Math.ceil(totalReports / 2) : 0,
-          lastReportedAt: isMalicious ? new Date().toISOString() : null,
-          reports,
-        };
-
-        await setCacheValue(cacheKey, mockData, 86400 * 2);
-        return { error: null, data: mockData };
+        return { error: "Chave da API do AbuseIPDB não configurada.", data: null };
       }
 
       const res = await fetch(
