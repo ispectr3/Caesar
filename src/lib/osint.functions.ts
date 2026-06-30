@@ -3940,8 +3940,6 @@ function murmurhash3_32_gc(key: string) {
   return h1 >>> 0;
 }
 
-import md5 from "md5";
-
 export const faviconLookup = createServerFn({ method: "POST" })
   .validator(z.object({ domain: z.string() }))
   .handler(async ({ data }): Promise<{ error: string | null; data: any | null }> => {
