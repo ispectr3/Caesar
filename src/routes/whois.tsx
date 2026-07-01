@@ -5,8 +5,10 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { whoisLookup, type WhoisInfo } from "@/lib/osint.functions";
 import { Server, Calendar, Shield, Network, User } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/whois")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "WHOIS Lookup" },

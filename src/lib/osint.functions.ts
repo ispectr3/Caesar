@@ -2212,6 +2212,7 @@ export const ghuntLookup = createServerFn({ method: "POST" })
       const hash = md5(email);
       let name: string | null = null;
       let avatarUrl: string | null = null;
+      const gravatarAccounts: Array<{ domain: string; display: string; url: string }> = [];
 
       try {
         const gravRes = await fetch(`https://gravatar.com/${hash}.json`, {
@@ -2223,12 +2224,41 @@ export const ghuntLookup = createServerFn({ method: "POST" })
           if (profile) {
             name = profile.displayName || profile.preferredUsername || null;
             avatarUrl = profile.thumbnailUrl || null;
+            if (profile.accounts) {
+              for (const acc of profile.accounts) {
+                gravatarAccounts.push({ domain: acc.domain, display: acc.display, url: acc.url });
+              }
+            }
           }
         }
       } catch {}
 
+      // Check YouTube channel via Gravatar accounts and public page
+      let youtubeStatus: "active" | "unknown" = "unknown";
+      let youtubeInfo = "Nenhum canal do YouTube encontrado para este e-mail.";
+      const youtubeAccount = gravatarAccounts.find(a => a.domain.toLowerCase().includes("youtube"));
+      if (youtubeAccount) {
+        youtubeStatus = "active";
+        youtubeInfo = `Canal encontrado via Gravatar: ${youtubeAccount.url}`;
+      } else if (isGoogle) {
+        try {
+          const ytName = email.split("@")[0].replace(/[^a-zA-Z0-9_-]/g, "");
+          if (ytName.length >= 2) {
+            const ytRes = await fetch(`https://www.youtube.com/@${encodeURIComponent(ytName)}`, {
+              headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" },
+              redirect: "manual",
+              signal: AbortSignal.timeout(4000),
+            });
+            if (ytRes.status === 200) {
+              youtubeStatus = "active";
+              youtubeInfo = `Canal do YouTube encontrado: https://www.youtube.com/@${ytName}`;
+            }
+          }
+        } catch {}
+      }
+
       // GAIA ID is not available without authentication
-      let gaiaId = "Não disponível";
+      const gaiaId = "Não disponível";
 
       // Google Services Exposure Checklist
       const services: GhuntResult["services"] = [
@@ -2239,8 +2269,8 @@ export const ghuntLookup = createServerFn({ method: "POST" })
         },
         {
           name: "YouTube Channel",
-          status: "unknown",
-          info: "Consulta de exposição requer credenciais adicionais.",
+          status: youtubeStatus,
+          info: youtubeInfo,
         },
         {
           name: "Google Maps / Local Guides",
@@ -2736,9 +2766,9 @@ export const theHarvesterScan = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ error: string | null; data: HarvesterResult | null }> => {
     try {
       const domain = data.domain.toLowerCase();
-      const sources = ["Google", "Bing", "Shodan", "CRT.sh", "ThreatCrowd", "DNSDumpster"];
-      
-      let foundSubdomains: string[] = [];
+      const sources: string[] = ["CRT.sh"];
+      const uniqueSubdomains = new Set<string>();
+
       try {
         const res = await fetch(
           `https://crt.sh/?q=%25.${encodeURIComponent(domain)}&output=json`,
@@ -2746,55 +2776,77 @@ export const theHarvesterScan = createServerFn({ method: "POST" })
         );
         if (res.ok) {
           const json = await res.json() as Array<{ name_value: string }>;
-          const uniq = new Set<string>();
           for (const item of json) {
             const names = item.name_value.split("\n");
             for (const name of names) {
               const clean = name.trim().toLowerCase().replace(/^\*\./, "");
               if (clean && clean.endsWith(domain)) {
-                uniq.add(clean);
+                uniqueSubdomains.add(clean);
               }
             }
           }
-          foundSubdomains = Array.from(uniq).slice(0, 8);
         }
       } catch {}
 
-      if (foundSubdomains.length === 0) {
-        foundSubdomains = [`www.${domain}`, `mail.${domain}`, `api.${domain}`, `dev.${domain}`, `ns1.${domain}`];
+      if (uniqueSubdomains.size === 0) {
+        try {
+          const fallbackRes = await fetchWithRetry(
+            `https://api.hackertarget.com/hostsearch/?q=${encodeURIComponent(domain)}`,
+            { timeout: 8000 },
+            1,
+            1500
+          );
+          if (fallbackRes.ok) {
+            const text = await fallbackRes.text();
+            if (text && !text.includes("error") && !text.includes("No hosts found")) {
+              sources.push("HackerTarget");
+              const lines = text.split("\n");
+              for (const line of lines) {
+                const parts = line.split(",");
+                if (parts.length >= 1) {
+                  const sub = parts[0].trim().toLowerCase();
+                  if (sub && sub.endsWith(domain)) {
+                    uniqueSubdomains.add(sub);
+                  }
+                }
+              }
+            }
+          }
+        } catch {}
       }
+
+      const foundSubdomains = Array.from(uniqueSubdomains).slice(0, 8);
 
       const subdomainsList: Array<{ name: string; ip: string }> = [];
       const ipSet = new Set<string>();
 
-      let seed = 0;
-      for (let i = 0; i < domain.length; i++) seed += domain.charCodeAt(i);
-
-      for (let idx = 0; idx < foundSubdomains.length; idx++) {
-        const sub = foundSubdomains[idx];
-        const lastOctet = (seed + idx * 17) % 254 + 1;
-        const publicIp = `104.244.42.${lastOctet}`;
-        subdomainsList.push({ name: sub, ip: publicIp });
-        ipSet.add(publicIp);
-      }
-
-      const commonPrefixes = ["admin", "contact", "support", "hr", "sales", "info", "billing", "jobs"];
-      const emails: string[] = [];
-      commonPrefixes.forEach((prefix, idx) => {
-        if ((seed + idx * 7) % 3 !== 0) {
-          emails.push(`${prefix}@${domain}`);
+      for (const sub of foundSubdomains) {
+        try {
+          const dnsRes = await fetch(
+            `https://dns.google/resolve?name=${encodeURIComponent(sub)}&type=A`,
+            { signal: AbortSignal.timeout(3000) }
+          );
+          if (dnsRes.ok) {
+            const dnsJson = await dnsRes.json() as { Answer?: Array<{ data: string }> };
+            const ips = dnsJson.Answer?.map(a => a.data) || [];
+            for (const ip of ips) {
+              subdomainsList.push({ name: sub, ip });
+              ipSet.add(ip);
+            }
+          }
+          if (subdomainsList.filter(s => s.name === sub).length === 0) {
+            subdomainsList.push({ name: sub, ip: "Não resolvido" });
+          }
+        } catch {
+          subdomainsList.push({ name: sub, ip: "Não resolvido" });
         }
-      });
-
-      if (emails.length === 0) {
-        emails.push(`info@${domain}`);
       }
 
       return {
         error: null,
         data: {
           domain,
-          emails,
+          emails: [],
           subdomains: subdomainsList,
           ips: Array.from(ipSet),
           sources,
@@ -2842,16 +2894,7 @@ export const phoneinfogaScan = createServerFn({ method: "POST" })
       const intl = parsed.formatInternational() || phoneInput;
       const type = parsed.getType() || "Desconhecido";
       
-      let seed = 0;
-      const cleanNum = phoneInput.replace(/\D/g, "");
-      for (let i = 0; i < cleanNum.length; i++) {
-        seed += parseInt(cleanNum[i]) || 0;
-      }
-
-      const carriers = ["Vivo", "Claro", "TIM", "Oi", "Vodafone", "AT&T", "Verizon", "T-Mobile"];
-      const carrier = parsed.country === "BR" ? carriers[seed % 4] : carriers[seed % carriers.length];
-
-      const cleanPhoneForDorks = cleanNum;
+      const cleanPhoneForDorks = phoneInput.replace(/\D/g, "");
       const dorks = [
         {
           title: "Busca exata na Web",
@@ -2875,23 +2918,18 @@ export const phoneinfogaScan = createServerFn({ method: "POST" })
         }
       ];
 
-      const reputationScore = 100 - ((seed * 7) % 60);
-      let threatLevel: "Low" | "Medium" | "High" = "Low";
-      if (reputationScore < 60) threatLevel = "High";
-      else if (reputationScore < 80) threatLevel = "Medium";
-
       return {
         error: null,
         data: {
           phone: phoneInput,
           valid: parsed.isValid(),
           country,
-          carrier,
+          carrier: "Não disponível",
           type,
           internationalFormat: intl,
           googleDorks: dorks,
-          reputationScore,
-          threatLevel,
+          reputationScore: 0,
+          threatLevel: "Low",
         },
       };
     } catch (e) {
@@ -2925,6 +2963,7 @@ export const mailsleuthCheck = createServerFn({ method: "POST" })
     try {
       const email = data.email.toLowerCase();
       const domain = email.split("@")[1];
+      const username = email.split("@")[0];
       
       let mxVerified = false;
       try {
@@ -2939,7 +2978,8 @@ export const mailsleuthCheck = createServerFn({ method: "POST" })
 
       const hash = md5(email);
       let gravatarExists = false;
-      let gravatarUrl = "";
+      let gravatarUrl: string | undefined = undefined;
+      let gravatarName: string | undefined = undefined;
       try {
         const gravRes = await fetch(`https://gravatar.com/${hash}.json`, {
           headers: { "User-Agent": "CaesarOSINT-Tool/1.0" },
@@ -2947,33 +2987,85 @@ export const mailsleuthCheck = createServerFn({ method: "POST" })
         if (gravRes.ok) {
           gravatarExists = true;
           gravatarUrl = `https://gravatar.com/${hash}`;
+          const gravJson = await gravRes.json();
+          gravatarName = gravJson.entry?.[0]?.displayName || gravJson.entry?.[0]?.preferredUsername || undefined;
         }
       } catch {}
 
-      let seed = 0;
-      for (let i = 0; i < email.length; i++) {
-        seed += email.charCodeAt(i);
-      }
-
-      const platforms = [
-        { name: "Gravatar", check: () => gravatarExists, link: gravatarUrl || `https://gravatar.com/${hash}` },
-        { name: "Spotify", check: () => (seed % 3 === 0 || seed % 5 === 0), link: "" },
-        { name: "Adobe ID", check: () => (seed % 2 === 0), link: "" },
-        { name: "Netflix", check: () => (seed % 4 !== 0), link: "" },
-        { name: "Amazon", check: () => (seed % 3 !== 1), link: "" },
-        { name: "Pinterest", check: () => (seed % 5 === 1), link: "" },
-        { name: "Microsoft Live", check: () => (seed % 2 === 0 || seed % 3 === 0), link: "" },
-        { name: "Steam", check: () => (seed % 4 === 0), link: "" },
+      const platformChecks: Array<{ platform: string; url: string; check: () => Promise<boolean> }> = [
+        {
+          platform: "Gravatar",
+          url: gravatarUrl || `https://gravatar.com/${hash}`,
+          check: async () => gravatarExists,
+        },
+        {
+          platform: "GitHub",
+          url: `https://github.com/${encodeURIComponent(username)}`,
+          check: async () => {
+            try {
+              const ghRes = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, {
+                headers: { "User-Agent": "CaesarOSINT-Tool/1.0" },
+                signal: AbortSignal.timeout(4000),
+              });
+              return ghRes.ok;
+            } catch { return false; }
+          },
+        },
+        {
+          platform: "Reddit",
+          url: `https://www.reddit.com/user/${encodeURIComponent(username)}`,
+          check: async () => {
+            try {
+              const rdRes = await fetch(`https://www.reddit.com/user/${encodeURIComponent(username)}/about.json`, {
+                headers: { "User-Agent": "CaesarOSINT-Tool/1.0" },
+                signal: AbortSignal.timeout(4000),
+              });
+              return rdRes.ok;
+            } catch { return false; }
+          },
+        },
+        {
+          platform: "Keybase",
+          url: `https://keybase.io/${encodeURIComponent(username)}`,
+          check: async () => {
+            try {
+              const kbRes = await fetch(`https://keybase.io/_/api/1.0/user/lookup.json?usernames=${encodeURIComponent(username)}`, {
+                signal: AbortSignal.timeout(4000),
+              });
+              if (!kbRes.ok) return false;
+              const kbJson = await kbRes.json();
+              return kbJson.status?.code === 0 && kbJson.them?.length > 0;
+            } catch { return false; }
+          },
+        },
+        {
+          platform: "Dev.to",
+          url: `https://dev.to/${encodeURIComponent(username)}`,
+          check: async () => {
+            try {
+              const dtRes = await fetch(`https://dev.to/${encodeURIComponent(username)}`, {
+                headers: { "User-Agent": "CaesarOSINT-Tool/1.0" },
+                redirect: "manual",
+                signal: AbortSignal.timeout(4000),
+              });
+              return dtRes.status === 200;
+            } catch { return false; }
+          },
+        },
       ];
 
-      const profiles = platforms.map(p => ({
-        platform: p.name,
-        registered: p.check(),
-        url: p.link || undefined,
-      }));
+      const profiles: MailSleuthResult["profiles"] = [];
+      const results = await Promise.all(platformChecks.map(p => p.check()));
+      for (let i = 0; i < platformChecks.length; i++) {
+        profiles.push({
+          platform: platformChecks[i].platform,
+          registered: results[i],
+          url: results[i] ? platformChecks[i].url : undefined,
+        });
+      }
 
       const registeredCount = profiles.filter(p => p.registered).length;
-      const score = Math.round((registeredCount / platforms.length) * 100);
+      const score = Math.round((registeredCount / platformChecks.length) * 100);
 
       return {
         error: null,
@@ -3548,7 +3640,7 @@ export type CryptoWalletResult = {
   lastActive: string;
   timeSinceLastTx: string;
   riskScore: number;
-  riskClassification: "BAIXO RISCO" | "MÉDIO RISCO" | "ALTO RISCO";
+  riskClassification: "BAIXO RISCO" | "MÉDIO RISCO" | "ALTO RISCO" | "NÃO AVALIADO";
   riskFactors: string[];
   entity: {
     name: string;
@@ -3689,10 +3781,10 @@ export const cryptoWalletLookup = createServerFn({ method: "POST" })
       const lastActive = "Recentemente";
       const timeSinceLastTx = "Recentemente";
 
-      // Non-simulated metrics
+      // Non-simulated metrics — análise forense avançada requer APIs pagas
       const riskScore = 0;
-      const riskClassification = "BAIXO RISCO" as const;
-      const riskFactors: string[] = ["Verificações avançadas forenses requerem chaves de API integradas."];
+      const riskClassification = "NÃO AVALIADO" as const;
+      const riskFactors: string[] = ["Análise forense avançada (entity tagging, cluster, timeline, risco) requer chaves de APIs especializadas (Chainalysis, Etherscan, etc)."];
       const entity = null;
       const cluster = null;
       const mentions: any[] = [];
@@ -3732,6 +3824,7 @@ export const cryptoWalletLookup = createServerFn({ method: "POST" })
 
 const virustotalSchema = z.object({
   query: z.string().trim().min(1, "O termo de busca não pode ser vazio"),
+  apiKey: z.string().optional(),
 });
 
 export type VirusTotalInfo = {
@@ -3897,7 +3990,7 @@ export const generateSmartUsernames = createServerFn({ method: "POST" })
         if (parsed.usernames && Array.isArray(parsed.usernames)) return { error: null, data: parsed.usernames };
         // regex fallback
         const matches = text.match(/"([^"]+)"/g);
-        if (matches) return { error: null, data: matches.map(m => m.replace(/"/g, '')) };
+        if (matches) return { error: null, data: matches.map((m: string) => m.replace(/"/g, '')) };
         return { error: "Formato de resposta inesperado da IA.", data: null };
       } catch (e) {
         return { error: "Falha ao extrair JSON da IA.", data: null };
@@ -3923,10 +4016,10 @@ function murmurhash3_32_gc(key: string) {
     h1 = (((h1b & 0xffff) + 0x6b64) + ((((h1b >>> 16) + 0xe654) & 0xffff) << 16));
   }
   k1 = 0;
-  switch (remainder) {
-    case 3: k1 ^= (key.charCodeAt(i + 2) & 0xff) << 16;
-    case 2: k1 ^= (key.charCodeAt(i + 1) & 0xff) << 8;
-    case 1: k1 ^= (key.charCodeAt(i) & 0xff);
+  if (remainder >= 3) k1 ^= (key.charCodeAt(i + 2) & 0xff) << 16;
+  if (remainder >= 2) k1 ^= (key.charCodeAt(i + 1) & 0xff) << 8;
+  if (remainder >= 1) {
+    k1 ^= (key.charCodeAt(i) & 0xff);
     k1 = (((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
     k1 = (k1 << 15) | (k1 >>> 17);
     k1 = (((k1 & 0xffff) * c2) + ((((k1 >>> 16) * c2) & 0xffff) << 16)) & 0xffffffff;

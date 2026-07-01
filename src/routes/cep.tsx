@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { MapPin } from "lucide-react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
+import { z } from "zod";
 
 export const Route = createFileRoute("/cep")({
+    validateSearch: z.object({ q: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "CEP Lookup" },

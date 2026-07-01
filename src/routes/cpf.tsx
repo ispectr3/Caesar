@@ -5,8 +5,10 @@ import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../c
 import { cpfLookup, type CpfResult } from "../lib/osint.functions";
 import { ShieldCheck, ShieldAlert, ShieldX, Copy, Check } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 
 export const Route = createFileRoute("/cpf")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "CPF Search" },

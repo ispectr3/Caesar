@@ -5,8 +5,10 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { headersAnalyze, type HeadersAnalysis } from "@/lib/osint.functions";
 import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/headers")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "HTTP Headers" },

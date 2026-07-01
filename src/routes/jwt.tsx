@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
-import { ResultCard, ToolForm } from "../components/ToolForm";
+import { ResultCard, ToolForm, ModuleInfoTabs } from "../components/ToolForm";
 import { ShieldAlert, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/jwt")({
@@ -45,10 +45,12 @@ function JwtTool() {
               placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
               buttonLabel="Decodificar Token"
               onSubmit={handleAnalyze}
-              isPassive={true}
-              how="Processa o Base64URL do cabeçalho e payload localmente no seu navegador."
-              interpret="Ataques comuns incluem alg:none (bypass de assinatura) ou expirações infinitas."
-            />
+            >
+              <ModuleInfoTabs
+                how="Processa o Base64URL do cabeçalho e payload localmente no seu navegador."
+                interpret="Ataques comuns incluem alg:none (bypass de assinatura) ou expirações infinitas."
+              />
+            </ToolForm>
 
             {result && (
               <div className="space-y-6 fade-in-up">

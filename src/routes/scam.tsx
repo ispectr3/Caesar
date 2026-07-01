@@ -4,8 +4,10 @@ import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { ResultCard } from "../components/ToolForm";
 import { scamAnalyze, type ScamAnalysisResult } from "../lib/osint.functions";
 import { ShieldAlert, AlertTriangle, AlertCircle, CheckCircle, Loader2, ArrowRight } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/scam")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "Phishing Analyzer" },

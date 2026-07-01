@@ -7,6 +7,7 @@ import { usernameScan, redditAnalyze, type UsernameScanResult, type RedditAnalyt
 import { Search, ExternalLink, CheckCircle2, XCircle, HelpCircle, Activity, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/username")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "WhatsMyName" },
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/username")({
 });
 
 import { useEffect } from "react";
+import { z } from "zod";
 
 function UsernameTool() {
   const { q } = Route.useSearch();

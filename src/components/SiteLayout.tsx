@@ -280,7 +280,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         const item = showResults[activeIndex];
         navigate({
           to: item.to as any,
-          search: item.query ? { q: item.query } : undefined,
+          search: item.query ? { q: item.query } as any : undefined,
         });
         setPaletteOpen(false);
         setPaletteQuery("");
@@ -575,7 +575,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                   onClick={() => {
                     navigate({
                       to: s.to as any,
-                      search: s.query ? { q: s.query } : undefined,
+                      search: s.query ? { q: s.query } as any : undefined,
                     });
                     setPaletteOpen(false);
                     setPaletteQuery("");

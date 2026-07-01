@@ -9,8 +9,10 @@ import {
   type GravatarProfile,
 } from "@/lib/osint.functions";
 import { CheckCircle, XCircle, AlertTriangle, Link2, Share2 } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/mosint")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "Mosint Email Analyzer" },
@@ -27,7 +29,7 @@ function MosintTool() {
   const { q } = Route.useSearch();
 
   useEffect(() => {
-    if (q && !result) {
+    if (q && !validation) {
       handleSubmit(q);
     }
   }, [q]);
@@ -89,7 +91,7 @@ function MosintTool() {
             {/* Domain & Validation */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ResultCard
-                exportData={result}
+                exportData={validation}
                 exportName="mosint_export" title="Status do Endereço">
                 <KeyValue k="Formato Correto" v={validation.formatValid ? "SIM" : "NÃO"} />
                 <KeyValue k="Domínio Descartável" v={validation.isDisposable ? "SIM [ALERTA]" : "NÃO [SEGURO]"} />

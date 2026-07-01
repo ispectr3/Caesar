@@ -4,8 +4,10 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { leaklookerScan, type LeakLookerResult } from "@/lib/osint.functions";
 import { ShieldCheck, ShieldAlert, Terminal, Activity } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/leaklooker")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "LeakLooker" },

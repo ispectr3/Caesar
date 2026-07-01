@@ -6,8 +6,10 @@ import { generateSmartUsernames } from "@/lib/osint.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Brain } from "lucide-react";
 import { Copy, Check, Search, Filter, HelpCircle, ArrowRight } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/namint")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "NAMINT Combiner" },

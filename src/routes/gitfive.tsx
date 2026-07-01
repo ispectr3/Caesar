@@ -4,8 +4,10 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { gitfiveLookup, type GitFiveResult } from "@/lib/osint.functions";
 import { Github, Mail, Database, Terminal } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/gitfive")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "Git Recon" },

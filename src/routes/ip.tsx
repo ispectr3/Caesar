@@ -5,6 +5,7 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { ipLookup, type IpInfo } from "@/lib/osint.functions";
 import { ShieldAlert, ShieldCheck, AlertTriangle, Wifi } from "lucide-react";
+import { z } from "zod";
 
 const HOSTING_ASNS = [
   "amazon", "aws", "digitalocean", "linode", "vultr", "hetzner", "ovh", "scaleway",
@@ -43,6 +44,7 @@ function detectIpRisk(result: IpInfo): { type: "vpn" | "hosting" | "clean"; labe
 }
 
 export const Route = createFileRoute("/ip")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "IP Lookup" },

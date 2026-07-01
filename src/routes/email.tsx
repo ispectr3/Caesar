@@ -10,8 +10,10 @@ import {
   type GravatarProfile,
 } from "@/lib/osint.functions";
 import { CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/email")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "Email Validator" },

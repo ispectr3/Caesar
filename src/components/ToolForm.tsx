@@ -76,16 +76,18 @@ export function ToolForm({
   children,
   extraInputs,
   apiKeyStorageKey,
+  description,
 }: {
   label?: string;
   title?: string;
+  description?: string;
   placeholder: string;
   buttonText?: string;
   buttonLabel?: string;
   onSubmit: (value: string, apiKey?: string) => void;
   loading?: boolean;
   error?: string | null;
-  inputType?: "cnpj" | "cpf" | "phone" | "domain" | "ip" | "email" | "default";
+  inputType?: "cnpj" | "cpf" | "phone" | "domain" | "ip" | "email" | "text" | "default";
   defaultValue?: string;
   storageKey?: string;
   children?: ReactNode;
@@ -185,6 +187,9 @@ export function ToolForm({
           </div>
         </div>
       )}
+      {description && (
+        <p className="font-mono text-[11px] text-muted-foreground/70 mb-2 -mt-1">{description}</p>
+      )}
       <div className="flex flex-col sm:flex-row gap-3 w-full"
       >
         <label className="sr-only">{displayLabel}</label>
@@ -258,9 +263,9 @@ const exportToPdf = async (elementId: string, fileName: string) => {
     const opt = {
       margin: 0.5,
       filename: `${fileName.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
+      image: { type: "jpeg" as const, quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, backgroundColor: "#0e0e10" },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      jsPDF: { unit: "in" as const, format: "a4" as const, orientation: "portrait" as const },
     };
     html2pdf().set(opt).from(element).save();
   } catch (err) {
@@ -478,7 +483,7 @@ export function PivotLinks({
           <Link
             key={i}
             to={p.to as any}
-            search={{ q: p.query }}
+            search={{ q: p.query } as any}
             className="group flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[10px] border border-border/40 bg-card/50 text-foreground/80 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-200"
           >
             <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform duration-200" />

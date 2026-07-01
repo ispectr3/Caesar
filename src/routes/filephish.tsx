@@ -4,8 +4,10 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard } from "@/components/ToolForm";
 import { Copy, Check, ExternalLink, HelpCircle, FileSearch, Fingerprint, UploadCloud, Loader2 } from "lucide-react";
 import exifr from "exifr";
+import { z } from "zod";
 
 export const Route = createFileRoute("/filephish")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "File Phish" },

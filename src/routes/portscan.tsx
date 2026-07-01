@@ -5,8 +5,10 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { portScan, type PortScanResult } from "@/lib/osint.functions";
 import { Lock, Unlock, AlertTriangle, ShieldCheck } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/portscan")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "Web Port Scanner" },

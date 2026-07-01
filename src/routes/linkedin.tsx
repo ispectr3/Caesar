@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, PivotLinks } from "@/components/ToolForm";
 import { Search, Linkedin, Copy, ExternalLink, User, Building2 } from "lucide-react";

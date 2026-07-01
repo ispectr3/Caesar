@@ -5,8 +5,10 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, ModuleInfoTabs } from "@/components/ToolForm";
 import { subdomainScan, type SubdomainResult } from "@/lib/osint.functions";
 import { Search } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/subdomains")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "Subdomain Scanner" },

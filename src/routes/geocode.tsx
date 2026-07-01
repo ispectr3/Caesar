@@ -5,8 +5,10 @@ import { useState, useEffect } from "react";
 import { KeyValue, ResultCard, ToolForm, PivotLinks } from "../components/ToolForm";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { geocodeLookup } from "../lib/osint.functions";
+import { z } from "zod";
 
 export const Route = createFileRoute("/geocode")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "GEOINT" },

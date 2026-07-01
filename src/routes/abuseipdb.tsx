@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { abuseIpdbLookup, type AbuseIpdbInfo } from "@/lib/osint.functions";
+import { z } from "zod";
 
 export const Route = createFileRoute("/abuseipdb")({
+    validateSearch: z.object({ q: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "AbuseIPDB Scanner" },

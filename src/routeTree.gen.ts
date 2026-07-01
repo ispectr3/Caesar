@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhoisRouteImport } from './routes/whois'
+import { Route as WaybackRouteImport } from './routes/wayback'
 import { Route as WafRouteImport } from './routes/waf'
 import { Route as VirustotalRouteImport } from './routes/virustotal'
 import { Route as UsernameRouteImport } from './routes/username'
@@ -18,17 +19,22 @@ import { Route as TorRouteImport } from './routes/tor'
 import { Route as TimestampRouteImport } from './routes/timestamp'
 import { Route as TelegramRouteImport } from './routes/telegram'
 import { Route as SubdomainsRouteImport } from './routes/subdomains'
+import { Route as StatusRouteImport } from './routes/status'
 import { Route as ShodanRouteImport } from './routes/shodan'
 import { Route as ScamRouteImport } from './routes/scam'
+import { Route as ReportRouteImport } from './routes/report'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as RegexRouteImport } from './routes/regex'
 import { Route as PortscanRouteImport } from './routes/portscan'
 import { Route as PhoneRouteImport } from './routes/phone'
+import { Route as PasteRouteImport } from './routes/paste'
 import { Route as NamintRouteImport } from './routes/namint'
 import { Route as MosintRouteImport } from './routes/mosint'
 import { Route as MalwarebazaarRouteImport } from './routes/malwarebazaar'
+import { Route as MacRouteImport } from './routes/mac'
 import { Route as LinkedinRouteImport } from './routes/linkedin'
 import { Route as LeaklookerRouteImport } from './routes/leaklooker'
+import { Route as JwtRouteImport } from './routes/jwt'
 import { Route as IpRouteImport } from './routes/ip'
 import { Route as HibpRouteImport } from './routes/hibp'
 import { Route as HeadersRouteImport } from './routes/headers'
@@ -47,7 +53,6 @@ import { Route as EmailRouteImport } from './routes/email'
 import { Route as ElaRouteImport } from './routes/ela'
 import { Route as DorksRouteImport } from './routes/dorks'
 import { Route as DnsRouteImport } from './routes/dns'
-import { Route as DatajudRouteImport } from './routes/datajud'
 import { Route as CveRouteImport } from './routes/cve'
 import { Route as CryptoRouteImport } from './routes/crypto'
 import { Route as CpfRouteImport } from './routes/cpf'
@@ -59,15 +64,15 @@ import { Route as BgpRouteImport } from './routes/bgp'
 import { Route as AbuseipdbRouteImport } from './routes/abuseipdb'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as StatusRouteImport } from './routes/status'
-import { Route as PasteRouteImport } from './routes/paste'
-import { Route as MacRouteImport } from './routes/mac'
-import { Route as JwtRouteImport } from './routes/jwt'
-import { Route as ReportRouteImport } from './routes/report'
 
 const WhoisRoute = WhoisRouteImport.update({
   id: '/whois',
   path: '/whois',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaybackRoute = WaybackRouteImport.update({
+  id: '/wayback',
+  path: '/wayback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WafRoute = WafRouteImport.update({
@@ -110,6 +115,11 @@ const SubdomainsRoute = SubdomainsRouteImport.update({
   path: '/subdomains',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShodanRoute = ShodanRouteImport.update({
   id: '/shodan',
   path: '/shodan',
@@ -118,6 +128,11 @@ const ShodanRoute = ShodanRouteImport.update({
 const ScamRoute = ScamRouteImport.update({
   id: '/scam',
   path: '/scam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistroRoute = RegistroRouteImport.update({
@@ -140,6 +155,11 @@ const PhoneRoute = PhoneRouteImport.update({
   path: '/phone',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PasteRoute = PasteRouteImport.update({
+  id: '/paste',
+  path: '/paste',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NamintRoute = NamintRouteImport.update({
   id: '/namint',
   path: '/namint',
@@ -155,6 +175,11 @@ const MalwarebazaarRoute = MalwarebazaarRouteImport.update({
   path: '/malwarebazaar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MacRoute = MacRouteImport.update({
+  id: '/mac',
+  path: '/mac',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LinkedinRoute = LinkedinRouteImport.update({
   id: '/linkedin',
   path: '/linkedin',
@@ -163,6 +188,11 @@ const LinkedinRoute = LinkedinRouteImport.update({
 const LeaklookerRoute = LeaklookerRouteImport.update({
   id: '/leaklooker',
   path: '/leaklooker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JwtRoute = JwtRouteImport.update({
+  id: '/jwt',
+  path: '/jwt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IpRoute = IpRouteImport.update({
@@ -255,11 +285,6 @@ const DnsRoute = DnsRouteImport.update({
   path: '/dns',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DatajudRoute = DatajudRouteImport.update({
-  id: '/datajud',
-  path: '/datajud',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CveRoute = CveRouteImport.update({
   id: '/cve',
   path: '/cve',
@@ -310,31 +335,6 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ReportRoute = ReportRouteImport.update({
-  id: '/report',
-  path: '/report',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JwtRoute = JwtRouteImport.update({
-  id: '/jwt',
-  path: '/jwt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MacRoute = MacRouteImport.update({
-  id: '/mac',
-  path: '/mac',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PasteRoute = PasteRouteImport.update({
-  id: '/paste',
-  path: '/paste',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StatusRoute = StatusRouteImport.update({
-  id: '/status',
-  path: '/status',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -342,13 +342,6 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/report': typeof ReportRoute
-  '/report': typeof ReportRoute
-  '/report': typeof ReportRoute
-  '/jwt': typeof JwtRoute
-  '/mac': typeof MacRoute
-  '/paste': typeof PasteRoute
-  '/status': typeof StatusRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -360,7 +353,6 @@ export interface FileRoutesByFullPath {
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
   '/cve': typeof CveRoute
-  '/datajud': typeof DatajudRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
   '/ela': typeof ElaRoute
@@ -379,19 +371,22 @@ export interface FileRoutesByFullPath {
   '/headers': typeof HeadersRoute
   '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
+  '/jwt': typeof JwtRoute
   '/leaklooker': typeof LeaklookerRoute
   '/linkedin': typeof LinkedinRoute
+  '/mac': typeof MacRoute
   '/malwarebazaar': typeof MalwarebazaarRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
-  '/password': typeof PasswordRoute
+  '/paste': typeof PasteRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
+  '/report': typeof ReportRoute
   '/scam': typeof ScamRoute
   '/shodan': typeof ShodanRoute
-  '/speedtest': typeof SpeedtestRoute
+  '/status': typeof StatusRoute
   '/subdomains': typeof SubdomainsRoute
   '/telegram': typeof TelegramRoute
   '/timestamp': typeof TimestampRoute
@@ -400,16 +395,10 @@ export interface FileRoutesByFullPath {
   '/username': typeof UsernameRoute
   '/virustotal': typeof VirustotalRoute
   '/waf': typeof WafRoute
+  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesByTo {
-  '/report': typeof ReportRoute
-  '/report': typeof ReportRoute
-  '/report': typeof ReportRoute
-  '/jwt': typeof JwtRoute
-  '/mac': typeof MacRoute
-  '/paste': typeof PasteRoute
-  '/status': typeof StatusRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -421,7 +410,6 @@ export interface FileRoutesByTo {
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
   '/cve': typeof CveRoute
-  '/datajud': typeof DatajudRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
   '/ela': typeof ElaRoute
@@ -440,19 +428,22 @@ export interface FileRoutesByTo {
   '/headers': typeof HeadersRoute
   '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
+  '/jwt': typeof JwtRoute
   '/leaklooker': typeof LeaklookerRoute
   '/linkedin': typeof LinkedinRoute
+  '/mac': typeof MacRoute
   '/malwarebazaar': typeof MalwarebazaarRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
-  '/password': typeof PasswordRoute
+  '/paste': typeof PasteRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
+  '/report': typeof ReportRoute
   '/scam': typeof ScamRoute
   '/shodan': typeof ShodanRoute
-  '/speedtest': typeof SpeedtestRoute
+  '/status': typeof StatusRoute
   '/subdomains': typeof SubdomainsRoute
   '/telegram': typeof TelegramRoute
   '/timestamp': typeof TimestampRoute
@@ -461,17 +452,11 @@ export interface FileRoutesByTo {
   '/username': typeof UsernameRoute
   '/virustotal': typeof VirustotalRoute
   '/waf': typeof WafRoute
+  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/report': typeof ReportRoute
-  '/report': typeof ReportRoute
-  '/report': typeof ReportRoute
-  '/jwt': typeof JwtRoute
-  '/mac': typeof MacRoute
-  '/paste': typeof PasteRoute
-  '/status': typeof StatusRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/abuseipdb': typeof AbuseipdbRoute
@@ -483,7 +468,6 @@ export interface FileRoutesById {
   '/cpf': typeof CpfRoute
   '/crypto': typeof CryptoRoute
   '/cve': typeof CveRoute
-  '/datajud': typeof DatajudRoute
   '/dns': typeof DnsRoute
   '/dorks': typeof DorksRoute
   '/ela': typeof ElaRoute
@@ -502,19 +486,22 @@ export interface FileRoutesById {
   '/headers': typeof HeadersRoute
   '/hibp': typeof HibpRoute
   '/ip': typeof IpRoute
+  '/jwt': typeof JwtRoute
   '/leaklooker': typeof LeaklookerRoute
   '/linkedin': typeof LinkedinRoute
+  '/mac': typeof MacRoute
   '/malwarebazaar': typeof MalwarebazaarRoute
   '/mosint': typeof MosintRoute
   '/namint': typeof NamintRoute
-  '/password': typeof PasswordRoute
+  '/paste': typeof PasteRoute
   '/phone': typeof PhoneRoute
   '/portscan': typeof PortscanRoute
   '/regex': typeof RegexRoute
   '/registro': typeof RegistroRoute
+  '/report': typeof ReportRoute
   '/scam': typeof ScamRoute
   '/shodan': typeof ShodanRoute
-  '/speedtest': typeof SpeedtestRoute
+  '/status': typeof StatusRoute
   '/subdomains': typeof SubdomainsRoute
   '/telegram': typeof TelegramRoute
   '/timestamp': typeof TimestampRoute
@@ -523,18 +510,12 @@ export interface FileRoutesById {
   '/username': typeof UsernameRoute
   '/virustotal': typeof VirustotalRoute
   '/waf': typeof WafRoute
+  '/wayback': typeof WaybackRoute
   '/whois': typeof WhoisRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/report'
-    | '/report'
-    | '/report'
-    | '/jwt'
-    | '/mac'
-    | '/paste'
-    | '/status'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -546,7 +527,6 @@ export interface FileRouteTypes {
     | '/cpf'
     | '/crypto'
     | '/cve'
-    | '/datajud'
     | '/dns'
     | '/dorks'
     | '/ela'
@@ -565,17 +545,22 @@ export interface FileRouteTypes {
     | '/headers'
     | '/hibp'
     | '/ip'
+    | '/jwt'
     | '/leaklooker'
     | '/linkedin'
+    | '/mac'
     | '/malwarebazaar'
     | '/mosint'
     | '/namint'
+    | '/paste'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
+    | '/report'
     | '/scam'
     | '/shodan'
+    | '/status'
     | '/subdomains'
     | '/telegram'
     | '/timestamp'
@@ -584,16 +569,10 @@ export interface FileRouteTypes {
     | '/username'
     | '/virustotal'
     | '/waf'
+    | '/wayback'
     | '/whois'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/report'
-    | '/report'
-    | '/report'
-    | '/jwt'
-    | '/mac'
-    | '/paste'
-    | '/status'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -605,7 +584,6 @@ export interface FileRouteTypes {
     | '/cpf'
     | '/crypto'
     | '/cve'
-    | '/datajud'
     | '/dns'
     | '/dorks'
     | '/ela'
@@ -624,17 +602,22 @@ export interface FileRouteTypes {
     | '/headers'
     | '/hibp'
     | '/ip'
+    | '/jwt'
     | '/leaklooker'
     | '/linkedin'
+    | '/mac'
     | '/malwarebazaar'
     | '/mosint'
     | '/namint'
+    | '/paste'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
+    | '/report'
     | '/scam'
     | '/shodan'
+    | '/status'
     | '/subdomains'
     | '/telegram'
     | '/timestamp'
@@ -643,16 +626,10 @@ export interface FileRouteTypes {
     | '/username'
     | '/virustotal'
     | '/waf'
+    | '/wayback'
     | '/whois'
   id:
     | '__root__'
-    | '/report'
-    | '/report'
-    | '/report'
-    | '/jwt'
-    | '/mac'
-    | '/paste'
-    | '/status'
     | '/'
     | '/about'
     | '/abuseipdb'
@@ -664,7 +641,6 @@ export interface FileRouteTypes {
     | '/cpf'
     | '/crypto'
     | '/cve'
-    | '/datajud'
     | '/dns'
     | '/dorks'
     | '/ela'
@@ -683,17 +659,22 @@ export interface FileRouteTypes {
     | '/headers'
     | '/hibp'
     | '/ip'
+    | '/jwt'
     | '/leaklooker'
     | '/linkedin'
+    | '/mac'
     | '/malwarebazaar'
     | '/mosint'
     | '/namint'
+    | '/paste'
     | '/phone'
     | '/portscan'
     | '/regex'
     | '/registro'
+    | '/report'
     | '/scam'
     | '/shodan'
+    | '/status'
     | '/subdomains'
     | '/telegram'
     | '/timestamp'
@@ -702,15 +683,11 @@ export interface FileRouteTypes {
     | '/username'
     | '/virustotal'
     | '/waf'
+    | '/wayback'
     | '/whois'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  ReportRoute: typeof ReportRoute
-  JwtRoute: typeof JwtRoute
-  MacRoute: typeof MacRoute
-  PasteRoute: typeof PasteRoute
-  StatusRoute: typeof StatusRoute
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AbuseipdbRoute: typeof AbuseipdbRoute
@@ -722,7 +699,6 @@ export interface RootRouteChildren {
   CpfRoute: typeof CpfRoute
   CryptoRoute: typeof CryptoRoute
   CveRoute: typeof CveRoute
-  DatajudRoute: typeof DatajudRoute
   DnsRoute: typeof DnsRoute
   DorksRoute: typeof DorksRoute
   ElaRoute: typeof ElaRoute
@@ -741,17 +717,22 @@ export interface RootRouteChildren {
   HeadersRoute: typeof HeadersRoute
   HibpRoute: typeof HibpRoute
   IpRoute: typeof IpRoute
+  JwtRoute: typeof JwtRoute
   LeaklookerRoute: typeof LeaklookerRoute
   LinkedinRoute: typeof LinkedinRoute
+  MacRoute: typeof MacRoute
   MalwarebazaarRoute: typeof MalwarebazaarRoute
   MosintRoute: typeof MosintRoute
   NamintRoute: typeof NamintRoute
+  PasteRoute: typeof PasteRoute
   PhoneRoute: typeof PhoneRoute
   PortscanRoute: typeof PortscanRoute
   RegexRoute: typeof RegexRoute
   RegistroRoute: typeof RegistroRoute
+  ReportRoute: typeof ReportRoute
   ScamRoute: typeof ScamRoute
   ShodanRoute: typeof ShodanRoute
+  StatusRoute: typeof StatusRoute
   SubdomainsRoute: typeof SubdomainsRoute
   TelegramRoute: typeof TelegramRoute
   TimestampRoute: typeof TimestampRoute
@@ -760,51 +741,24 @@ export interface RootRouteChildren {
   UsernameRoute: typeof UsernameRoute
   VirustotalRoute: typeof VirustotalRoute
   WafRoute: typeof WafRoute
+  WaybackRoute: typeof WaybackRoute
   WhoisRoute: typeof WhoisRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/status': {
-      id: '/status'
-      path: '/status'
-      fullPath: '/status'
-      preLoaderRoute: typeof StatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/paste': {
-      id: '/paste'
-      path: '/paste'
-      fullPath: '/paste'
-      preLoaderRoute: typeof PasteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mac': {
-      id: '/mac'
-      path: '/mac'
-      fullPath: '/mac'
-      preLoaderRoute: typeof MacRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/jwt': {
-      id: '/jwt'
-      path: '/jwt'
-      fullPath: '/jwt'
-      preLoaderRoute: typeof JwtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/report': {
-      id: '/report'
-      path: '/report'
-      fullPath: '/report'
-      preLoaderRoute: typeof ReportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/whois': {
       id: '/whois'
       path: '/whois'
       fullPath: '/whois'
       preLoaderRoute: typeof WhoisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wayback': {
+      id: '/wayback'
+      path: '/wayback'
+      fullPath: '/wayback'
+      preLoaderRoute: typeof WaybackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/waf': {
@@ -863,6 +817,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubdomainsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shodan': {
       id: '/shodan'
       path: '/shodan'
@@ -875,6 +836,13 @@ declare module '@tanstack/react-router' {
       path: '/scam'
       fullPath: '/scam'
       preLoaderRoute: typeof ScamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registro': {
@@ -905,6 +873,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PhoneRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/paste': {
+      id: '/paste'
+      path: '/paste'
+      fullPath: '/paste'
+      preLoaderRoute: typeof PasteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/namint': {
       id: '/namint'
       path: '/namint'
@@ -926,6 +901,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MalwarebazaarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mac': {
+      id: '/mac'
+      path: '/mac'
+      fullPath: '/mac'
+      preLoaderRoute: typeof MacRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/linkedin': {
       id: '/linkedin'
       path: '/linkedin'
@@ -938,6 +920,13 @@ declare module '@tanstack/react-router' {
       path: '/leaklooker'
       fullPath: '/leaklooker'
       preLoaderRoute: typeof LeaklookerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jwt': {
+      id: '/jwt'
+      path: '/jwt'
+      fullPath: '/jwt'
+      preLoaderRoute: typeof JwtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ip': {
@@ -1066,13 +1055,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DnsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/datajud': {
-      id: '/datajud'
-      path: '/datajud'
-      fullPath: '/datajud'
-      preLoaderRoute: typeof DatajudRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cve': {
       id: '/cve'
       path: '/cve'
@@ -1165,7 +1147,6 @@ const rootRouteChildren: RootRouteChildren = {
   CpfRoute: CpfRoute,
   CryptoRoute: CryptoRoute,
   CveRoute: CveRoute,
-  DatajudRoute: DatajudRoute,
   DnsRoute: DnsRoute,
   DorksRoute: DorksRoute,
   ElaRoute: ElaRoute,
@@ -1184,17 +1165,22 @@ const rootRouteChildren: RootRouteChildren = {
   HeadersRoute: HeadersRoute,
   HibpRoute: HibpRoute,
   IpRoute: IpRoute,
+  JwtRoute: JwtRoute,
   LeaklookerRoute: LeaklookerRoute,
   LinkedinRoute: LinkedinRoute,
+  MacRoute: MacRoute,
   MalwarebazaarRoute: MalwarebazaarRoute,
   MosintRoute: MosintRoute,
   NamintRoute: NamintRoute,
+  PasteRoute: PasteRoute,
   PhoneRoute: PhoneRoute,
   PortscanRoute: PortscanRoute,
   RegexRoute: RegexRoute,
   RegistroRoute: RegistroRoute,
+  ReportRoute: ReportRoute,
   ScamRoute: ScamRoute,
   ShodanRoute: ShodanRoute,
+  StatusRoute: StatusRoute,
   SubdomainsRoute: SubdomainsRoute,
   TelegramRoute: TelegramRoute,
   TimestampRoute: TimestampRoute,
@@ -1203,6 +1189,7 @@ const rootRouteChildren: RootRouteChildren = {
   UsernameRoute: UsernameRoute,
   VirustotalRoute: VirustotalRoute,
   WafRoute: WafRoute,
+  WaybackRoute: WaybackRoute,
   WhoisRoute: WhoisRoute,
 }
 export const routeTree = rootRouteImport

@@ -5,10 +5,12 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { dnsLookup } from "@/lib/osint.functions";
 import { ShieldCheck, ShieldAlert, AlertTriangle, Info, Mail, Server, Globe } from "lucide-react";
+import { z } from "zod";
 
 type DnsResult = Array<{ type: string; records: string[] }>;
 
 export const Route = createFileRoute("/dns")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "DNS Lookup" },

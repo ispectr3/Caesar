@@ -5,8 +5,10 @@ import { useState, useEffect } from "react";
 import { KeyValue, ResultCard, ToolForm } from "../components/ToolForm";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { cveSearch } from "../lib/osint.functions";
+import { z } from "zod";
 
 export const Route = createFileRoute("/cve")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "CVE Search" },

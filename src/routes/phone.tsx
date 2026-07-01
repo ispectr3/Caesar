@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { PageHeader, SiteLayout } from "../components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "../components/ToolForm";
 import { phoneLookup, type PhoneInfo } from "../lib/osint.functions";
+import { z } from "zod";
 
 export const Route = createFileRoute("/phone")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "Phone OSINT" },

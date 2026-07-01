@@ -4,8 +4,10 @@ import { PageHeader, SiteLayout } from "@/components/SiteLayout";
 import { KeyValue, ResultCard, ToolForm, PivotLinks, ModuleInfoTabs } from "@/components/ToolForm";
 import { ghuntLookup, type GhuntResult } from "@/lib/osint.functions";
 import { ShieldCheck, Mail, Globe, Database, HelpCircle } from "lucide-react";
+import { z } from "zod";
 
 export const Route = createFileRoute("/ghunt")({
+    validateSearch: z.object({ q: z.string().optional() }),
     head: () => ({
     meta: [
       { title: "GHunt" },
